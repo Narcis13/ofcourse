@@ -61,3 +61,8 @@ This is a Next.js 15 SaaS template using the App Router with clear separation be
 - `CLERK_SECRET_KEY` - Clerk secret key
 - `STRIPE_SECRET_KEY` - Stripe secret key
 - Database connection handled by Supabase CLI
+
+## Workflow
+
+- read the PRD document in /docs/PRD.md 
+- Treat implementation plan in /docs/implementation-plan.md as a living document. Update checkboxes as tasks are completed and add new tasks as discovered
