@@ -62,16 +62,16 @@ This implementation plan outlines the development of OfCourse, a premium multi-c
   - [x] `getCourseById(id)` - Get single course details
   - [x] `getCoursesByCategory(categorySlug)` - Filter by category
   - [x] `getUserCourses(userId)` - Get purchased courses
-- [ ] Create `/actions/categories.ts` with:
-  - [ ] `getAllCategories()` - List all categories
-  - [ ] `getCategoryBySlug(slug)` - Get category details
-- [ ] Create `/actions/bundles.ts` with:
-  - [ ] `getActiveBundles()` - List available bundles
-  - [ ] `getBundleById(id)` - Get bundle details
-- [ ] Extend `/actions/stripe.ts` with:
-  - [ ] `createCourseCheckout(courseId, userId)` - Single course purchase
-  - [ ] `createBundleCheckout(bundleId, userId)` - Bundle purchase
-  - [ ] `handleCoursePaymentSuccess(sessionId)` - Grant course access
+- [x] Create `/actions/categories.ts` with:
+  - [x] `getAllCategories()` - List all categories
+  - [x] `getCategoryBySlug(slug)` - Get category details
+- [x] Create `/actions/bundles.ts` with:
+  - [x] `getActiveBundles()` - List available bundles
+  - [x] `getBundleById(id)` - Get bundle details
+- [x] Extend `/actions/stripe.ts` with:
+  - [x] `createCourseCheckout(courseId, userId)` - Single course purchase
+  - [x] `createBundleCheckout(bundleId, userId)` - Bundle purchase
+  - [x] `handleCoursePaymentSuccess(sessionId)` - Grant course access
 
 ### Week 2: Course Catalog & Browse Experience
 
