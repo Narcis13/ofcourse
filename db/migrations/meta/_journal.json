@@ -15,6 +15,41 @@
       "when": 1752422949368,
       "tag": "0001_soft_barracuda",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1752508246272,
+      "tag": "0002_rare_surge",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1752508814359,
+      "tag": "0003_steady_onslaught",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1752508980473,
+      "tag": "0004_broken_wendell_rand",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1752509186563,
+      "tag": "0005_dashing_cammi",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1752509284781,
+      "tag": "0006_smiling_firelord",
+      "breakpoints": true
     }
   ]
 }

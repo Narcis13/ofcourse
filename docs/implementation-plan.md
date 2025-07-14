@@ -48,20 +48,20 @@ This implementation plan outlines the development of OfCourse, a premium multi-c
   - thumbnail_url
   - preview_video_url
   ```
-- [ ] Add `bundles` table: id, name, description, category_id, price, discount_percentage, course_ids[], active, featured
-- [ ] Add `purchases` table: id, user_id, purchase_type, item_id, price_paid, stripe_payment_intent_id, purchased_at
-- [ ] Add `user_courses` junction table: user_id, course_id, granted_via, granted_at
-- [ ] Add `instructors` table: id, user_id, bio, expertise[], verified, revenue_share
-- [ ] Add `modules` table: id, course_id, order_index, title, video_url, duration, interactive_type, interactive_config
-- [ ] Run migrations: `npm run db:migrate`
-- [ ] Create seed data for categories and sample courses
+- [x] Add `bundles` table: id, name, description, category_id, price, discount_percentage, course_ids[], active, featured
+- [x] Add `purchases` table: id, user_id, purchase_type, item_id, price_paid, stripe_payment_intent_id, purchased_at
+- [x] Add `user_courses` junction table: user_id, course_id, granted_via, granted_at
+- [x] Add `instructors` table: id, user_id, bio, expertise[], verified, revenue_share
+- [x] Add `modules` table: id, course_id, order_index, title, video_url, duration, interactive_type, interactive_config
+- [x] Run migrations: `npm run db:migrate`
+- [x] Create seed data for categories and sample courses
 
 #### Server Actions
-- [ ] Create `/actions/courses.ts` with:
-  - [ ] `getCourses(filters)` - List courses with pagination
-  - [ ] `getCourseById(id)` - Get single course details
-  - [ ] `getCoursesByCategory(categorySlug)` - Filter by category
-  - [ ] `getUserCourses(userId)` - Get purchased courses
+- [x] Create `/actions/courses.ts` with:
+  - [x] `getCourses(filters)` - List courses with pagination
+  - [x] `getCourseById(id)` - Get single course details
+  - [x] `getCoursesByCategory(categorySlug)` - Filter by category
+  - [x] `getUserCourses(userId)` - Get purchased courses
 - [ ] Create `/actions/categories.ts` with:
   - [ ] `getAllCategories()` - List all categories
   - [ ] `getCategoryBySlug(slug)` - Get category details
