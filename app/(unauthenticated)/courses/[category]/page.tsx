@@ -28,6 +28,9 @@ import {
 } from "@/components/ui/breadcrumb";
 import { formatPrice } from "@/lib/utils";
 import { Star, Users, Clock, ChevronRight, Search, Filter, BookOpen, Sparkles } from "lucide-react";
+import CourseGridSkeleton from "@/components/courses/course-grid-skeleton";
+import { CategoryEmptyState, CourseEmptyState } from "@/components/courses/empty-states";
+import MobileFilterDrawer from "@/components/courses/mobile-filter-drawer";
 
 interface PageProps {
   params: Promise<{ category: string }>;
@@ -226,27 +229,6 @@ function CourseCard({
   );
 }
 
-function CourseGridSkeleton() {
-  return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <Card key={i} className="overflow-hidden">
-          <div className="aspect-video bg-muted animate-pulse" />
-          <CardContent className="p-5 space-y-3">
-            <div className="space-y-2">
-              <div className="h-5 bg-muted rounded animate-pulse" />
-              <div className="h-4 bg-muted rounded animate-pulse w-3/4" />
-            </div>
-            <div className="flex gap-4">
-              <div className="h-4 bg-muted rounded animate-pulse w-16" />
-              <div className="h-4 bg-muted rounded animate-pulse w-20" />
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
-}
 
 export default async function CategoryPage({ params, searchParams }: PageProps) {
   const resolvedParams = await params;
@@ -278,36 +260,37 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
         }}
       >
         <div className="absolute inset-0 bg-grid-white/5 [mask-image:radial-gradient(ellipse_at_center,white,transparent_70%)]" />
-        <SectionWrapper className="relative py-16">
-          <Breadcrumb className="mb-8">
-            <BreadcrumbList>
+        <SectionWrapper className="relative py-8 sm:py-16">
+          <Breadcrumb className="mb-4 sm:mb-8">
+            <BreadcrumbList className="text-sm sm:text-base">
               <BreadcrumbItem>
-                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                <BreadcrumbLink href="/" className="hidden sm:inline">Home</BreadcrumbLink>
+                <BreadcrumbLink href="/" className="sm:hidden">Home</BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden sm:inline" />
+              <BreadcrumbItem className="hidden sm:inline">
                 <BreadcrumbLink href="/courses">Courses</BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator />
+              <BreadcrumbSeparator className="hidden sm:inline" />
               <BreadcrumbItem>
-                <BreadcrumbPage>{category.name}</BreadcrumbPage>
+                <BreadcrumbPage className="truncate max-w-[150px] sm:max-w-none">{category.name}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
 
-          <div className="flex items-start gap-6">
+          <div className="flex items-start gap-4 sm:gap-6">
             <div
-              className="h-20 w-20 rounded-2xl flex items-center justify-center shadow-lg"
+              className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0"
               style={{
                 background: `linear-gradient(135deg, hsl(var(--${categoryColor})) 0%, hsl(var(--${categoryColor}) / 0.8) 100%)`,
               }}
             >
-              <BookOpen className="h-10 w-10 text-white" />
+              <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
             </div>
             <div className="flex-1">
-              <h1 className="text-4xl font-bold tracking-tight flex items-center gap-3">
+              <h1 className="text-2xl sm:text-4xl font-bold tracking-tight flex items-center gap-2 sm:gap-3">
                 {category.name}
-                <Sparkles className="h-8 w-8 text-yellow-500" />
+                <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />
               </h1>
               {category.description && (
                 <p className="mt-3 text-lg text-muted-foreground max-w-3xl">
@@ -324,9 +307,22 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
         </SectionWrapper>
       </div>
 
-      <SectionWrapper className="py-12">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <aside className="lg:w-80 space-y-6">
+      <SectionWrapper className="py-6 sm:py-12">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+          {/* Mobile Filter Button */}
+          <div className="lg:hidden">
+            <MobileFilterDrawer 
+              categories={[]}
+              maxPrice={1000}
+              activeFilters={
+                (resolvedSearchParams.search ? 1 : 0) +
+                (resolvedSearchParams.minPrice || resolvedSearchParams.maxPrice ? 1 : 0)
+              }
+            />
+          </div>
+          
+          {/* Desktop Sidebar */}
+          <aside className="hidden lg:block lg:w-80 space-y-6">
             <Card className="p-6">
               <h3 className="font-semibold mb-4 flex items-center gap-2">
                 <Filter className="h-4 w-4" />
@@ -458,19 +454,21 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
                   )}
                 </>
               ) : (
-                <Card className="p-12 text-center">
-                  <BookOpen className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No courses found</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Try adjusting your filters or search terms
-                  </p>
-                  <Button variant="outline" asChild>
-                    <Link href="/courses">
-                      Browse all courses
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </Card>
+                resolvedSearchParams.search || resolvedSearchParams.minPrice || resolvedSearchParams.maxPrice ? (
+                  <CourseEmptyState
+                    variant="no-results"
+                    searchQuery={resolvedSearchParams.search}
+                    categoryName={category.name}
+                    categorySlug={category.slug}
+                    onClearFilters={() => {
+                      window.location.href = `/courses/${category.slug}`;
+                    }}
+                  />
+                ) : (
+                  <CategoryEmptyState
+                    categoryName={category.name}
+                    categorySlug={category.slug}
+                  />
               )}
             </Suspense>
           </div>

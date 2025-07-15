@@ -28,7 +28,7 @@ async function seed() {
         description:
           "Learn programming languages, frameworks, and software development",
         icon: "code",
-        colorScheme: "blue",
+        colorScheme: "#3B82F6", // Blue-500
         displayOrder: 1
       },
       {
@@ -36,7 +36,7 @@ async function seed() {
         slug: "design",
         description: "Master UI/UX design, graphic design, and creative tools",
         icon: "palette",
-        colorScheme: "purple",
+        colorScheme: "#8B5CF6", // Purple-500
         displayOrder: 2
       },
       {
@@ -44,7 +44,7 @@ async function seed() {
         slug: "business",
         description: "Business strategy, marketing, and entrepreneurship",
         icon: "briefcase",
-        colorScheme: "green",
+        colorScheme: "#10B981", // Emerald-500
         displayOrder: 3
       },
       {
@@ -52,7 +52,7 @@ async function seed() {
         slug: "data-science",
         description: "Machine learning, AI, and data analysis",
         icon: "chart-bar",
-        colorScheme: "orange",
+        colorScheme: "#F97316", // Orange-500
         displayOrder: 4
       },
       {
@@ -60,7 +60,7 @@ async function seed() {
         slug: "personal-development",
         description: "Improve your skills and mindset",
         icon: "user",
-        colorScheme: "pink",
+        colorScheme: "#EC4899", // Pink-500
         displayOrder: 5
       }
     ]

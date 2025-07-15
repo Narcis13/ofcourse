@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { getCategoryColorScheme } from "@/lib/category-colors";
 
 interface Category {
   id: string;
@@ -217,25 +218,52 @@ export default function CategoryFilter({
               All Categories
             </span>
           </label>
-          {categories.map((category) => (
-            <label 
-              key={category.id} 
-              className="flex items-center justify-between cursor-pointer group"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value={category.slug} />
-                <span className="text-sm group-hover:text-foreground transition-colors flex items-center gap-2">
-                  {category.icon}
-                  {category.name}
-                </span>
-              </div>
-              {category.courseCount !== undefined && (
-                <Badge variant="outline" className="ml-auto text-xs h-5">
-                  {category.courseCount}
-                </Badge>
-              )}
-            </label>
-          ))}
+          {categories.map((category) => {
+            const colors = getCategoryColorScheme(category.slug);
+            return (
+              <label 
+                key={category.id} 
+                className="flex items-center justify-between cursor-pointer group py-1 px-2 -mx-2 rounded-md transition-colors"
+                style={{
+                  '--hover-bg': `${colors.primary}08`,
+                } as React.CSSProperties}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--hover-bg)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value={category.slug} />
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-3 h-3 rounded-full ring-2 ring-offset-1"
+                      style={{
+                        backgroundColor: colors.primary,
+                        ringColor: `${colors.primary}30`
+                      }}
+                    />
+                    <span className="text-sm group-hover:text-foreground transition-colors flex items-center gap-2">
+                      {category.icon}
+                      {category.name}
+                    </span>
+                  </div>
+                </div>
+                {category.courseCount !== undefined && (
+                  <Badge 
+                    variant="outline" 
+                    className={cn(
+                      "ml-auto text-xs h-5 transition-colors",
+                      filters.category === category.slug && colors.badge
+                    )}
+                  >
+                    {category.courseCount}
+                  </Badge>
+                )}
+              </label>
+            );
+          })}
         </RadioGroup>
       </FilterSection>
 

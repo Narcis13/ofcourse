@@ -16,6 +16,9 @@ import { Label } from "@/components/ui/label"
 import { SectionWrapper } from "@/app/(unauthenticated)/(marketing)/_components/sections/section-wrapper"
 import Link from "next/link"
 import Image from "next/image"
+import CourseGridSkeleton from "@/components/courses/course-grid-skeleton"
+import { CourseEmptyState } from "@/components/courses/empty-states"
+import MobileFilterDrawer from "@/components/courses/mobile-filter-drawer"
 
 interface SearchParams {
   search?: string
@@ -72,8 +75,21 @@ async function CourseCatalog({ searchParams }: { searchParams: SearchParams }) {
       : courses.length
 
   return (
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-      <aside className="lg:col-span-1">
+    <div className="flex flex-col lg:grid lg:grid-cols-4 gap-8">
+      {/* Mobile Filter Button */}
+      <div className="lg:hidden">
+        <MobileFilterDrawer 
+          categories={categories}
+          maxPrice={1000}
+          activeFilters={
+            (searchParams.category ? 1 : 0) +
+            (searchParams.minPrice || searchParams.maxPrice ? 1 : 0)
+          }
+        />
+      </div>
+      
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:block lg:col-span-1">
         <div className="sticky top-24 space-y-6">
           <div>
             <h3 className="mb-4 text-lg font-semibold">Categories</h3>
@@ -182,14 +198,25 @@ async function CourseCatalog({ searchParams }: { searchParams: SearchParams }) {
         </div>
 
         <div className="mb-6 flex items-center justify-between">
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             Showing {courses.length} of {total} courses
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {courses.map((course) => (
-            <Link key={course.id} href={`/courses/${course.category?.slug || 'uncategorized'}/${course.slug || course.id}`}>
+        {courses.length === 0 ? (
+          <CourseEmptyState
+            variant="no-results"
+            searchQuery={searchParams.search}
+            categoryName={categories.find(c => c.slug === searchParams.category)?.name}
+            categorySlug={searchParams.category}
+            onClearFilters={() => {
+              window.location.href = '/courses';
+            }}
+          />
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {courses.map((course) => (
+              <Link key={course.id} href={`/courses/${course.category?.slug || 'uncategorized'}/${course.slug || course.id}`}>
               <Card className="h-full cursor-pointer transition-shadow hover:shadow-lg">
                 <div className="relative aspect-video overflow-hidden rounded-t-lg">
                   {course.thumbnailUrl ? (
@@ -256,7 +283,8 @@ async function CourseCatalog({ searchParams }: { searchParams: SearchParams }) {
               </Card>
             </Link>
           ))}
-        </div>
+          </div>
+        )}
 
         {totalPages > 1 && (
           <div className="mt-8 flex justify-center gap-2">
@@ -322,22 +350,7 @@ async function CourseCatalog({ searchParams }: { searchParams: SearchParams }) {
 }
 
 function CourseListSkeleton() {
-  return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <Card key={i} className="h-full">
-          <div className="bg-muted aspect-video animate-pulse rounded-t-lg" />
-          <CardHeader>
-            <div className="bg-muted h-6 w-3/4 animate-pulse rounded" />
-            <div className="bg-muted mt-2 h-4 w-full animate-pulse rounded" />
-          </CardHeader>
-          <CardContent>
-            <div className="bg-muted h-4 w-1/2 animate-pulse rounded" />
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  )
+  return <CourseGridSkeleton count={12} columns={3} />
 }
 
 export default function CoursesPage({
@@ -346,10 +359,10 @@ export default function CoursesPage({
   searchParams: SearchParams
 }) {
   return (
-    <SectionWrapper className="py-16">
-      <div className="mb-12 text-center">
-        <h1 className="mb-4 text-4xl font-bold">Explore Our Courses</h1>
-        <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
+    <SectionWrapper className="py-8 sm:py-16">
+      <div className="mb-8 sm:mb-12 text-center">
+        <h1 className="mb-3 sm:mb-4 text-2xl sm:text-4xl font-bold">Explore Our Courses</h1>
+        <p className="text-muted-foreground mx-auto max-w-2xl text-base sm:text-xl px-4 sm:px-0">
           Discover courses that will help you grow your skills and advance your
           career
         </p>

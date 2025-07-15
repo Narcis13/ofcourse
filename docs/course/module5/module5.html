@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5: Bringing It to Life - JavaScript Fundamentals</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a78bfa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --code-bg: #1e293b;
+            --border: #e5e7eb;
+        }
+
+        /* Dark mode variables */
+        body.dark-mode {
+            --dark: #f3f4f6;
+            --light: #1f2937;
+            --white: #111827;
+            --border: #374151;
+            --code-bg: #0f172a;
+            background: #0f172a;
+            color: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            color: var(--dark);
+            opacity: 0.8;
+            font-size: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        .theme-toggle {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary-dark);
+        }
+
+        .progress-container {
+            height: 4px;
+            background: var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-top: 100px;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 250px;
+            padding: 2rem 1rem;
+            background: var(--white);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            height: calc(100vh - 100px);
+            overflow-y: auto;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--dark);
+            text-decoration: none;
+            display: block;
+        }
+
+        .nav-item:hover {
+            background: var(--light);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-item.completed::after {
+            content: '✓';
+            float: right;
+            color: var(--success);
+        }
+
+        .nav-item.active.completed::after {
+            color: white;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .lesson-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .lesson-section.active {
+            display: block;
+        }
+
+        .lesson-section h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .lesson-section p {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        /* Interactive Elements */
+        .try-it-box {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .try-it-box h4 {
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            background: var(--code-bg);
+            color: #e2e8f0;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 1rem 0;
+            resize: vertical;
+        }
+
+        .run-button {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .run-button:hover {
+            background: #059669;
+        }
+
+        .output-box {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 60px;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .quiz-option {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            background: var(--light);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+        }
+
+        .quiz-option.correct {
+            background: #d1fae5;
+            border-color: var(--success);
+        }
+
+        .quiz-option.incorrect {
+            background: #fee2e2;
+            border-color: var(--danger);
+        }
+
+        .quiz-result {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .quiz-result.show {
+            display: block;
+        }
+
+        .quiz-result.correct {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .quiz-result.incorrect {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Code Block */
+        .code-block {
+            position: relative;
+            background: var(--code-bg);
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .code-block pre {
+            padding: 1rem;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background: var(--primary-dark);
+        }
+
+        .copy-button.copied {
+            background: var(--success);
+        }
+
+        /* Spoiler */
+        .spoiler {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .spoiler-header {
+            padding: 1rem;
+            background: var(--light);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.3s ease;
+        }
+
+        .spoiler-header:hover {
+            background: var(--border);
+        }
+
+        .spoiler-header::after {
+            content: '▼';
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .spoiler.open .spoiler-header::after {
+            transform: rotate(180deg);
+        }
+
+        .spoiler-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .spoiler.open .spoiler-content {
+            padding: 1rem;
+            max-height: 500px;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Achievement Popup */
+        .achievement {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: top 0.5s ease;
+            z-index: 2000;
+            text-align: center;
+        }
+
+        .achievement.show {
+            top: 120px;
+        }
+
+        .achievement h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .container {
+                flex-direction: column;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .header-subtitle {
+                display: none;
+            }
+        }
+
+        /* Special Elements */
+        .concept-box {
+            background: var(--secondary);
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border-left: 4px solid var(--success);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        /* Variable Display */
+        .variable-display {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .variable-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .variable-item:last-child {
+            border-bottom: none;
+        }
+
+        .variable-name {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .variable-value {
+            color: var(--dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1>Module 5: Bringing It to Life 🚀</h1>
+                <div class="header-subtitle">JavaScript Fundamentals - Make your websites interactive!</div>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="toggle-icon">🌙</span>
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav id="lessonNav">
+                <a href="#" class="nav-item active" onclick="showSection(0)">🎯 Introduction</a>
+                <a href="#" class="nav-item" onclick="showSection(1)">📦 Variables & Data Types</a>
+                <a href="#" class="nav-item" onclick="showSection(2)">🔧 Functions</a>
+                <a href="#" class="nav-item" onclick="showSection(3)">🎨 DOM Manipulation</a>
+                <a href="#" class="nav-item" onclick="showSection(4)">🎮 Event Listeners</a>
+                <a href="#" class="nav-item" onclick="showSection(5)">🔀 Conditionals & Loops</a>
+                <a href="#" class="nav-item" onclick="showSection(6)">🏗️ Final Project</a>
+                <a href="#" class="nav-item" onclick="showSection(7)">🎉 Module Complete</a>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Section 0: Introduction -->
+            <section class="lesson-section active" id="section-0">
+                <h2>🎯 Welcome to JavaScript!</h2>
+                <p>You've built beautiful websites with HTML and CSS, but now it's time to make them come alive! JavaScript is the programming language that adds interactivity, animations, and dynamic behavior to your web pages.</p>
+
+                <div class="concept-box">
+                    <h3>🧠 Think of it this way:</h3>
+                    <p>If HTML is the skeleton 🦴 and CSS is the clothing 👕, then JavaScript is the brain 🧠 and muscles 💪 that make everything move and respond!</p>
+                </div>
+
+                <p>In this module, you'll learn to:</p>
+                <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                    <li>Store information in variables (like a computer's memory)</li>
+                    <li>Create functions that do cool things</li>
+                    <li>Make your webpage respond to clicks, hovers, and keyboard input</li>
+                    <li>Change HTML and CSS with code</li>
+                    <li>Build interactive features like dark mode toggles and form validators</li>
+                </ul>
+
+                <div class="try-it-box">
+                    <h4>🎮 Your First JavaScript!</h4>
+                    <p>Let's start with something fun. Click the button below to see JavaScript in action:</p>
+                    <button class="run-button" onclick="alert('🎉 Congratulations! You just ran JavaScript!')">
+                        Click Me!
+                    </button>
+                </div>
+
+                <p>That popup you just saw? That's JavaScript! Now let's dive deeper and learn how to create our own interactive features.</p>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" style="visibility: hidden;">← Previous</button>
+                    <button class="nav-button" onclick="showSection(1)">Next: Variables →</button>
+                </div>
+            </section>
+
+            <!-- Section 1: Variables & Data Types -->
+            <section class="lesson-section" id="section-1">
+                <h2>📦 Variables & Data Types</h2>
+                <p>Variables are like labeled boxes 📦 where you can store information. Just like you might have a box labeled "favorite games" or "homework," variables let your code remember things!</p>
+
+                <div class="concept-box">
+                    <h3>🏷️ Three Ways to Create Variables</h3>
+                    <p><strong>let</strong> - Can change later (like a whiteboard)<br>
+                    <strong>const</strong> - Can't change (like permanent marker)<br>
+                    <strong>var</strong> - Old way (avoid using this)</p>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Try Creating Variables!</h4>
+                    <p>Edit the code below to create your own variables, then run it:</p>
+                    <textarea class="code-editor" id="variables-editor">// Create variables about yourself!
+let myName = "Alex";
+let myAge = 16;
+const favoriteColor = "blue";
+let isLearningJS = true;
+
+// Display them
+console.log("Name:", myName);
+console.log("Age:", myAge);
+console.log("Favorite Color:", favoriteColor);
+console.log("Learning JS?", isLearningJS);</textarea>
+                    <button class="run-button" onclick="runCode('variables-editor', 'variables-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="variables-output">Output will appear here...</div>
+                </div>
+
+                <h3>📊 Data Types</h3>
+                <p>JavaScript can store different types of information:</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Numbers
+let score = 100;
+let pi = 3.14;
+
+// Strings (text)
+let message = "Hello World!";
+let username = 'CoolCoder123';
+
+// Booleans (true/false)
+let isGameOver = false;
+let hasWon = true;
+
+// Arrays (lists)
+let colors = ["red", "green", "blue"];
+let scores = [95, 87, 92];
+
+// Objects (collections of properties)
+let player = {
+    name: "Alex",
+    score: 1000,
+    level: 5
+};</pre>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Pro Tip: Naming Variables
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Use descriptive names that explain what the variable stores:</p>
+                        <ul style="margin-left: 1rem;">
+                            <li>✅ Good: <code>playerScore</code>, <code>isGameActive</code></li>
+                            <li>❌ Bad: <code>x</code>, <code>temp</code>, <code>data</code></li>
+                        </ul>
+                        <p>Use camelCase: start with lowercase, capitalize each new word!</p>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Which variable declaration should you use for a value that won't change?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'const')">
+                        <input type="radio" name="q1" value="let"> let
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'const')">
+                        <input type="radio" name="q1" value="const"> const
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'const')">
+                        <input type="radio" name="q1" value="var"> var
+                    </label>
+                    <div class="quiz-result" id="q1-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(0)">← Introduction</button>
+                    <button class="nav-button" onclick="showSection(2)">Next: Functions →</button>
+                </div>
+            </section>
+
+            <!-- Section 2: Functions -->
+            <section class="lesson-section" id="section-2">
+                <h2>🔧 Functions - Your Code Tools</h2>
+                <p>Functions are like recipes 🍕 or tools 🔨 - they're sets of instructions you can use over and over. Instead of writing the same code multiple times, you create a function once and use it whenever you need!</p>
+
+                <div class="concept-box">
+                    <h3>🎯 Function Anatomy</h3>
+                    <p>Functions have three parts:<br>
+                    1. <strong>Name</strong> - What to call it<br>
+                    2. <strong>Parameters</strong> - What info it needs (optional)<br>
+                    3. <strong>Body</strong> - What it does</p>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Create Your First Function!</h4>
+                    <p>Let's make a greeting function:</p>
+                    <textarea class="code-editor" id="functions-editor">// Define a function
+function greet(name) {
+    return "Hello, " + name + "! Welcome to JavaScript! 🎉";
+}
+
+// Use the function
+console.log(greet("Alex"));
+console.log(greet("Sam"));
+console.log(greet("Your Name"));
+
+// Function with multiple parameters
+function calculateScore(correct, total) {
+    let percentage = (correct / total) * 100;
+    return "You got " + percentage + "%!";
+}
+
+console.log(calculateScore(8, 10));</textarea>
+                    <button class="run-button" onclick="runCode('functions-editor', 'functions-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="functions-output">Output will appear here...</div>
+                </div>
+
+                <h3>🏗️ Different Ways to Write Functions</h3>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Traditional function
+function add(a, b) {
+    return a + b;
+}
+
+// Function expression
+const multiply = function(a, b) {
+    return a * b;
+};
+
+// Arrow function (modern way)
+const subtract = (a, b) => {
+    return a - b;
+};
+
+// Super short arrow function
+const divide = (a, b) => a / b;</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Function Challenge!</h4>
+                    <p>Create a function that calculates the area of a rectangle:</p>
+                    <textarea class="code-editor" id="function-challenge">// Create a function called calculateArea
+// It should take width and height as parameters
+// It should return the area (width * height)
+
+function calculateArea(width, height) {
+    // Your code here!
+    
+}
+
+// Test your function
+console.log("Area of 5x10 rectangle:", calculateArea(5, 10));
+console.log("Area of 7x3 rectangle:", calculateArea(7, 3));</textarea>
+                    <button class="run-button" onclick="runCode('function-challenge', 'function-challenge-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="function-challenge-output">Output will appear here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 When to Use Functions
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Create a function when:</p>
+                        <ul style="margin-left: 1rem;">
+                            <li>You're doing the same thing multiple times</li>
+                            <li>You want to organize your code</li>
+                            <li>You need to calculate something</li>
+                            <li>You want to make your code easier to understand</li>
+                        </ul>
+                        <p>Good function names describe what they do: <code>calculateTotal</code>, <code>validateEmail</code>, <code>toggleDarkMode</code></p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(1)">← Variables</button>
+                    <button class="nav-button" onclick="showSection(3)">Next: DOM Manipulation →</button>
+                </div>
+            </section>
+
+            <!-- Section 3: DOM Manipulation -->
+            <section class="lesson-section" id="section-3">
+                <h2>🎨 DOM Manipulation - Control Your Page!</h2>
+                <p>DOM stands for Document Object Model. It's how JavaScript sees and controls your HTML. Think of it as JavaScript's remote control 🎮 for your webpage!</p>
+
+                <div class="concept-box">
+                    <h3>🎯 The Power of DOM</h3>
+                    <p>With DOM manipulation, you can:<br>
+                    • Change text content<br>
+                    • Modify styles<br>
+                    • Add or remove elements<br>
+                    • Update attributes</p>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Change the Page!</h4>
+                    <p>Click the buttons to see DOM manipulation in action:</p>
+                    <div id="demo-text" style="font-size: 1.2rem; margin: 1rem 0; padding: 1rem; background: var(--light); border-radius: 8px;">
+                        Hello! I'm a paragraph that can be changed!
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="run-button" onclick="document.getElementById('demo-text').textContent = 'Text changed! 🎉'">
+                            Change Text
+                        </button>
+                        <button class="run-button" onclick="document.getElementById('demo-text').style.color = '#6366f1'">
+                            Change Color
+                        </button>
+                        <button class="run-button" onclick="document.getElementById('demo-text').style.fontSize = '1.5rem'">
+                            Make Bigger
+                        </button>
+                        <button class="run-button" onclick="document.getElementById('demo-text').style.background = '#fbbf24'">
+                            Change Background
+                        </button>
+                    </div>
+                </div>
+
+                <h3>🔍 Selecting Elements</h3>
+                <p>Before you can change something, you need to find it:</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Get element by ID (for unique elements)
+const header = document.getElementById('main-header');
+
+// Get element by class (returns first match)
+const button = document.querySelector('.btn-primary');
+
+// Get ALL elements with a class
+const allButtons = document.querySelectorAll('.button');
+
+// Get by tag name
+const paragraphs = document.getElementsByTagName('p');</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 DOM Manipulation Practice!</h4>
+                    <p>Use JavaScript to modify the elements below:</p>
+                    
+                    <div id="practice-area" style="padding: 1rem; background: var(--white); border: 2px solid var(--border); border-radius: 8px; margin: 1rem 0;">
+                        <h3 id="practice-title">Original Title</h3>
+                        <p id="practice-text">This is the original text.</p>
+                        <button id="practice-button" style="background: gray; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px;">
+                            Original Button
+                        </button>
+                    </div>
+                    
+                    <textarea class="code-editor" id="dom-editor">// Select elements
+const title = document.getElementById('practice-title');
+const text = document.getElementById('practice-text');
+const button = document.getElementById('practice-button');
+
+// Change the title text
+title.textContent = 'JavaScript is Awesome! 🚀';
+
+// Change the paragraph
+text.innerHTML = 'I can <strong>control</strong> the page!';
+
+// Style the button
+button.style.background = '#6366f1';
+button.textContent = 'Styled Button ✨';
+
+// Add a new element
+const newElement = document.createElement('p');
+newElement.textContent = 'This element was created with JavaScript!';
+newElement.style.color = '#10b981';
+document.getElementById('practice-area').appendChild(newElement);</textarea>
+                    <button class="run-button" onclick="runCode('dom-editor', 'dom-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="dom-output">Check the practice area above!</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Which method would you use to select an element with id="header"?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'getElementById')">
+                        <input type="radio" name="q2" value="getElementById"> document.getElementById('header')
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'getElementById')">
+                        <input type="radio" name="q2" value="querySelector"> document.querySelector('header')
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'getElementById')">
+                        <input type="radio" name="q2" value="getElement"> document.getElement('header')
+                    </label>
+                    <div class="quiz-result" id="q2-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(2)">← Functions</button>
+                    <button class="nav-button" onclick="showSection(4)">Next: Event Listeners →</button>
+                </div>
+            </section>
+
+            <!-- Section 4: Event Listeners -->
+            <section class="lesson-section" id="section-4">
+                <h2>🎮 Event Listeners - Make It Interactive!</h2>
+                <p>Event listeners are like security cameras 📹 for your webpage - they watch for specific things to happen (like clicks, hovers, or key presses) and then spring into action!</p>
+
+                <div class="concept-box">
+                    <h3>🎯 Common Events</h3>
+                    <p><strong>click</strong> - When something is clicked<br>
+                    <strong>mouseover</strong> - When mouse hovers over<br>
+                    <strong>keydown</strong> - When a key is pressed<br>
+                    <strong>change</strong> - When input value changes<br>
+                    <strong>submit</strong> - When form is submitted</p>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Interactive Event Playground!</h4>
+                    <p>Try different events on the box below:</p>
+                    
+                    <div id="event-box" style="background: var(--primary); color: white; padding: 2rem; text-align: center; border-radius: 12px; margin: 1rem 0; cursor: pointer; transition: all 0.3s ease;">
+                        <h3>Event Box</h3>
+                        <p>Interact with me!</p>
+                        <p id="event-counter">Clicks: 0</p>
+                    </div>
+                    
+                    <textarea class="code-editor" id="events-editor">// Get the event box
+const eventBox = document.getElementById('event-box');
+let clickCount = 0;
+
+// Click event
+eventBox.addEventListener('click', function() {
+    clickCount++;
+    document.getElementById('event-counter').textContent = 'Clicks: ' + clickCount;
+    
+    // Change color randomly
+    const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#a78bfa'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    eventBox.style.background = randomColor;
+});
+
+// Hover events
+eventBox.addEventListener('mouseenter', function() {
+    eventBox.style.transform = 'scale(1.05)';
+});
+
+eventBox.addEventListener('mouseleave', function() {
+    eventBox.style.transform = 'scale(1)';
+});
+
+// Double click event
+eventBox.addEventListener('dblclick', function() {
+    alert('Double clicked! 🎉');
+});</textarea>
+                    <button class="run-button" onclick="runCode('events-editor', 'events-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="events-output">Try clicking, hovering, and double-clicking the box!</div>
+                </div>
+
+                <h3>🎨 Form Events</h3>
+                <p>Let's handle form inputs with events:</p>
+
+                <div class="try-it-box">
+                    <h4>🎮 Live Input Handler!</h4>
+                    <p>Type in the input to see real-time updates:</p>
+                    
+                    <input type="text" id="name-input" placeholder="Type your name..." style="width: 100%; padding: 0.75rem; font-size: 1rem; border: 2px solid var(--border); border-radius: 8px; margin: 1rem 0;">
+                    
+                    <div id="greeting-display" style="font-size: 1.2rem; padding: 1rem; background: var(--light); border-radius: 8px; margin: 1rem 0;">
+                        Hello, stranger! 👋
+                    </div>
+                    
+                    <textarea class="code-editor" id="input-editor">// Get the input and display elements
+const nameInput = document.getElementById('name-input');
+const greetingDisplay = document.getElementById('greeting-display');
+
+// Listen for input changes
+nameInput.addEventListener('input', function(event) {
+    const name = event.target.value;
+    
+    if (name.length > 0) {
+        greetingDisplay.textContent = 'Hello, ' + name + '! 👋';
+        greetingDisplay.style.background = '#d1fae5';
+    } else {
+        greetingDisplay.textContent = 'Hello, stranger! 👋';
+        greetingDisplay.style.background = '#f3f4f6';
+    }
+});
+
+// Listen for Enter key
+nameInput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        alert('Welcome, ' + event.target.value + '! 🎉');
+    }
+});</textarea>
+                    <button class="run-button" onclick="runCode('input-editor', 'input-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="input-output">Type in the input field above!</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Event Bubbling Explained
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Events "bubble up" through the DOM tree. If you click a button inside a div, both the button AND the div receive the click event!</p>
+                        <p>To stop this, use <code>event.stopPropagation()</code></p>
+                        <p>To prevent default behavior (like form submission), use <code>event.preventDefault()</code></p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(3)">← DOM Manipulation</button>
+                    <button class="nav-button" onclick="showSection(5)">Next: Conditionals & Loops →</button>
+                </div>
+            </section>
+
+            <!-- Section 5: Conditionals & Loops -->
+            <section class="lesson-section" id="section-5">
+                <h2>🔀 Conditionals & Loops - Smart Decisions!</h2>
+                <p>Conditionals let your code make decisions (like a choose-your-own-adventure book 📚), while loops repeat actions (like a playlist on repeat 🔁)!</p>
+
+                <div class="concept-box">
+                    <h3>🤔 If/Else Statements</h3>
+                    <p>Make decisions based on conditions:<br>
+                    <strong>if</strong> - Do this if true<br>
+                    <strong>else if</strong> - Otherwise, check this<br>
+                    <strong>else</strong> - If nothing else, do this</p>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Age Checker Game!</h4>
+                    <p>Create a program that checks if someone can do different activities:</p>
+                    <textarea class="code-editor" id="conditionals-editor">// Age checker function
+function checkAge(age) {
+    if (age >= 18) {
+        console.log("🎉 You're an adult! You can vote!");
+    } else if (age >= 16) {
+        console.log("🚗 You can drive!");
+    } else if (age >= 13) {
+        console.log("🎮 You're a teenager!");
+    } else {
+        console.log("🧒 You're still a kid - enjoy it!");
+    }
+}
+
+// Test different ages
+checkAge(10);
+checkAge(14);
+checkAge(16);
+checkAge(18);
+checkAge(21);
+
+// Grade calculator
+function getGrade(score) {
+    if (score >= 90) return "A - Excellent! 🌟";
+    else if (score >= 80) return "B - Great job! 👍";
+    else if (score >= 70) return "C - Good work! 😊";
+    else if (score >= 60) return "D - Keep trying! 💪";
+    else return "F - Let's work together! 🤝";
+}
+
+console.log("\nGrades:");
+console.log("95 points:", getGrade(95));
+console.log("73 points:", getGrade(73));
+console.log("58 points:", getGrade(58));</textarea>
+                    <button class="run-button" onclick="runCode('conditionals-editor', 'conditionals-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="conditionals-output">Output will appear here...</div>
+                </div>
+
+                <h3>🔁 Loops - Repeat Actions!</h3>
+                <p>Loops let you repeat code without writing it multiple times:</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// For loop - when you know how many times
+for (let i = 1; i <= 5; i++) {
+    console.log("Lap " + i);
+}
+
+// While loop - repeat while condition is true
+let energy = 100;
+while (energy > 0) {
+    console.log("Energy: " + energy);
+    energy -= 20;
+}
+
+// For...of loop - go through arrays
+const fruits = ["apple", "banana", "orange"];
+for (const fruit of fruits) {
+    console.log("I like " + fruit);
+}</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Loop Challenge - Countdown Timer!</h4>
+                    <p>Create a countdown and a pattern generator:</p>
+                    <textarea class="code-editor" id="loops-editor">// Countdown timer
+console.log("🚀 COUNTDOWN!");
+for (let i = 10; i > 0; i--) {
+    console.log(i + "...");
+}
+console.log("BLASTOFF! 🚀");
+
+// Pattern generator
+console.log("\n⭐ Star Pattern:");
+for (let i = 1; i <= 5; i++) {
+    let stars = "";
+    for (let j = 0; j < i; j++) {
+        stars += "⭐";
+    }
+    console.log(stars);
+}
+
+// Array processor
+const scores = [85, 92, 78, 95, 88];
+let total = 0;
+let highest = 0;
+
+for (const score of scores) {
+    total += score;
+    if (score > highest) {
+        highest = score;
+    }
+}
+
+console.log("\n📊 Score Analysis:");
+console.log("Scores:", scores);
+console.log("Average:", total / scores.length);
+console.log("Highest:", highest);</textarea>
+                    <button class="run-button" onclick="runCode('loops-editor', 'loops-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="loops-output">Output will appear here...</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What will this code output? <code>for(let i = 0; i < 3; i++) { console.log(i); }</code></div>
+                    <label class="quiz-option" onclick="checkQuiz(this, '012')">
+                        <input type="radio" name="q3" value="123"> 1, 2, 3
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, '012')">
+                        <input type="radio" name="q3" value="012"> 0, 1, 2
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, '012')">
+                        <input type="radio" name="q3" value="0123"> 0, 1, 2, 3
+                    </label>
+                    <div class="quiz-result" id="q3-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(4)">← Event Listeners</button>
+                    <button class="nav-button" onclick="showSection(6)">Next: Final Project →</button>
+                </div>
+            </section>
+
+            <!-- Section 6: Final Project -->
+            <section class="lesson-section" id="section-6">
+                <h2>🏗️ Final Project - Build Something Awesome!</h2>
+                <p>Time to put everything together! You'll build an interactive feature for your portfolio using all the JavaScript skills you've learned.</p>
+
+                <div class="concept-box">
+                    <h3>🎯 Project: Dark Mode Toggle</h3>
+                    <p>Create a dark mode toggle that:<br>
+                    • Switches between light and dark themes<br>
+                    • Saves the user's preference<br>
+                    • Updates all page elements<br>
+                    • Has smooth transitions</p>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Build Your Dark Mode Toggle!</h4>
+                    <p>Complete the code below to create a working dark mode system:</p>
+                    <textarea class="code-editor" id="project-editor" style="height: 400px;">// Dark Mode Toggle Project
+
+// Step 1: Create the toggle function
+function toggleDarkMode() {
+    // Toggle the dark-mode class on body
+    document.body.classList.toggle('dark-mode');
+    
+    // Update the toggle button icon
+    const toggleBtn = document.querySelector('.theme-toggle-btn');
+    const isDark = document.body.classList.contains('dark-mode');
+    
+    if (isDark) {
+        toggleBtn.textContent = '☀️';
+        // Save preference to localStorage
+        localStorage.setItem('darkMode', 'enabled');
+    } else {
+        toggleBtn.textContent = '🌙';
+        localStorage.setItem('darkMode', 'disabled');
+    }
+}
+
+// Step 2: Check saved preference on page load
+function checkDarkMode() {
+    const darkMode = localStorage.getItem('darkMode');
+    
+    if (darkMode === 'enabled') {
+        document.body.classList.add('dark-mode');
+        document.querySelector('.theme-toggle-btn').textContent = '☀️';
+    }
+}
+
+// Step 3: Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Create toggle button if it doesn't exist
+    if (!document.querySelector('.theme-toggle-btn')) {
+        const btn = document.createElement('button');
+        btn.className = 'theme-toggle-btn';
+        btn.textContent = '🌙';
+        btn.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px;
+            font-size: 24px;
+            background: #6366f1;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        `;
+        btn.onclick = toggleDarkMode;
+        document.body.appendChild(btn);
+    }
+    
+    // Check for saved preference
+    checkDarkMode();
+});
+
+// Test it!
+console.log("✅ Dark mode system ready!");
+console.log("Click the button in the bottom-right corner!")
+
+// Bonus: Add keyboard shortcut (Ctrl/Cmd + D)
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        e.preventDefault();
+        toggleDarkMode();
+        console.log("🎹 Keyboard shortcut activated!");
+    }
+});</textarea>
+                    <button class="run-button" onclick="runCode('project-editor', 'project-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="project-output">Look for the toggle button in the bottom-right corner!</div>
+                </div>
+
+                <h3>🚀 Challenge Extensions</h3>
+                <p>Once your dark mode works, try these challenges:</p>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Challenge 1: Smooth Transitions
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Add CSS transitions to make the theme change smoother:</p>
+                        <pre>body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}</pre>
+                    </div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Challenge 2: Project Filter
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Create buttons to filter portfolio projects by category:</p>
+                        <pre>function filterProjects(category) {
+    const projects = document.querySelectorAll('.project-card');
+    
+    projects.forEach(project => {
+        if (category === 'all' || project.dataset.category === category) {
+            project.style.display = 'block';
+        } else {
+            project.style.display = 'none';
+        }
+    });
+}</pre>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ Testing Tips:</strong>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                        <li>Test in different browsers</li>
+                        <li>Check mobile responsiveness</li>
+                        <li>Verify localStorage works</li>
+                        <li>Test keyboard shortcuts</li>
+                    </ul>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(5)">← Conditionals & Loops</button>
+                    <button class="nav-button" onclick="showSection(7)">Complete Module! →</button>
+                </div>
+            </section>
+
+            <!-- Section 7: Module Complete -->
+            <section class="lesson-section" id="section-7">
+                <h2>🎉 Congratulations! Module Complete!</h2>
+                
+                <div class="concept-box" style="text-align: center; padding: 2rem;">
+                    <h1>🏆</h1>
+                    <h3>JavaScript Fundamentals Master!</h3>
+                    <p>You've successfully completed Module 5!</p>
+                </div>
+
+                <h3>✅ What You've Learned:</h3>
+                <ul style="margin-left: 2rem; line-height: 2;">
+                    <li>📦 <strong>Variables & Data Types</strong> - Store and manage information</li>
+                    <li>🔧 <strong>Functions</strong> - Create reusable code blocks</li>
+                    <li>🎨 <strong>DOM Manipulation</strong> - Control your webpage with JavaScript</li>
+                    <li>🎮 <strong>Event Listeners</strong> - Make pages interactive</li>
+                    <li>🔀 <strong>Conditionals & Loops</strong> - Add logic to your code</li>
+                </ul>
+
+                <h3>🚀 Your New Superpowers:</h3>
+                <div class="success-box">
+                    <p>You can now:</p>
+                    <ul style="margin-left: 1rem;">
+                        <li>Add dark mode to any website</li>
+                        <li>Create interactive forms with validation</li>
+                        <li>Build dynamic content that responds to users</li>
+                        <li>Make calculators, games, and tools</li>
+                        <li>Debug code using the browser console</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Practice Projects:</h3>
+                <p>Keep building your skills with these project ideas:</p>
+                
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        🎮 Project 1: Interactive Quiz Game
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Build a quiz with:</p>
+                        <ul>
+                            <li>Multiple choice questions</li>
+                            <li>Score tracking</li>
+                            <li>Timer countdown</li>
+                            <li>Results display</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        📝 Project 2: Todo List App
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Create a todo list with:</p>
+                        <ul>
+                            <li>Add/remove tasks</li>
+                            <li>Mark as complete</li>
+                            <li>Filter by status</li>
+                            <li>Save to localStorage</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        🧮 Project 3: Calculator
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Build a calculator with:</p>
+                        <ul>
+                            <li>Basic operations (+, -, *, /)</li>
+                            <li>Clear button</li>
+                            <li>Decimal support</li>
+                            <li>Keyboard input</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>🎯 What's Next?</h3>
+                <p>You're ready for <strong>Module 6: Dynamic Data - Working with APIs</strong>!</p>
+                <p>You'll learn to:</p>
+                <ul style="margin-left: 2rem;">
+                    <li>Fetch data from the internet</li>
+                    <li>Work with JSON</li>
+                    <li>Handle async operations</li>
+                    <li>Build apps with real-time data</li>
+                </ul>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="nav-button" style="font-size: 1.2rem; padding: 1rem 2rem;" onclick="completeModule()">
+                        🎊 Complete Module & Get Certificate!
+                    </button>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(6)">← Final Project</button>
+                    <button class="nav-button" style="visibility: hidden;">Next →</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement" id="achievement">
+        <h3>🏆 Achievement Unlocked!</h3>
+        <p id="achievementText">JavaScript Master!</p>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Track current section and progress
+        let currentSection = 0;
+        const totalSections = 8;
+        let completedSections = new Set();
+
+        // Load progress from localStorage
+        function loadProgress() {
+            const saved = localStorage.getItem('module5-progress');
+            if (saved) {
+                const progress = JSON.parse(saved);
+                currentSection = progress.currentSection || 0;
+                completedSections = new Set(progress.completedSections || []);
+                updateProgressBar();
+                updateNavigation();
+            }
+        }
+
+        // Save progress to localStorage
+        function saveProgress() {
+            const progress = {
+                currentSection: currentSection,
+                completedSections: Array.from(completedSections)
+            };
+            localStorage.setItem('module5-progress', JSON.stringify(progress));
+        }
+
+        // Show specific section
+        function showSection(index) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.lesson-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Show selected section
+            sections[index].classList.add('active');
+            
+            // Update current section
+            currentSection = index;
+            
+            // Mark previous section as completed
+            if (index > 0) {
+                completedSections.add(index - 1);
+            }
+            
+            // Update UI
+            updateProgressBar();
+            updateNavigation();
+            saveProgress();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Show achievement for milestones
+            if (completedSections.size === 3 && !localStorage.getItem('module5-milestone1')) {
+                showAchievement('Halfway There! 🌟');
+                localStorage.setItem('module5-milestone1', 'true');
+            }
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const progress = (completedSections.size / (totalSections - 1)) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Update navigation
+        function updateNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach((item, index) => {
+                item.classList.remove('active', 'completed');
+                
+                if (index === currentSection) {
+                    item.classList.add('active');
+                }
+                
+                if (completedSections.has(index)) {
+                    item.classList.add('completed');
+                }
+            });
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.querySelector('.toggle-icon').textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        // Load theme preference
+        function loadTheme() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.toggle-icon').textContent = '☀️';
+            }
+        }
+
+        // Run code in editor
+        function runCode(editorId, outputId) {
+            const code = document.getElementById(editorId).value;
+            const output = document.getElementById(outputId);
+            
+            // Store original console.log
+            const originalLog = console.log;
+            let logs = [];
+            
+            // Override console.log
+            console.log = function(...args) {
+                logs.push(args.join(' '));
+                originalLog.apply(console, args);
+            };
+            
+            try {
+                // Clear previous output
+                logs = [];
+                
+                // Execute code
+                eval(code);
+                
+                // Display output
+                output.style.color = 'var(--dark)';
+                output.innerHTML = logs.join('<br>') || 'Code executed successfully! (No output)';
+                
+                // Show achievement for first code run
+                if (!localStorage.getItem('module5-firstCode')) {
+                    showAchievement('First Code Run! 🚀');
+                    localStorage.setItem('module5-firstCode', 'true');
+                }
+            } catch (error) {
+                output.style.color = 'var(--danger)';
+                output.textContent = '❌ Error: ' + error.message;
+            }
+            
+            // Restore original console.log
+            console.log = originalLog;
+        }
+
+        // Copy code block
+        function copyCode(button) {
+            const pre = button.nextElementSibling;
+            const code = pre.textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Toggle spoiler
+        function toggleSpoiler(header) {
+            const spoiler = header.parentElement;
+            spoiler.classList.toggle('open');
+        }
+
+        // Check quiz answer
+        function checkQuiz(option, correctAnswer) {
+            const value = option.querySelector('input').value;
+            const container = option.parentElement;
+            const resultDiv = container.querySelector('.quiz-result');
+            
+            // Disable all options
+            container.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            
+            if (value === correctAnswer) {
+                option.classList.add('correct');
+                resultDiv.textContent = '✅ Correct! Well done!';
+                resultDiv.classList.add('correct', 'show');
+                
+                // Achievement for first quiz
+                if (!localStorage.getItem('module5-firstQuiz')) {
+                    showAchievement('Quiz Master! 🎯');
+                    localStorage.setItem('module5-firstQuiz', 'true');
+                }
+            } else {
+                option.classList.add('incorrect');
+                resultDiv.textContent = '❌ Not quite. The correct answer is: ' + correctAnswer;
+                resultDiv.classList.add('incorrect', 'show');
+            }
+        }
+
+        // Show achievement
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            document.getElementById('achievementText').textContent = text;
+            
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        // Complete module
+        function completeModule() {
+            completedSections.add(totalSections - 1);
+            updateProgressBar();
+            updateNavigation();
+            saveProgress();
+            
+            showAchievement('Module 5 Complete! 🎊');
+            
+            // Generate certificate
+            setTimeout(() => {
+                alert('🎉 Congratulations!\n\nYou\'ve mastered JavaScript Fundamentals!\n\nYour certificate has been saved to your progress.\n\nReady for Module 6: Working with APIs!');
+            }, 1000);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            loadProgress();
+            showSection(currentSection);
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && currentSection > 0) {
+                showSection(currentSection - 1);
+            } else if (e.key === 'ArrowRight' && currentSection < totalSections - 1) {
+                showSection(currentSection + 1);
+            }
+        });
+    </script>
+</body>
+</html>
