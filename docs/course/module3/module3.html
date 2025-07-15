@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3: Making It Look Good - CSS for Style</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a78bfa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --code-bg: #1e293b;
+            --border: #e5e7eb;
+        }
+
+        /* Dark mode variables */
+        body.dark-mode {
+            --dark: #f3f4f6;
+            --light: #1f2937;
+            --white: #111827;
+            --border: #374151;
+            --code-bg: #0f172a;
+            background: #0f172a;
+            color: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background-color 0.3s ease;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-subtitle {
+            color: var(--dark);
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .theme-toggle {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background-color: var(--border);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--success);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--white);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: var(--light);
+            border-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .nav-item.completed {
+            border-left: 4px solid var(--success);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 800px;
+        }
+
+        .lesson-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .lesson-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lesson-section h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .lesson-section p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        /* Code Editor */
+        .try-it-box {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .try-it-box h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: 150px;
+            font-family: 'Courier New', monospace;
+            background-color: var(--code-bg);
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            resize: vertical;
+            margin: 1rem 0;
+        }
+
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .run-button {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .run-button:hover {
+            background-color: #0ea471;
+        }
+
+        .output-box {
+            background-color: var(--code-bg);
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            min-height: 60px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        /* Live Preview */
+        .preview-container {
+            background-color: white;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            min-height: 200px;
+        }
+
+        /* Quiz */
+        .quiz-container {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .quiz-question {
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .quiz-option {
+            display: block;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background-color: var(--light);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background-color: var(--border);
+        }
+
+        .quiz-option.correct {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .quiz-result {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            display: none;
+        }
+
+        .quiz-result.show {
+            display: block;
+        }
+
+        /* Code Block */
+        .code-block {
+            position: relative;
+            background-color: var(--code-bg);
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .code-block pre {
+            color: #e2e8f0;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .copy-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Spoiler */
+        .spoiler {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        .spoiler-header {
+            padding: 1rem;
+            background-color: var(--light);
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .spoiler-header:hover {
+            background-color: var(--border);
+        }
+
+        .spoiler-content {
+            padding: 1rem;
+            display: none;
+        }
+
+        .spoiler.open .spoiler-content {
+            display: block;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .nav-button:disabled {
+            background-color: var(--border);
+            cursor: not-allowed;
+        }
+
+        /* Achievement */
+        .achievement {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--success);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .achievement.show {
+            transform: translateY(0);
+        }
+
+        .achievement h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        /* CSS Visual Examples */
+        .css-demo {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .color-swatch {
+            height: 80px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.05);
+        }
+
+        /* Box Model Demo */
+        .box-model-demo {
+            background-color: #ddd;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .box-content {
+            background-color: var(--primary);
+            color: white;
+            padding: 2rem;
+            border: 5px solid var(--dark);
+            margin: 1rem;
+        }
+
+        .box-label {
+            position: absolute;
+            background: white;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            border-radius: 0.25rem;
+            color: var(--dark);
+        }
+
+        /* Flexbox Demo */
+        .flex-demo {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: var(--light);
+            border-radius: 0.5rem;
+            min-height: 100px;
+        }
+
+        .flex-item {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            text-align: center;
+            flex: 1;
+        }
+
+        /* Grid Demo */
+        .grid-demo {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            padding: 1rem;
+            background-color: var(--light);
+            border-radius: 0.5rem;
+        }
+
+        .grid-item {
+            background-color: var(--secondary);
+            color: white;
+            padding: 2rem 1rem;
+            border-radius: 0.25rem;
+            text-align: center;
+        }
+
+        /* Animation Demo */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .animation-demo {
+            animation: bounce 2s infinite;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 1rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+
+            .editor-container {
+                grid-template-columns: 1fr;
+            }
+
+            .color-palette {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Utility Classes */
+        .highlight {
+            background-color: var(--warning);
+            color: var(--dark);
+            padding: 0.1rem 0.3rem;
+            border-radius: 0.2rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-2 {
+            margin-top: 2rem;
+        }
+
+        /* Interactive Styling Demo */
+        .style-target {
+            padding: 2rem;
+            text-align: center;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+    </style>
+    <script>
+        // Progress tracking
+        let completedSections = new Set();
+        let currentSection = 0;
+
+        // Load saved progress
+        function loadProgress() {
+            const saved = localStorage.getItem('module3-progress');
+            if (saved) {
+                completedSections = new Set(JSON.parse(saved));
+                updateNavigation();
+                updateProgressBar();
+            }
+            
+            // Load theme
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.toggle-icon').textContent = '☀️';
+            }
+        }
+
+        // Save progress
+        function saveProgress() {
+            localStorage.setItem('module3-progress', JSON.stringify([...completedSections]));
+        }
+
+        // Show section
+        function showSection(index) {
+            // Hide all sections
+            document.querySelectorAll('.lesson-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(`section-${index}`).classList.add('active');
+            
+            // Update navigation
+            currentSection = index;
+            updateNavigation();
+            
+            // Mark section as visited
+            completedSections.add(index);
+            saveProgress();
+            updateProgressBar();
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Update navigation
+        function updateNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach((item, index) => {
+                item.classList.remove('active');
+                if (completedSections.has(index)) {
+                    item.classList.add('completed');
+                }
+                if (index === currentSection) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const totalSections = 9;
+            const progress = (completedSections.size / totalSections) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-icon');
+            icon.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+
+        // Live CSS editor
+        function applyCSS(editorId, targetId) {
+            const css = document.getElementById(editorId).value;
+            const target = document.getElementById(targetId);
+            const styleId = `style-${targetId}`;
+            
+            // Remove existing style
+            const existingStyle = document.getElementById(styleId);
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+            
+            // Create new style element
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = css;
+            document.head.appendChild(style);
+            
+            // Show success message
+            const output = document.getElementById(`${editorId}-output`);
+            if (output) {
+                output.textContent = 'CSS applied successfully! Check the preview below.';
+            }
+        }
+
+        // Copy code
+        function copyCode(button) {
+            const pre = button.nextElementSibling;
+            const text = pre.textContent;
+            navigator.clipboard.writeText(text);
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = 'Copy';
+            }, 2000);
+        }
+
+        // Toggle spoiler
+        function toggleSpoiler(header) {
+            header.parentElement.classList.toggle('open');
+        }
+
+        // Quiz checking
+        function checkQuiz(option, correctAnswer) {
+            const container = option.parentElement;
+            const resultDiv = container.querySelector('.quiz-result');
+            const allOptions = container.querySelectorAll('.quiz-option');
+            
+            // Disable all options
+            allOptions.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            
+            if (option.querySelector('input').value === correctAnswer) {
+                option.classList.add('correct');
+                resultDiv.innerHTML = '<span style="color: var(--success);">✅ Correct! Excellent understanding!</span>';
+                resultDiv.classList.add('show');
+                
+                // Show achievement for first correct answer
+                if (!localStorage.getItem('module3-quiz-completed')) {
+                    showAchievement('CSS Selector Master!');
+                    localStorage.setItem('module3-quiz-completed', 'true');
+                }
+            } else {
+                option.classList.add('incorrect');
+                resultDiv.innerHTML = '<span style="color: var(--danger);">❌ Not quite. Try reviewing the section!</span>';
+                resultDiv.classList.add('show');
+            }
+        }
+
+        // Show achievement
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            document.getElementById('achievementText').textContent = text;
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        // Complete module
+        function completeModule() {
+            // Mark all sections as completed
+            for (let i = 0; i < 9; i++) {
+                completedSections.add(i);
+            }
+            saveProgress();
+            updateProgressBar();
+            updateNavigation();
+            
+            showAchievement('Module 3 Complete! 🎉');
+            
+            // Show completion message
+            setTimeout(() => {
+                alert('Incredible work! You\'ve mastered CSS and can now make beautiful, responsive websites! 🎨');
+            }, 1000);
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadProgress();
+        });
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1>Module 3: Making It Look Good 🎨</h1>
+                <div class="header-subtitle">Transform your plain HTML into something people actually want to look at!</div>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="toggle-icon">🌙</span>
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav id="lessonNav">
+                <div class="nav-item active" onclick="showSection(0)">🎨 Introduction to CSS</div>
+                <div class="nav-item" onclick="showSection(1)">🎯 CSS Selectors</div>
+                <div class="nav-item" onclick="showSection(2)">📦 The Box Model</div>
+                <div class="nav-item" onclick="showSection(3)">🎨 Colors & Typography</div>
+                <div class="nav-item" onclick="showSection(4)">📐 Flexbox Layouts</div>
+                <div class="nav-item" onclick="showSection(5)">🔲 CSS Grid</div>
+                <div class="nav-item" onclick="showSection(6)">📱 Responsive Design</div>
+                <div class="nav-item" onclick="showSection(7)">✨ Transitions & Effects</div>
+                <div class="nav-item" onclick="showSection(8)">🚀 Style Your Portfolio</div>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Section 0: Introduction -->
+            <section class="lesson-section active" id="section-0">
+                <h2>🎨 Welcome to CSS - Where Design Comes Alive!</h2>
+                <p>Remember that HTML portfolio you built in Module 2? It works great but looks... well, boring. That's about to change! CSS (Cascading Style Sheets) is what transforms plain HTML into the beautiful websites you see every day.</p>
+                
+                <p>Think of it like this: If HTML is the skeleton of your website, CSS is the clothes, makeup, and style. It's what makes your site go from "meh" to "WOW!" 🤩</p>
+
+                <div class="css-demo">
+                    <h3>What CSS Can Do:</h3>
+                    <ul>
+                        <li>🎨 Add colors and backgrounds</li>
+                        <li>📝 Change fonts and text styles</li>
+                        <li>📐 Create layouts and positioning</li>
+                        <li>📱 Make sites responsive (work on all devices)</li>
+                        <li>✨ Add animations and transitions</li>
+                        <li>🎯 Style specific elements with precision</li>
+                    </ul>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Quick Check: What does CSS stand for?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'cascading')">
+                        <input type="radio" name="q0" value="cascading"> Cascading Style Sheets
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'cascading')">
+                        <input type="radio" name="q0" value="computer"> Computer Style Sheets
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'cascading')">
+                        <input type="radio" name="q0" value="creative"> Creative Style System
+                    </label>
+                    <div class="quiz-result" id="q0-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" disabled>← Previous</button>
+                    <button class="nav-button" onclick="showSection(1)">Next: CSS Selectors →</button>
+                </div>
+            </section>
+
+            <!-- Section 1: CSS Selectors -->
+            <section class="lesson-section" id="section-1">
+                <h2>🎯 CSS Selectors - Targeting Elements Like a Sniper</h2>
+                <p>Before you can style something, you need to select it. CSS selectors are like coordinates that tell CSS exactly which HTML elements to style. Master these, and you can style ANYTHING!</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>/* Element Selector - Targets all elements of a type */
+p {
+    color: blue;
+}
+
+/* Class Selector - Targets elements with specific class */
+.highlight {
+    background-color: yellow;
+}
+
+/* ID Selector - Targets one specific element */
+#header {
+    font-size: 24px;
+}
+
+/* Descendant Selector - Targets nested elements */
+nav a {
+    text-decoration: none;
+}
+
+/* Multiple Classes */
+.btn.primary {
+    background: blue;
+}</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Try It Yourself!</h4>
+                    <p>Write CSS to style the HTML below. Try to make the heading blue, the paragraph red, and items in the list green:</p>
+                    <div class="editor-container">
+                        <div>
+                            <h5>CSS Editor:</h5>
+                            <textarea class="code-editor" id="selector-css">/* Write your CSS here! */
+h1 {
+    /* Make this blue */
+}
+
+p {
+    /* Make this red */
+}
+
+li {
+    /* Make these green */
+}</textarea>
+                        </div>
+                        <div>
+                            <h5>HTML (Read-only):</h5>
+                            <div class="code-editor" style="background-color: #2d3748;">
+&lt;h1&gt;Welcome to CSS&lt;/h1&gt;
+&lt;p&gt;This is a paragraph&lt;/p&gt;
+&lt;ul&gt;
+    &lt;li&gt;First item&lt;/li&gt;
+    &lt;li&gt;Second item&lt;/li&gt;
+    &lt;li&gt;Third item&lt;/li&gt;
+&lt;/ul&gt;</div>
+                        </div>
+                    </div>
+                    <button class="run-button" onclick="applyCSS('selector-css', 'selector-preview')">
+                        ▶️ Apply CSS
+                    </button>
+                    <div class="output-box" id="selector-css-output">Click "Apply CSS" to see your styles!</div>
+                    <div class="preview-container" id="selector-preview">
+                        <h1>Welcome to CSS</h1>
+                        <p>This is a paragraph</p>
+                        <ul>
+                            <li>First item</li>
+                            <li>Second item</li>
+                            <li>Third item</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 CSS Specificity Rules
+                    </div>
+                    <div class="spoiler-content">
+                        <p>When multiple styles target the same element, specificity determines which wins:</p>
+                        <ol>
+                            <li>Inline styles (style="...") - 1000 points</li>
+                            <li>IDs (#header) - 100 points</li>
+                            <li>Classes (.highlight) - 10 points</li>
+                            <li>Elements (p, div) - 1 point</li>
+                        </ol>
+                        <p>Higher specificity wins! If tied, the last rule wins.</p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(0)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(2)">Next: Box Model →</button>
+                </div>
+            </section>
+
+            <!-- Section 2: Box Model -->
+            <section class="lesson-section" id="section-2">
+                <h2>📦 The Box Model - The Secret to CSS Spacing</h2>
+                <p>Here's a mind-blowing fact: EVERYTHING in CSS is a box! Understanding the box model is like unlocking a superpower - suddenly, spacing and layout make perfect sense.</p>
+
+                <div class="css-demo">
+                    <div class="box-model-demo">
+                        <div class="box-label" style="top: 5px; left: 50%; transform: translateX(-50%);">Margin</div>
+                        <div class="box-label" style="top: 40px; left: 50%; transform: translateX(-50%);">Border</div>
+                        <div class="box-label" style="top: 75px; left: 50%; transform: translateX(-50%);">Padding</div>
+                        <div class="box-content">Content</div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>/* The Box Model Properties */
+.box {
+    /* Content width and height */
+    width: 200px;
+    height: 100px;
+    
+    /* Padding - Space inside the border */
+    padding: 20px;  /* All sides */
+    padding-top: 10px;
+    padding-right: 15px;
+    padding-bottom: 10px;
+    padding-left: 15px;
+    /* Shorthand: top right bottom left */
+    padding: 10px 15px 10px 15px;
+    
+    /* Border - The edge of the box */
+    border: 2px solid black;
+    border-radius: 8px;  /* Rounded corners! */
+    
+    /* Margin - Space outside the border */
+    margin: 20px;
+    margin: 10px 20px;  /* vertical horizontal */
+    
+    /* Pro tip: Include padding/border in width */
+    box-sizing: border-box;
+}</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Box Model Playground!</h4>
+                    <p>Experiment with padding, margin, and border to see how they affect the box:</p>
+                    <textarea class="code-editor" id="box-css">.my-box {
+    background-color: #6366f1;
+    color: white;
+    
+    /* Try changing these values! */
+    padding: 20px;
+    margin: 10px;
+    border: 3px solid #1f2937;
+    border-radius: 0px;
+    
+    /* Change width and height */
+    width: 200px;
+    height: 100px;
+}</textarea>
+                    <button class="run-button" onclick="applyCSS('box-css', 'box-preview')">
+                        ▶️ Apply CSS
+                    </button>
+                    <div class="preview-container" id="box-preview" style="background: #f3f4f6;">
+                        <div class="my-box">This is my box!</div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(1)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(3)">Next: Colors & Typography →</button>
+                </div>
+            </section>
+
+            <!-- Section 3: Colors & Typography -->
+            <section class="lesson-section" id="section-3">
+                <h2>🎨 Colors & Typography - Making It Beautiful</h2>
+                <p>Colors and fonts are what give your site personality! The right combination can make your site feel professional, playful, modern, or classic. Let's explore!</p>
+
+                <h3>Color Systems in CSS</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>/* Different ways to specify colors */
+.colors {
+    /* Named colors */
+    color: red;
+    color: dodgerblue;
+    
+    /* Hex codes (most common) */
+    color: #FF0000;      /* Red */
+    color: #00FF00;      /* Green */
+    color: #0000FF;      /* Blue */
+    color: #333;         /* Short form */
+    
+    /* RGB (Red, Green, Blue) */
+    color: rgb(255, 0, 0);
+    color: rgba(255, 0, 0, 0.5);  /* With transparency */
+    
+    /* HSL (Hue, Saturation, Lightness) */
+    color: hsl(0, 100%, 50%);
+    color: hsla(0, 100%, 50%, 0.5);
+}</pre>
+                </div>
+
+                <div class="css-demo">
+                    <h4>Popular Color Palette:</h4>
+                    <div class="color-palette">
+                        <div class="color-swatch" style="background: #6366f1;">#6366f1</div>
+                        <div class="color-swatch" style="background: #10b981;">#10b981</div>
+                        <div class="color-swatch" style="background: #f59e0b;">#f59e0b</div>
+                        <div class="color-swatch" style="background: #ef4444;">#ef4444</div>
+                        <div class="color-swatch" style="background: #8b5cf6;">#8b5cf6</div>
+                        <div class="color-swatch" style="background: #1f2937;">#1f2937</div>
+                    </div>
+                </div>
+
+                <h3>Typography Properties</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>/* Font Properties */
+.text {
+    /* Font family (with fallbacks) */
+    font-family: 'Helvetica', Arial, sans-serif;
+    
+    /* Font size */
+    font-size: 16px;      /* Pixels */
+    font-size: 1.2rem;    /* Relative to root */
+    font-size: 1.5em;     /* Relative to parent */
+    
+    /* Font weight */
+    font-weight: normal;  /* 400 */
+    font-weight: bold;    /* 700 */
+    font-weight: 300;     /* Light */
+    
+    /* Font style */
+    font-style: italic;
+    
+    /* Line height (spacing between lines) */
+    line-height: 1.6;
+    
+    /* Letter spacing */
+    letter-spacing: 1px;
+    
+    /* Text alignment */
+    text-align: center;
+    text-align: left;
+    text-align: right;
+    text-align: justify;
+    
+    /* Text decoration */
+    text-decoration: underline;
+    text-decoration: none;  /* Remove underline from links */
+    
+    /* Text transform */
+    text-transform: uppercase;
+    text-transform: lowercase;
+    text-transform: capitalize;
+}</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Design Your Own Style!</h4>
+                    <p>Create a beautiful text style using colors and typography:</p>
+                    <textarea class="code-editor" id="style-css">.styled-text {
+    /* Try different fonts */
+    font-family: Georgia, serif;
+    
+    /* Experiment with sizes */
+    font-size: 24px;
+    
+    /* Add some color! */
+    color: #333;
+    
+    /* Adjust spacing */
+    line-height: 1.8;
+    letter-spacing: 1px;
+    
+    /* Try other properties! */
+}
+
+.styled-heading {
+    font-family: Arial, sans-serif;
+    font-size: 36px;
+    color: #6366f1;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}</textarea>
+                    <button class="run-button" onclick="applyCSS('style-css', 'style-preview')">
+                        ▶️ Apply CSS
+                    </button>
+                    <div class="preview-container" id="style-preview">
+                        <h1 class="styled-heading">Amazing Heading</h1>
+                        <p class="styled-text">
+                            This is a paragraph with custom styling. Notice how different fonts, 
+                            sizes, and colors can completely change the feel of your text. 
+                            Play with the values above to create your own unique style!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(2)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(4)">Next: Flexbox →</button>
+                </div>
+            </section>
+
+            <!-- Section 4: Flexbox -->
+            <section class="lesson-section" id="section-4">
+                <h2>📐 Flexbox - Make Things Line Up Without Tears!</h2>
+                <p>Remember trying to center things in CSS and wanting to cry? Flexbox is here to save the day! It's like having a magic wand that makes elements line up exactly how you want them.</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>/* Flexbox Container Properties */
+.flex-container {
+    display: flex;  /* Turn on flexbox! */
+    
+    /* Main axis direction */
+    flex-direction: row;        /* Default: left to right */
+    flex-direction: column;     /* Top to bottom */
+    flex-direction: row-reverse;
+    flex-direction: column-reverse;
+    
+    /* Alignment on main axis */
+    justify-content: flex-start;  /* Default */
+    justify-content: center;      /* Center items */
+    justify-content: space-between;
+    justify-content: space-around;
+    justify-content: space-evenly;
+    
+    /* Alignment on cross axis */
+    align-items: stretch;     /* Default */
+    align-items: center;      /* Center vertically */
+    align-items: flex-start;
+    align-items: flex-end;
+    
+    /* Wrapping */
+    flex-wrap: nowrap;    /* Default */
+    flex-wrap: wrap;      /* Allow wrapping */
+    
+    /* Gap between items */
+    gap: 20px;
+}
+
+/* Flex Item Properties */
+.flex-item {
+    flex: 1;           /* Grow to fill space */
+    flex-grow: 2;      /* Grow twice as much */
+    flex-shrink: 0;    /* Don't shrink */
+    flex-basis: 200px; /* Starting size */
+}</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Flexbox Playground!</h4>
+                    <p>Experiment with flexbox properties to arrange the items:</p>
+                    <textarea class="code-editor" id="flex-css">.flex-container {
+    display: flex;
+    
+    /* Try changing these! */
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    gap: 10px;
+    
+    /* Container styling */
+    min-height: 200px;
+    padding: 20px;
+    background-color: #f3f4f6;
+    border-radius: 8px;
+}
+
+.flex-item {
+    /* Make items flexible */
+    flex: 1;
+    
+    /* Item styling */
+    background-color: #6366f1;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 4px;
+}
+
+/* Try making one item bigger! */
+.flex-item:nth-child(2) {
+    flex: 2;
+}</textarea>
+                    <button class="run-button" onclick="applyCSS('flex-css', 'flex-preview')">
+                        ▶️ Apply CSS
+                    </button>
+                    <div class="preview-container" id="flex-preview">
+                        <div class="flex-container">
+                            <div class="flex-item">Item 1</div>
+                            <div class="flex-item">Item 2</div>
+                            <div class="flex-item">Item 3</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Common Flexbox Patterns
+                    </div>
+                    <div class="spoiler-content">
+                        <p><strong>Center Everything:</strong></p>
+                        <pre>display: flex;
+justify-content: center;
+align-items: center;</pre>
+                        
+                        <p><strong>Navigation Bar:</strong></p>
+                        <pre>display: flex;
+justify-content: space-between;
+align-items: center;</pre>
+                        
+                        <p><strong>Card Layout:</strong></p>
+                        <pre>display: flex;
+flex-wrap: wrap;
+gap: 20px;</pre>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(3)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(5)">Next: CSS Grid →</button>
+                </div>
+            </section>
+
+            <!-- Section 5: CSS Grid -->
+            <section class="lesson-section" id="section-5">
+                <h2>🔲 CSS Grid - Two-Dimensional Layouts Made Easy</h2>
+                <p>While Flexbox is great for one-dimensional layouts (rows OR columns), CSS Grid is perfect for two-dimensional layouts (rows AND columns). It's like having a spreadsheet for your layout!</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>/* Grid Container */
+.grid-container {
+    display: grid;
+    
+    /* Define columns */
+    grid-template-columns: 200px 200px 200px;  /* 3 fixed columns */
+    grid-template-columns: 1fr 1fr 1fr;        /* 3 equal columns */
+    grid-template-columns: 1fr 2fr 1fr;        /* Middle column twice as wide */
+    grid-template-columns: repeat(3, 1fr);     /* Shorthand for equal columns */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive! */
+    
+    /* Define rows */
+    grid-template-rows: 100px 200px;
+    grid-template-rows: auto auto;  /* Size to content */
+    
+    /* Gaps */
+    gap: 20px;              /* Both row and column gaps */
+    row-gap: 10px;
+    column-gap: 20px;
+}
+
+/* Grid Items */
+.grid-item {
+    /* Span multiple columns/rows */
+    grid-column: span 2;    /* Take up 2 columns */
+    grid-row: span 2;       /* Take up 2 rows */
+    
+    /* Specific placement */
+    grid-column: 1 / 3;     /* Start at 1, end at 3 */
+    grid-row: 2 / 4;
+}</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Grid Layout Builder!</h4>
+                    <p>Create a responsive grid layout:</p>
+                    <textarea class="code-editor" id="grid-css">.grid-container {
+    display: grid;
+    
+    /* Try different column setups! */
+    grid-template-columns: repeat(3, 1fr);
+    
+    /* Add some gaps */
+    gap: 15px;
+    
+    /* Container styling */
+    padding: 20px;
+    background-color: #f3f4f6;
+    border-radius: 8px;
+}
+
+.grid-item {
+    background-color: #8b5cf6;
+    color: white;
+    padding: 30px;
+    text-align: center;
+    border-radius: 4px;
+}
+
+/* Make the first item bigger */
+.grid-item:first-child {
+    grid-column: span 2;
+    background-color: #6366f1;
+}
+
+/* Try responsive columns! */
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+    .grid-item:first-child {
+        grid-column: span 1;
+    }
+}</textarea>
+                    <button class="run-button" onclick="applyCSS('grid-css', 'grid-preview')">
+                        ▶️ Apply CSS
+                    </button>
+                    <div class="preview-container" id="grid-preview">
+                        <div class="grid-container">
+                            <div class="grid-item">Header</div>
+                            <div class="grid-item">Item 2</div>
+                            <div class="grid-item">Item 3</div>
+                            <div class="grid-item">Item 4</div>
+                            <div class="grid-item">Item 5</div>
+                            <div class="grid-item">Item 6</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(4)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(6)">Next: Responsive Design →</button>
+                </div>
+            </section>
+
+            <!-- Section 6: Responsive Design -->
+            <section class="lesson-section" id="section-6">
+                <h2>📱 Responsive Design - One Site, All Devices</h2>
+                <p>Your website needs to look amazing whether someone's viewing it on a phone, tablet, or desktop. Responsive design makes this happen with CSS media queries!</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>/* Mobile First Approach */
+/* Base styles (mobile) */
+.container {
+    width: 100%;
+    padding: 10px;
+}
+
+/* Tablet styles */
+@media (min-width: 768px) {
+    .container {
+        width: 750px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+    .container {
+        width: 1000px;
+        padding: 30px;
+    }
+}
+
+/* Common Breakpoints */
+/* Mobile: 0-767px (default) */
+/* Tablet: 768px-1023px */
+/* Desktop: 1024px+ */
+
+/* Responsive Typography */
+html {
+    font-size: 16px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 18px;
+    }
+}
+
+/* Responsive Images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Responsive Grid */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;  /* Mobile: 1 column */
+}
+
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);  /* Tablet: 2 columns */
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);  /* Desktop: 3 columns */
+    }
+}</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Make It Responsive!</h4>
+                    <p>Create a responsive card layout that adapts to different screen sizes:</p>
+                    <textarea class="code-editor" id="responsive-css">.card-container {
+    display: grid;
+    gap: 20px;
+    padding: 20px;
+    
+    /* Mobile: 1 column */
+    grid-template-columns: 1fr;
+}
+
+.card {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+    color: #6366f1;
+    margin-bottom: 10px;
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 768px) {
+    .card-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Desktop: 3 columns */
+@media (min-width: 1024px) {
+    .card-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .card {
+        padding: 30px;
+    }
+}
+
+/* Large screens: 4 columns */
+@media (min-width: 1280px) {
+    .card-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}</textarea>
+                    <button class="run-button" onclick="applyCSS('responsive-css', 'responsive-preview')">
+                        ▶️ Apply CSS
+                    </button>
+                    <div class="preview-container" id="responsive-preview" style="background: #f3f4f6;">
+                        <div class="card-container">
+                            <div class="card">
+                                <h3>Card 1</h3>
+                                <p>Resize your browser to see the magic!</p>
+                            </div>
+                            <div class="card">
+                                <h3>Card 2</h3>
+                                <p>Watch how cards rearrange</p>
+                            </div>
+                            <div class="card">
+                                <h3>Card 3</h3>
+                                <p>From 1 to 4 columns!</p>
+                            </div>
+                            <div class="card">
+                                <h3>Card 4</h3>
+                                <p>Responsive design rocks!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(5)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(7)">Next: Transitions →</button>
+                </div>
+            </section>
+
+            <!-- Section 7: Transitions & Effects -->
+            <section class="lesson-section" id="section-7">
+                <h2>✨ Transitions & Effects - Adding Life to Your Site</h2>
+                <p>Static websites are so 2010! Let's add smooth transitions, hover effects, and animations that make your site feel alive and interactive.</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>/* Transitions - Smooth changes between states */
+.button {
+    background-color: #6366f1;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    
+    /* Transition syntax: property duration timing-function delay */
+    transition: all 0.3s ease;
+    transition: background-color 0.3s ease;
+    transition: transform 0.2s ease-in-out;
+    
+    /* Multiple properties */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button:hover {
+    background-color: #4f46e5;
+    transform: translateY(-2px);
+}
+
+/* Transform - Change position, size, rotation */
+.element {
+    transform: translateX(20px);     /* Move horizontally */
+    transform: translateY(-10px);    /* Move vertically */
+    transform: scale(1.2);           /* Make bigger */
+    transform: rotate(45deg);        /* Rotate */
+    transform: skew(10deg);          /* Skew */
+    
+    /* Combine transforms */
+    transform: translateY(-5px) scale(1.05);
+}
+
+/* Animations - Complex, repeatable effects */
+@keyframes bounce {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0); }
+}
+
+.bouncing {
+    animation: bounce 2s ease-in-out infinite;
+    /* name duration timing-function iteration-count */
+}
+
+/* Hover Effects */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* Cool gradient animation */
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.gradient-bg {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+}</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Create Amazing Effects!</h4>
+                    <p>Add transitions and hover effects to these elements:</p>
+                    <textarea class="code-editor" id="effects-css">/* Button with hover effect */
+.effect-button {
+    background-color: #6366f1;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    
+    /* Add smooth transition */
+    transition: all 0.3s ease;
+}
+
+.effect-button:hover {
+    background-color: #4f46e5;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+}
+
+/* Card with 3D effect */
+.effect-card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    margin: 20px;
+}
+
+.effect-card:hover {
+    transform: rotateY(5deg) translateZ(20px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* Pulsing animation */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.pulse-icon {
+    display: inline-block;
+    font-size: 48px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Gradient text */
+.gradient-text {
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+/* Loading spinner */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f4f6;
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px;
+}</textarea>
+                    <button class="run-button" onclick="applyCSS('effects-css', 'effects-preview')">
+                        ▶️ Apply CSS
+                    </button>
+                    <div class="preview-container" id="effects-preview" style="background: #f3f4f6; padding: 20px;">
+                        <button class="effect-button">Hover Me!</button>
+                        
+                        <div class="effect-card">
+                            <h3>3D Card Effect</h3>
+                            <p>Hover to see the magic!</p>
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <div class="pulse-icon">💜</div>
+                            <h2 class="gradient-text">Gradient Text</h2>
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(6)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(8)">Next: Final Project →</button>
+                </div>
+            </section>
+
+            <!-- Section 8: Final Project -->
+            <section class="lesson-section" id="section-8">
+                <h2>🚀 Final Project - Style Your Portfolio!</h2>
+                <p>Time to put it all together! Take the HTML portfolio you built in Module 2 and transform it into a stunning, professional website using everything you've learned about CSS!</p>
+
+                <div class="css-demo">
+                    <h3>Your CSS Toolkit:</h3>
+                    <ul>
+                        <li>✅ CSS Selectors to target any element</li>
+                        <li>✅ Box Model for perfect spacing</li>
+                        <li>✅ Beautiful colors and typography</li>
+                        <li>✅ Flexbox for navigation and sections</li>
+                        <li>✅ Grid for project galleries</li>
+                        <li>✅ Media queries for responsive design</li>
+                        <li>✅ Transitions and hover effects</li>
+                        <li>✅ Custom properties for consistency</li>
+                    </ul>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🏆 Complete Portfolio CSS!</h4>
+                    <p>Here's a starter template for your portfolio. Customize it to match your style!</p>
+                    <textarea class="code-editor" id="portfolio-css" style="min-height: 400px;">/* CSS Variables for Consistent Design */
+:root {
+    --primary-color: #6366f1;
+    --secondary-color: #8b5cf6;
+    --text-color: #1f2937;
+    --bg-color: #ffffff;
+    --accent-bg: #f3f4f6;
+    --border-color: #e5e7eb;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+}
+
+/* Header and Navigation */
+header {
+    background-color: var(--bg-color);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+nav a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+nav a:hover {
+    color: var(--primary-color);
+}
+
+/* Hero Section */
+#home {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+#home h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* Sections */
+section {
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+section:nth-child(even) {
+    background-color: var(--accent-bg);
+}
+
+/* Skills Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Project Cards */
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.project-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Contact Form */
+form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    nav ul {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    #home h1 {
+        font-size: 2rem;
+    }
+    
+    .project-grid {
+        grid-template-columns: 1fr;
+    }
+}</textarea>
+                    <button class="run-button" onclick="applyCSS('portfolio-css', 'portfolio-preview')">
+                        ▶️ Preview CSS
+                    </button>
+                    <div class="output-box" id="portfolio-css-output">This CSS will transform your HTML portfolio into a professional website!</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Final Check: Which CSS property creates smooth animations between states?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'transition')">
+                        <input type="radio" name="q8" value="transition"> transition
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'transition')">
+                        <input type="radio" name="q8" value="animation"> animation
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'transition')">
+                        <input type="radio" name="q8" value="transform"> transform
+                    </label>
+                    <div class="quiz-result" id="q8-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(7)">← Previous</button>
+                    <button class="nav-button" onclick="completeModule()">Complete Module! 🎉</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement" id="achievement">
+        <h3>🏆 Achievement Unlocked!</h3>
+        <p id="achievementText">CSS Master!</p>
+    </div>
+</body>
+</html>

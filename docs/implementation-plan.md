@@ -79,22 +79,22 @@ This implementation plan outlines the development of OfCourse, a premium multi-c
 - [x] Create `/app/(unauthenticated)/courses/page.tsx` - Main catalog
 - [x] Create `/app/(unauthenticated)/courses/[category]/page.tsx` - Category view
 - [x] Create `/app/(unauthenticated)/courses/[category]/[courseSlug]/page.tsx` - Course details
-- [ ] Create `/app/(unauthenticated)/bundles/page.tsx` - Bundle catalog
+- [x] Create `/app/(unauthenticated)/bundles/page.tsx` - Bundle catalog
 
 #### Components
-- [ ] Create `/components/courses/course-card.tsx` with:
-  - [ ] Thumbnail image
-  - [ ] Title, instructor, price
-  - [ ] Category badge
-  - [ ] Duration and difficulty
-  - [ ] Rating stars (placeholder)
-- [ ] Create `/components/courses/course-grid.tsx` - Responsive grid layout
-- [ ] Create `/components/courses/category-filter.tsx` - Filter sidebar
-- [ ] Create `/components/courses/course-hero.tsx` - Course detail hero section
-- [ ] Create `/components/courses/course-curriculum.tsx` - Module list preview
-- [ ] Create `/components/courses/instructor-bio.tsx` - Instructor section
-- [ ] Create `/components/bundles/bundle-card.tsx` - Bundle display
-- [ ] Create `/components/ui/price-tag.tsx` - Consistent price display
+- [x] Create `/components/courses/course-card.tsx` with:
+  - [x] Thumbnail image
+  - [x] Title, instructor, price
+  - [x] Category badge
+  - [x] Duration and difficulty
+  - [x] Rating stars (placeholder)
+- [x] Create `/components/courses/course-grid.tsx` - Responsive grid layout
+- [x] Create `/components/courses/category-filter.tsx` - Filter sidebar
+- [x] Create `/components/courses/course-hero.tsx` - Course detail hero section
+- [x] Create `/components/courses/course-curriculum.tsx` - Module list preview
+- [x] Create `/components/courses/instructor-bio.tsx` - Instructor section
+- [x] Create `/components/bundles/bundle-card.tsx` - Bundle display
+- [x] Create `/components/ui/price-tag.tsx` - Consistent price display
 
 #### Styling & UX
 - [ ] Design category color schemes (tech=blue, finance=green, etc.)
