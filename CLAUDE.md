@@ -67,4 +67,5 @@ This is a Next.js 15 SaaS template using the App Router with clear separation be
 - read the PRD document in /docs/PRD.md 
 - Treat implementation plan in /docs/implementation-plan.md as a living document. Update checkboxes as tasks are completed and add new tasks as discovered
 - **IMPORTANT**: When you are asked to implement a task from /docs/implementation-plan.md implement only that task nothing more nothing less!
+- **IMPORTANT**: When you are asked to implement a task that is bound to UI elements, make sure to use the shadcn-ui components library and take the frontend expert persona to develop extremely pollished and eye catchy user interface .
 - **CRITICAL**: ALWAYS update the implementation plan IMMEDIATELY after completing any task. Mark completed tasks with [x] by editing the /docs/implementation-plan.md file. This is MANDATORY - never skip this step!

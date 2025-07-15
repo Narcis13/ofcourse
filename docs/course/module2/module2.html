@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: Building the Skeleton - HTML for Structure</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a78bfa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --code-bg: #1e293b;
+            --border: #e5e7eb;
+        }
+
+        /* Dark mode variables */
+        body.dark-mode {
+            --dark: #f3f4f6;
+            --light: #1f2937;
+            --white: #111827;
+            --border: #374151;
+            --code-bg: #0f172a;
+            background: #0f172a;
+            color: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background-color 0.3s ease;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-subtitle {
+            color: var(--dark);
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .theme-toggle {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background-color: var(--border);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--success);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--white);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: var(--light);
+            border-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .nav-item.completed {
+            border-left: 4px solid var(--success);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 800px;
+        }
+
+        .lesson-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .lesson-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lesson-section h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .lesson-section p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        /* Code Editor */
+        .try-it-box {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .try-it-box h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: 150px;
+            font-family: 'Courier New', monospace;
+            background-color: var(--code-bg);
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            resize: vertical;
+            margin: 1rem 0;
+        }
+
+        .run-button {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .run-button:hover {
+            background-color: #0ea471;
+        }
+
+        .output-box {
+            background-color: var(--code-bg);
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            min-height: 60px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        /* Quiz */
+        .quiz-container {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .quiz-question {
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .quiz-option {
+            display: block;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background-color: var(--light);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background-color: var(--border);
+        }
+
+        .quiz-option.correct {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .quiz-result {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            display: none;
+        }
+
+        .quiz-result.show {
+            display: block;
+        }
+
+        /* Code Block */
+        .code-block {
+            position: relative;
+            background-color: var(--code-bg);
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .code-block pre {
+            color: #e2e8f0;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .copy-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Spoiler */
+        .spoiler {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        .spoiler-header {
+            padding: 1rem;
+            background-color: var(--light);
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .spoiler-header:hover {
+            background-color: var(--border);
+        }
+
+        .spoiler-content {
+            padding: 1rem;
+            display: none;
+        }
+
+        .spoiler.open .spoiler-content {
+            display: block;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .nav-button:disabled {
+            background-color: var(--border);
+            cursor: not-allowed;
+        }
+
+        /* Achievement */
+        .achievement {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--success);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .achievement.show {
+            transform: translateY(0);
+        }
+
+        .achievement h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Semantic HTML Visual */
+        .semantic-visual {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .semantic-box {
+            border: 2px dashed var(--primary);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            position: relative;
+        }
+
+        .semantic-label {
+            position: absolute;
+            top: -12px;
+            left: 10px;
+            background: var(--white);
+            padding: 0 0.5rem;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        body.dark-mode .semantic-label {
+            background: var(--white);
+        }
+
+        /* Form Styles */
+        .form-example {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            background-color: var(--white);
+            color: var(--dark);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* HTML Structure Visualization */
+        .html-tree {
+            font-family: monospace;
+            background-color: var(--code-bg);
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            line-height: 1.4;
+        }
+
+        .tree-line {
+            margin: 0.2rem 0;
+        }
+
+        .tree-indent {
+            margin-left: 2rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 1rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+
+            .semantic-visual {
+                padding: 0.75rem;
+            }
+        }
+
+        /* Utility Classes */
+        .highlight {
+            background-color: var(--warning);
+            color: var(--dark);
+            padding: 0.1rem 0.3rem;
+            border-radius: 0.2rem;
+        }
+
+        .tag {
+            color: var(--primary);
+            font-family: monospace;
+            background-color: var(--light);
+            padding: 0.1rem 0.3rem;
+            border-radius: 0.2rem;
+        }
+
+        /* Tag color coding */
+        .tag-semantic {
+            color: var(--success);
+        }
+
+        .tag-div {
+            color: var(--danger);
+        }
+
+        /* Preview Frame */
+        .preview-frame {
+            width: 100%;
+            height: 400px;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            background: white;
+            margin-top: 1rem;
+        }
+    </style>
+    <script>
+        // Progress tracking
+        let completedSections = new Set();
+        let currentSection = 0;
+
+        // Load saved progress
+        function loadProgress() {
+            const saved = localStorage.getItem('module2-progress');
+            if (saved) {
+                completedSections = new Set(JSON.parse(saved));
+                updateNavigation();
+                updateProgressBar();
+            }
+            
+            // Load theme
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.toggle-icon').textContent = '☀️';
+            }
+        }
+
+        // Save progress
+        function saveProgress() {
+            localStorage.setItem('module2-progress', JSON.stringify([...completedSections]));
+        }
+
+        // Show section
+        function showSection(index) {
+            // Hide all sections
+            document.querySelectorAll('.lesson-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(`section-${index}`).classList.add('active');
+            
+            // Update navigation
+            currentSection = index;
+            updateNavigation();
+            
+            // Mark section as visited
+            completedSections.add(index);
+            saveProgress();
+            updateProgressBar();
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Update navigation
+        function updateNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach((item, index) => {
+                item.classList.remove('active');
+                if (completedSections.has(index)) {
+                    item.classList.add('completed');
+                }
+                if (index === currentSection) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const totalSections = 9;
+            const progress = (completedSections.size / totalSections) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-icon');
+            icon.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+
+        // Code execution for HTML preview
+        function runHTML(editorId, outputId) {
+            const code = document.getElementById(editorId).value;
+            const output = document.getElementById(outputId);
+            
+            // Create iframe for HTML preview
+            output.innerHTML = '<iframe class="preview-frame" srcdoc="' + code.replace(/"/g, '&quot;') + '"></iframe>';
+        }
+
+        // Copy code
+        function copyCode(button) {
+            const pre = button.nextElementSibling;
+            const text = pre.textContent;
+            navigator.clipboard.writeText(text);
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = 'Copy';
+            }, 2000);
+        }
+
+        // Toggle spoiler
+        function toggleSpoiler(header) {
+            header.parentElement.classList.toggle('open');
+        }
+
+        // Quiz checking
+        function checkQuiz(option, correctAnswer) {
+            const container = option.parentElement;
+            const resultDiv = container.querySelector('.quiz-result');
+            const allOptions = container.querySelectorAll('.quiz-option');
+            
+            // Disable all options
+            allOptions.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            
+            if (option.querySelector('input').value === correctAnswer) {
+                option.classList.add('correct');
+                resultDiv.innerHTML = '<span style="color: var(--success);">✅ Correct! Well done!</span>';
+                resultDiv.classList.add('show');
+                
+                // Show achievement for first correct answer
+                if (!localStorage.getItem('module2-quiz-completed')) {
+                    showAchievement('HTML Master!');
+                    localStorage.setItem('module2-quiz-completed', 'true');
+                }
+            } else {
+                option.classList.add('incorrect');
+                resultDiv.innerHTML = '<span style="color: var(--danger);">❌ Not quite. Try reviewing the section!</span>';
+                resultDiv.classList.add('show');
+            }
+        }
+
+        // Validate form
+        function validateForm(formId) {
+            const form = document.getElementById(formId);
+            const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+            let valid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.style.borderColor = 'var(--danger)';
+                    valid = false;
+                } else {
+                    input.style.borderColor = 'var(--success)';
+                }
+            });
+            
+            if (valid) {
+                showAchievement('Form Expert! 📝');
+                alert('Great job! In a real website, this form would send data to a server.');
+            } else {
+                alert('Please fill in all required fields!');
+            }
+            
+            return false; // Prevent actual form submission
+        }
+
+        // Show achievement
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            document.getElementById('achievementText').textContent = text;
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        // Complete module
+        function completeModule() {
+            // Mark all sections as completed
+            for (let i = 0; i < 9; i++) {
+                completedSections.add(i);
+            }
+            saveProgress();
+            updateProgressBar();
+            updateNavigation();
+            
+            showAchievement('Module 2 Complete! 🎉');
+            
+            // Show completion message
+            setTimeout(() => {
+                alert('Amazing work! You\'ve mastered HTML structure and are ready to make it beautiful with CSS in Module 3! 🎨');
+            }, 1000);
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadProgress();
+        });
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1>Module 2: Building the Skeleton 🏗️</h1>
+                <div class="header-subtitle">Learn the language that builds the bones of every website!</div>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="toggle-icon">🌙</span>
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav id="lessonNav">
+                <div class="nav-item active" onclick="showSection(0)">🚀 Introduction to HTML</div>
+                <div class="nav-item" onclick="showSection(1)">🏷️ Semantic HTML</div>
+                <div class="nav-item" onclick="showSection(2)">📝 Document Structure</div>
+                <div class="nav-item" onclick="showSection(3)">🔤 Headings & Text</div>
+                <div class="nav-item" onclick="showSection(4)">🔗 Links & Navigation</div>
+                <div class="nav-item" onclick="showSection(5)">📋 Forms & Inputs</div>
+                <div class="nav-item" onclick="showSection(6)">📊 Lists & Tables</div>
+                <div class="nav-item" onclick="showSection(7)">🖼️ Media & Embeds</div>
+                <div class="nav-item" onclick="showSection(8)">🎯 Final Portfolio Project</div>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Section 0: Introduction -->
+            <section class="lesson-section active" id="section-0">
+                <h2>🚀 Welcome to HTML - The Foundation of the Web!</h2>
+                <p>Hey there, future web architect! 👋 Ready to learn the language that literally built the internet? HTML (HyperText Markup Language) is like the skeleton of every website you've ever visited - from TikTok to Netflix!</p>
+                
+                <p>Think of HTML like this: If a website were a house, HTML would be the frame, walls, and rooms. It gives structure and meaning to content. Without it, the web would just be one giant text file!</p>
+
+                <div class="semantic-visual">
+                    <h3>What You'll Build in This Module:</h3>
+                    <ul>
+                        <li>✨ A professional portfolio homepage</li>
+                        <li>📝 A working contact form</li>
+                        <li>🧭 Navigation that actually makes sense</li>
+                        <li>🎯 Clean, semantic code that Google loves</li>
+                    </ul>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Quick Check: What does HTML stand for?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'hypertext')">
+                        <input type="radio" name="q0" value="hypertext"> HyperText Markup Language
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'hypertext')">
+                        <input type="radio" name="q0" value="high"> High Tech Modern Language
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'hypertext')">
+                        <input type="radio" name="q0" value="home"> Home Tool Markup Language
+                    </label>
+                    <div class="quiz-result" id="q0-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" disabled>← Previous</button>
+                    <button class="nav-button" onclick="showSection(1)">Next: Semantic HTML →</button>
+                </div>
+            </section>
+
+            <!-- Section 1: Semantic HTML -->
+            <section class="lesson-section" id="section-1">
+                <h2>🏷️ Semantic HTML - Making Your Code Meaningful</h2>
+                <p>Here's a secret: There are two ways to write HTML. The old way (using <span class="tag tag-div">&lt;div&gt;</span> for everything) and the smart way (using semantic tags). Let's learn the smart way!</p>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 What does "semantic" even mean?
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Semantic = meaningful. Semantic HTML uses tags that describe what the content IS, not just how it looks.</p>
+                        <p>For example:</p>
+                        <ul>
+                            <li><span class="tag tag-semantic">&lt;header&gt;</span> = "This is the header"</li>
+                            <li><span class="tag tag-semantic">&lt;nav&gt;</span> = "This is navigation"</li>
+                            <li><span class="tag tag-semantic">&lt;article&gt;</span> = "This is an article"</li>
+                        </ul>
+                        <p>vs. the old way: <span class="tag tag-div">&lt;div class="header"&gt;</span> = "This is... something?"</p>
+                    </div>
+                </div>
+
+                <h3>Semantic vs Non-Semantic HTML</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>❌ OLD WAY (Don't do this):
+&lt;div class="header"&gt;
+    &lt;div class="navigation"&gt;
+        &lt;div class="nav-item"&gt;Home&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+✅ SEMANTIC WAY (Do this!):
+&lt;header&gt;
+    &lt;nav&gt;
+        &lt;a href="#home"&gt;Home&lt;/a&gt;
+    &lt;/nav&gt;
+&lt;/header&gt;</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Try It Yourself!</h4>
+                    <p>Convert this non-semantic HTML to use proper semantic tags:</p>
+                    <textarea class="code-editor" id="semantic-editor">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My Site&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;!-- Change these divs to semantic tags! --&gt;
+    &lt;div class="top"&gt;
+        &lt;h1&gt;Welcome to My Site&lt;/h1&gt;
+        &lt;div class="menu"&gt;
+            &lt;a href="#home"&gt;Home&lt;/a&gt;
+            &lt;a href="#about"&gt;About&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    
+    &lt;div class="content"&gt;
+        &lt;div class="post"&gt;
+            &lt;h2&gt;My First Post&lt;/h2&gt;
+            &lt;p&gt;This is my article content.&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    
+    &lt;div class="bottom"&gt;
+        &lt;p&gt;&copy; 2024 My Site&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+                    <button class="run-button" onclick="runHTML('semantic-editor', 'semantic-output')">
+                        ▶️ Preview HTML
+                    </button>
+                    <div class="output-box" id="semantic-output">Change the divs to header, nav, main, article, and footer tags, then click Preview!</div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(0)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(2)">Next: Document Structure →</button>
+                </div>
+            </section>
+
+            <!-- Section 2: Document Structure -->
+            <section class="lesson-section" id="section-2">
+                <h2>📝 HTML Document Structure - Building a Solid Foundation</h2>
+                <p>Every HTML document follows the same basic structure. Think of it like a recipe - you need certain ingredients in the right order!</p>
+
+                <div class="html-tree">
+                    <div class="tree-line">&lt;!DOCTYPE html&gt; <span style="color: #888;">← Tells browser "this is HTML5"</span></div>
+                    <div class="tree-line">&lt;html lang="en"&gt; <span style="color: #888;">← Root element with language</span></div>
+                    <div class="tree-indent">
+                        <div class="tree-line">&lt;head&gt; <span style="color: #888;">← Invisible metadata</span></div>
+                        <div class="tree-indent">
+                            <div class="tree-line">&lt;meta charset="UTF-8"&gt;</div>
+                            <div class="tree-line">&lt;meta name="viewport"...&gt;</div>
+                            <div class="tree-line">&lt;title&gt;Page Title&lt;/title&gt;</div>
+                        </div>
+                        <div class="tree-line">&lt;/head&gt;</div>
+                        <div class="tree-line">&lt;body&gt; <span style="color: #888;">← Everything visible</span></div>
+                        <div class="tree-indent">
+                            <div class="tree-line">&lt;header&gt;...&lt;/header&gt;</div>
+                            <div class="tree-line">&lt;main&gt;...&lt;/main&gt;</div>
+                            <div class="tree-line">&lt;footer&gt;...&lt;/footer&gt;</div>
+                        </div>
+                        <div class="tree-line">&lt;/body&gt;</div>
+                    </div>
+                    <div class="tree-line">&lt;/html&gt;</div>
+                </div>
+
+                <h3>Essential Meta Tags</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>&lt;head&gt;
+    &lt;!-- Character encoding (always use UTF-8) --&gt;
+    &lt;meta charset="UTF-8"&gt;
+    
+    &lt;!-- Mobile responsiveness --&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    
+    &lt;!-- Page description for search engines --&gt;
+    &lt;meta name="description" content="Learn web development with hands-on projects"&gt;
+    
+    &lt;!-- Page title (shows in browser tab) --&gt;
+    &lt;title&gt;My Portfolio | Web Developer&lt;/title&gt;
+    
+    &lt;!-- Link to CSS (we'll use this in Module 3) --&gt;
+    &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Build Your First Complete Document!</h4>
+                    <p>Create a proper HTML document structure with all the essential elements:</p>
+                    <textarea class="code-editor" id="structure-editor">&lt;!-- Start your HTML document here! --&gt;
+&lt;!-- Remember: DOCTYPE, html, head, body --&gt;
+&lt;!-- Add proper meta tags and a title --&gt;</textarea>
+                    <button class="run-button" onclick="runHTML('structure-editor', 'structure-output')">
+                        ▶️ Preview HTML
+                    </button>
+                    <div class="output-box" id="structure-output">Build a complete HTML document structure!</div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(1)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(3)">Next: Headings & Text →</button>
+                </div>
+            </section>
+
+            <!-- Section 3: Headings & Text -->
+            <section class="lesson-section" id="section-3">
+                <h2>🔤 Headings & Text - Organizing Your Content</h2>
+                <p>Headings are like the outline of your essay - they create hierarchy and help readers (and Google!) understand your content structure.</p>
+
+                <h3>The Heading Hierarchy</h3>
+                <div class="semantic-visual">
+                    <h1 style="margin: 0.5rem 0;">H1: Main Page Title (Use only ONCE per page!)</h1>
+                    <h2 style="margin: 0.5rem 0;">H2: Major Section Heading</h2>
+                    <h3 style="margin: 0.5rem 0;">H3: Subsection Heading</h3>
+                    <h4 style="margin: 0.5rem 0;">H4: Sub-subsection</h4>
+                    <h5 style="margin: 0.5rem 0;">H5: Rarely used</h5>
+                    <h6 style="margin: 0.5rem 0;">H6: Almost never used</h6>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Pro Tip: Heading Best Practices
+                    </div>
+                    <div class="spoiler-content">
+                        <ul>
+                            <li>✅ Use only ONE &lt;h1&gt; per page</li>
+                            <li>✅ Don't skip levels (h1 → h2 → h3, not h1 → h3)</li>
+                            <li>✅ Use headings for structure, not style</li>
+                            <li>❌ Don't use headings just to make text bigger</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Text Formatting Tags</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>&lt;!-- Paragraphs --&gt;
+&lt;p&gt;This is a paragraph. Use it for normal text blocks.&lt;/p&gt;
+
+&lt;!-- Emphasis (italics) --&gt;
+&lt;p&gt;This is &lt;em&gt;emphasized&lt;/em&gt; text.&lt;/p&gt;
+
+&lt;!-- Strong (bold) --&gt;
+&lt;p&gt;This is &lt;strong&gt;important&lt;/strong&gt; text.&lt;/p&gt;
+
+&lt;!-- Line breaks --&gt;
+&lt;p&gt;First line&lt;br&gt;Second line&lt;/p&gt;
+
+&lt;!-- Horizontal rule (divider) --&gt;
+&lt;hr&gt;
+
+&lt;!-- Blockquote --&gt;
+&lt;blockquote&gt;
+    "The best time to plant a tree was 20 years ago. 
+    The second best time is now."
+&lt;/blockquote&gt;
+
+&lt;!-- Preformatted text (preserves spacing) --&gt;
+&lt;pre&gt;
+    This    text    keeps    its    spacing
+    And line breaks too!
+&lt;/pre&gt;</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Create a Blog Post Structure!</h4>
+                    <p>Build a properly structured blog post with headings and formatted text:</p>
+                    <textarea class="code-editor" id="headings-editor">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My Blog Post&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;!-- Create your blog post here! --&gt;
+    &lt;!-- Include: h1 for title, h2 for sections, --&gt;
+    &lt;!-- paragraphs, emphasis, and a blockquote --&gt;
+    
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+                    <button class="run-button" onclick="runHTML('headings-editor', 'headings-output')">
+                        ▶️ Preview HTML
+                    </button>
+                    <div class="output-box" id="headings-output">Create a structured blog post with proper headings!</div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(2)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(4)">Next: Links & Navigation →</button>
+                </div>
+            </section>
+
+            <!-- Section 4: Links & Navigation -->
+            <section class="lesson-section" id="section-4">
+                <h2>🔗 Links & Navigation - Connecting the Web</h2>
+                <p>Links are what make the web a "web"! They connect pages together and let users navigate your site. Let's master the art of linking!</p>
+
+                <h3>Types of Links</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>&lt;!-- External link (to another website) --&gt;
+&lt;a href="https://github.com"&gt;Visit GitHub&lt;/a&gt;
+
+&lt;!-- Internal link (to another page on your site) --&gt;
+&lt;a href="about.html"&gt;About Me&lt;/a&gt;
+
+&lt;!-- Anchor link (to section on same page) --&gt;
+&lt;a href="#contact"&gt;Jump to Contact&lt;/a&gt;
+
+&lt;!-- Email link --&gt;
+&lt;a href="mailto:hello@example.com"&gt;Email Me&lt;/a&gt;
+
+&lt;!-- Phone link (great for mobile!) --&gt;
+&lt;a href="tel:+1234567890"&gt;Call Me&lt;/a&gt;
+
+&lt;!-- Download link --&gt;
+&lt;a href="resume.pdf" download&gt;Download Resume&lt;/a&gt;
+
+&lt;!-- Open in new tab --&gt;
+&lt;a href="https://twitter.com" target="_blank"&gt;Twitter&lt;/a&gt;</pre>
+                </div>
+
+                <h3>Building Navigation Menus</h3>
+                <div class="semantic-visual">
+                    <div class="semantic-box">
+                        <span class="semantic-label">&lt;nav&gt;</span>
+                        <ul style="list-style: none; padding: 0; display: flex; gap: 1rem;">
+                            <li><a href="#home" style="color: var(--primary);">Home</a></li>
+                            <li><a href="#about" style="color: var(--primary);">About</a></li>
+                            <li><a href="#projects" style="color: var(--primary);">Projects</a></li>
+                            <li><a href="#contact" style="color: var(--primary);">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Create a Navigation Menu!</h4>
+                    <p>Build a navigation menu with internal and external links:</p>
+                    <textarea class="code-editor" id="nav-editor">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My Portfolio&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;header&gt;
+        &lt;h1&gt;My Portfolio&lt;/h1&gt;
+        &lt;!-- Create a nav with links here! --&gt;
+        &lt;!-- Include: Home, About, Projects, GitHub (external) --&gt;
+    &lt;/header&gt;
+    
+    &lt;main&gt;
+        &lt;section id="home"&gt;
+            &lt;h2&gt;Welcome!&lt;/h2&gt;
+            &lt;p&gt;This is my portfolio.&lt;/p&gt;
+        &lt;/section&gt;
+        
+        &lt;!-- Add more sections for your nav links --&gt;
+    &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+                    <button class="run-button" onclick="runHTML('nav-editor', 'nav-output')">
+                        ▶️ Preview HTML
+                    </button>
+                    <div class="output-box" id="nav-output">Create a working navigation menu!</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Which attribute makes a link open in a new tab?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, '_blank')">
+                        <input type="radio" name="q4" value="_blank"> target="_blank"
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, '_blank')">
+                        <input type="radio" name="q4" value="new"> target="new"
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, '_blank')">
+                        <input type="radio" name="q4" value="window"> new-window="true"
+                    </label>
+                    <div class="quiz-result" id="q4-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(3)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(5)">Next: Forms & Inputs →</button>
+                </div>
+            </section>
+
+            <!-- Section 5: Forms & Inputs -->
+            <section class="lesson-section" id="section-5">
+                <h2>📋 Forms & Inputs - Collecting User Data</h2>
+                <p>Forms are how users interact with your website - from login screens to contact forms. They're everywhere! Let's build some interactive forms (even though they won't actually send data yet - that comes in later modules).</p>
+
+                <h3>Essential Form Elements</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>&lt;form&gt;
+    &lt;!-- Text input --&gt;
+    &lt;label for="name"&gt;Name:&lt;/label&gt;
+    &lt;input type="text" id="name" name="name" required&gt;
+    
+    &lt;!-- Email input (with validation!) --&gt;
+    &lt;label for="email"&gt;Email:&lt;/label&gt;
+    &lt;input type="email" id="email" name="email" required&gt;
+    
+    &lt;!-- Password input (hidden text) --&gt;
+    &lt;label for="password"&gt;Password:&lt;/label&gt;
+    &lt;input type="password" id="password" name="password"&gt;
+    
+    &lt;!-- Number input --&gt;
+    &lt;label for="age"&gt;Age:&lt;/label&gt;
+    &lt;input type="number" id="age" name="age" min="13" max="120"&gt;
+    
+    &lt;!-- Dropdown select --&gt;
+    &lt;label for="country"&gt;Country:&lt;/label&gt;
+    &lt;select id="country" name="country"&gt;
+        &lt;option value=""&gt;Choose...&lt;/option&gt;
+        &lt;option value="us"&gt;United States&lt;/option&gt;
+        &lt;option value="uk"&gt;United Kingdom&lt;/option&gt;
+        &lt;option value="ca"&gt;Canada&lt;/option&gt;
+    &lt;/select&gt;
+    
+    &lt;!-- Radio buttons (choose one) --&gt;
+    &lt;p&gt;Preferred Contact:&lt;/p&gt;
+    &lt;input type="radio" id="contact-email" name="contact" value="email"&gt;
+    &lt;label for="contact-email"&gt;Email&lt;/label&gt;
+    
+    &lt;input type="radio" id="contact-phone" name="contact" value="phone"&gt;
+    &lt;label for="contact-phone"&gt;Phone&lt;/label&gt;
+    
+    &lt;!-- Checkboxes (choose multiple) --&gt;
+    &lt;p&gt;Interests:&lt;/p&gt;
+    &lt;input type="checkbox" id="web" name="interests" value="web"&gt;
+    &lt;label for="web"&gt;Web Development&lt;/label&gt;
+    
+    &lt;input type="checkbox" id="mobile" name="interests" value="mobile"&gt;
+    &lt;label for="mobile"&gt;Mobile Apps&lt;/label&gt;
+    
+    &lt;!-- Text area (multi-line text) --&gt;
+    &lt;label for="message"&gt;Message:&lt;/label&gt;
+    &lt;textarea id="message" name="message" rows="4" cols="50"&gt;&lt;/textarea&gt;
+    
+    &lt;!-- Submit button --&gt;
+    &lt;button type="submit"&gt;Send Message&lt;/button&gt;
+&lt;/form&gt;</pre>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Form Best Practices
+                    </div>
+                    <div class="spoiler-content">
+                        <ul>
+                            <li>Always use <code>&lt;label&gt;</code> with <code>for</code> attribute</li>
+                            <li>Add <code>required</code> for mandatory fields</li>
+                            <li>Use appropriate input types (email, tel, number)</li>
+                            <li>Group related inputs with <code>&lt;fieldset&gt;</code></li>
+                            <li>Provide helpful placeholder text</li>
+                            <li>Consider mobile users (big touch targets!)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Build a Contact Form!</h4>
+                    <p>Create a professional contact form with various input types:</p>
+                    <textarea class="code-editor" id="form-editor">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Contact Me&lt;/title&gt;
+    &lt;style&gt;
+        /* Some basic styling */
+        form { max-width: 400px; margin: 20px; }
+        label { display: block; margin-top: 10px; }
+        input, select, textarea { width: 100%; padding: 5px; margin-top: 5px; }
+        button { margin-top: 10px; padding: 10px 20px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Contact Me&lt;/h1&gt;
+    
+    &lt;!-- Build your contact form here! --&gt;
+    &lt;!-- Include: name, email, subject dropdown, message textarea, submit button --&gt;
+    
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+                    <button class="run-button" onclick="runHTML('form-editor', 'form-output')">
+                        ▶️ Preview HTML
+                    </button>
+                    <div class="output-box" id="form-output">Create a complete contact form!</div>
+                </div>
+
+                <div class="form-example">
+                    <h4>Interactive Form Demo</h4>
+                    <form id="demo-form" onsubmit="return validateForm('demo-form')">
+                        <div class="form-group">
+                            <label for="demo-name">Your Name *</label>
+                            <input type="text" id="demo-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="demo-email">Email *</label>
+                            <input type="email" id="demo-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="demo-subject">Subject</label>
+                            <select id="demo-subject">
+                                <option>General Inquiry</option>
+                                <option>Project Proposal</option>
+                                <option>Feedback</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="demo-message">Message *</label>
+                            <textarea id="demo-message" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="run-button">Submit Form</button>
+                    </form>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(4)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(6)">Next: Lists & Tables →</button>
+                </div>
+            </section>
+
+            <!-- Section 6: Lists & Tables -->
+            <section class="lesson-section" id="section-6">
+                <h2>📊 Lists & Tables - Organizing Information</h2>
+                <p>Lists and tables are perfect for organizing information in a way that's easy to scan. From navigation menus to data displays, you'll use these constantly!</p>
+
+                <h3>Types of Lists</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>&lt;!-- Unordered List (bullets) --&gt;
+&lt;ul&gt;
+    &lt;li&gt;HTML&lt;/li&gt;
+    &lt;li&gt;CSS&lt;/li&gt;
+    &lt;li&gt;JavaScript&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- Ordered List (numbers) --&gt;
+&lt;ol&gt;
+    &lt;li&gt;Learn HTML&lt;/li&gt;
+    &lt;li&gt;Style with CSS&lt;/li&gt;
+    &lt;li&gt;Add JavaScript&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;!-- Description List (terms & definitions) --&gt;
+&lt;dl&gt;
+    &lt;dt&gt;HTML&lt;/dt&gt;
+    &lt;dd&gt;HyperText Markup Language - structures content&lt;/dd&gt;
+    
+    &lt;dt&gt;CSS&lt;/dt&gt;
+    &lt;dd&gt;Cascading Style Sheets - styles content&lt;/dd&gt;
+&lt;/dl&gt;
+
+&lt;!-- Nested Lists --&gt;
+&lt;ul&gt;
+    &lt;li&gt;Frontend
+        &lt;ul&gt;
+            &lt;li&gt;HTML&lt;/li&gt;
+            &lt;li&gt;CSS&lt;/li&gt;
+            &lt;li&gt;JavaScript&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;Backend
+        &lt;ul&gt;
+            &lt;li&gt;Node.js&lt;/li&gt;
+            &lt;li&gt;Python&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;</pre>
+                </div>
+
+                <h3>Creating Tables</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>&lt;table&gt;
+    &lt;!-- Table header --&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Language&lt;/th&gt;
+            &lt;th&gt;Purpose&lt;/th&gt;
+            &lt;th&gt;Difficulty&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    
+    &lt;!-- Table body --&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td&gt;HTML&lt;/td&gt;
+            &lt;td&gt;Structure&lt;/td&gt;
+            &lt;td&gt;Easy&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;CSS&lt;/td&gt;
+            &lt;td&gt;Styling&lt;/td&gt;
+            &lt;td&gt;Medium&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;JavaScript&lt;/td&gt;
+            &lt;td&gt;Interactivity&lt;/td&gt;
+            &lt;td&gt;Hard&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+    
+    &lt;!-- Table footer (optional) --&gt;
+    &lt;tfoot&gt;
+        &lt;tr&gt;
+            &lt;td colspan="3"&gt;Keep learning!&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tfoot&gt;
+&lt;/table&gt;</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Create a Skills Table!</h4>
+                    <p>Build a table showing your skills and experience level:</p>
+                    <textarea class="code-editor" id="table-editor">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My Skills&lt;/title&gt;
+    &lt;style&gt;
+        table { border-collapse: collapse; margin: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;My Technical Skills&lt;/h1&gt;
+    
+    &lt;!-- Create a table with your skills here! --&gt;
+    &lt;!-- Columns: Skill, Experience Level, Projects Built --&gt;
+    
+    &lt;h2&gt;Learning Goals&lt;/h2&gt;
+    
+    &lt;!-- Create an ordered list of your learning goals --&gt;
+    
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+                    <button class="run-button" onclick="runHTML('table-editor', 'table-output')">
+                        ▶️ Preview HTML
+                    </button>
+                    <div class="output-box" id="table-output">Create a skills table and learning goals list!</div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(5)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(7)">Next: Media & Embeds →</button>
+                </div>
+            </section>
+
+            <!-- Section 7: Media & Embeds -->
+            <section class="lesson-section" id="section-7">
+                <h2>🖼️ Media & Embeds - Making Pages Visual</h2>
+                <p>A picture is worth a thousand words, and a video is worth a million! Let's add images, videos, and other media to make your pages come alive.</p>
+
+                <h3>Working with Images</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>&lt;!-- Basic image --&gt;
+&lt;img src="profile.jpg" alt="My profile photo"&gt;
+
+&lt;!-- Image with dimensions --&gt;
+&lt;img src="logo.png" alt="Company logo" width="200" height="100"&gt;
+
+&lt;!-- Responsive image --&gt;
+&lt;img src="hero.jpg" alt="Hero image" style="width: 100%; height: auto;"&gt;
+
+&lt;!-- Image as a link --&gt;
+&lt;a href="portfolio.html"&gt;
+    &lt;img src="thumbnail.jpg" alt="View my portfolio"&gt;
+&lt;/a&gt;
+
+&lt;!-- Figure with caption --&gt;
+&lt;figure&gt;
+    &lt;img src="project.png" alt="My latest project"&gt;
+    &lt;figcaption&gt;Screenshot of my latest web app&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Image Best Practices
+                    </div>
+                    <div class="spoiler-content">
+                        <ul>
+                            <li>ALWAYS include alt text for accessibility</li>
+                            <li>Use descriptive filenames (profile-photo.jpg not IMG_1234.jpg)</li>
+                            <li>Optimize image sizes (under 200KB for web)</li>
+                            <li>Use appropriate formats:
+                                <ul>
+                                    <li>JPEG for photos</li>
+                                    <li>PNG for graphics with transparency</li>
+                                    <li>SVG for logos and icons</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Embedding Media</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>&lt;!-- Video (local file) --&gt;
+&lt;video controls width="600"&gt;
+    &lt;source src="demo.mp4" type="video/mp4"&gt;
+    &lt;source src="demo.webm" type="video/webm"&gt;
+    Your browser doesn't support video.
+&lt;/video&gt;
+
+&lt;!-- Audio --&gt;
+&lt;audio controls&gt;
+    &lt;source src="podcast.mp3" type="audio/mp3"&gt;
+    &lt;source src="podcast.ogg" type="audio/ogg"&gt;
+&lt;/audio&gt;
+
+&lt;!-- YouTube embed --&gt;
+&lt;iframe width="560" height="315" 
+    src="https://www.youtube.com/embed/VIDEO_ID" 
+    frameborder="0" allowfullscreen&gt;
+&lt;/iframe&gt;
+
+&lt;!-- Google Maps embed --&gt;
+&lt;iframe src="https://maps.google.com/maps?q=..." 
+    width="600" height="450" 
+    style="border:0;" allowfullscreen&gt;
+&lt;/iframe&gt;</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Create a Media-Rich Page!</h4>
+                    <p>Build a page showcasing different types of media:</p>
+                    <textarea class="code-editor" id="media-editor">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My Media Gallery&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Welcome to My Media Gallery&lt;/h1&gt;
+    
+    &lt;!-- Add an image with proper alt text --&gt;
+    &lt;!-- Create a figure with caption --&gt;
+    &lt;!-- Embed a YouTube video (use any video ID) --&gt;
+    &lt;!-- Bonus: Add an audio element --&gt;
+    
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+                    <button class="run-button" onclick="runHTML('media-editor', 'media-output')">
+                        ▶️ Preview HTML
+                    </button>
+                    <div class="output-box" id="media-output">Create a page with images and embedded media!</div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(6)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(8)">Next: Final Project →</button>
+                </div>
+            </section>
+
+            <!-- Section 8: Final Portfolio Project -->
+            <section class="lesson-section" id="section-8">
+                <h2>🎯 Final Project - Build Your Portfolio!</h2>
+                <p>Time to put it all together! You're going to build a complete portfolio website using everything you've learned. This will be the foundation you'll style in Module 3 with CSS!</p>
+
+                <div class="semantic-visual">
+                    <h3>Portfolio Requirements Checklist:</h3>
+                    <ul style="list-style: none;">
+                        <li>✅ Proper document structure with semantic HTML</li>
+                        <li>✅ Navigation menu linking all sections</li>
+                        <li>✅ About section with headings and paragraphs</li>
+                        <li>✅ Skills table or list</li>
+                        <li>✅ Projects section with images</li>
+                        <li>✅ Contact form with multiple input types</li>
+                        <li>✅ Footer with links</li>
+                    </ul>
+                </div>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>&lt;!-- Portfolio Structure Template --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;meta name="description" content="Portfolio of [Your Name]"&gt;
+    &lt;title&gt;[Your Name] | Web Developer&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;!-- Header with Navigation --&gt;
+    &lt;header&gt;
+        &lt;nav&gt;
+            &lt;!-- Your nav menu here --&gt;
+        &lt;/nav&gt;
+    &lt;/header&gt;
+    
+    &lt;!-- Main Content --&gt;
+    &lt;main&gt;
+        &lt;!-- Hero/Intro Section --&gt;
+        &lt;section id="home"&gt;
+            &lt;!-- Your introduction --&gt;
+        &lt;/section&gt;
+        
+        &lt;!-- About Section --&gt;
+        &lt;section id="about"&gt;
+            &lt;!-- About you content --&gt;
+        &lt;/section&gt;
+        
+        &lt;!-- Skills Section --&gt;
+        &lt;section id="skills"&gt;
+            &lt;!-- Skills table or list --&gt;
+        &lt;/section&gt;
+        
+        &lt;!-- Projects Section --&gt;
+        &lt;section id="projects"&gt;
+            &lt;!-- Project showcases --&gt;
+        &lt;/section&gt;
+        
+        &lt;!-- Contact Section --&gt;
+        &lt;section id="contact"&gt;
+            &lt;!-- Contact form --&gt;
+        &lt;/section&gt;
+    &lt;/main&gt;
+    
+    &lt;!-- Footer --&gt;
+    &lt;footer&gt;
+        &lt;!-- Footer content --&gt;
+    &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🏆 Build Your Complete Portfolio!</h4>
+                    <p>This is it - create your full portfolio website structure:</p>
+                    <textarea class="code-editor" id="portfolio-editor" style="min-height: 400px;">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Your Portfolio&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;!-- Build your complete portfolio here! --&gt;
+    &lt;!-- Remember to include all required sections --&gt;
+    
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+                    <button class="run-button" onclick="runHTML('portfolio-editor', 'portfolio-output')">
+                        ▶️ Preview Portfolio
+                    </button>
+                    <div class="output-box" id="portfolio-output">Build your complete portfolio structure!</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Final Check: Which semantic tag should wrap your main navigation?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'nav')">
+                        <input type="radio" name="q8" value="nav"> &lt;nav&gt;
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'nav')">
+                        <input type="radio" name="q8" value="menu"> &lt;menu&gt;
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'nav')">
+                        <input type="radio" name="q8" value="navigation"> &lt;navigation&gt;
+                    </label>
+                    <div class="quiz-result" id="q8-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(7)">← Previous</button>
+                    <button class="nav-button" onclick="completeModule()">Complete Module! 🎉</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement" id="achievement">
+        <h3>🏆 Achievement Unlocked!</h3>
+        <p id="achievementText">HTML Master!</p>
+    </div>
+</body>
+</html>

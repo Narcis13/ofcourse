@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 1: The Coder's Toolkit</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a78bfa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --code-bg: #1e293b;
+            --border: #e5e7eb;
+        }
+
+        /* Dark mode variables */
+        body.dark-mode {
+            --dark: #f3f4f6;
+            --light: #1f2937;
+            --white: #111827;
+            --border: #374151;
+            --code-bg: #0f172a;
+            background: #0f172a;
+            color: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background-color 0.3s ease;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-subtitle {
+            color: var(--dark);
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .theme-toggle {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background-color: var(--border);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--success);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--white);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: var(--light);
+            border-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .nav-item.completed {
+            border-left: 4px solid var(--success);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 800px;
+        }
+
+        .lesson-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .lesson-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lesson-section h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .lesson-section p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        /* Code Editor */
+        .try-it-box {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .try-it-box h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: 150px;
+            font-family: 'Courier New', monospace;
+            background-color: var(--code-bg);
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            resize: vertical;
+            margin: 1rem 0;
+        }
+
+        .run-button {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .run-button:hover {
+            background-color: #0ea471;
+        }
+
+        .output-box {
+            background-color: var(--code-bg);
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            min-height: 60px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        /* Quiz */
+        .quiz-container {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .quiz-question {
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .quiz-option {
+            display: block;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background-color: var(--light);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background-color: var(--border);
+        }
+
+        .quiz-option.correct {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .quiz-result {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            display: none;
+        }
+
+        .quiz-result.show {
+            display: block;
+        }
+
+        /* Code Block */
+        .code-block {
+            position: relative;
+            background-color: var(--code-bg);
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .code-block pre {
+            color: #e2e8f0;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .copy-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Spoiler */
+        .spoiler {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        .spoiler-header {
+            padding: 1rem;
+            background-color: var(--light);
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .spoiler-header:hover {
+            background-color: var(--border);
+        }
+
+        .spoiler-content {
+            padding: 1rem;
+            display: none;
+        }
+
+        .spoiler.open .spoiler-content {
+            display: block;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .nav-button:disabled {
+            background-color: var(--border);
+            cursor: not-allowed;
+        }
+
+        /* Achievement */
+        .achievement {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--success);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .achievement.show {
+            transform: translateY(0);
+        }
+
+        .achievement h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 1rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Utility Classes */
+        .highlight {
+            background-color: var(--warning);
+            color: var(--dark);
+            padding: 0.1rem 0.3rem;
+            border-radius: 0.2rem;
+        }
+
+        .terminal-window {
+            background-color: #1a1a1a;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+        }
+
+        .terminal-window::before {
+            content: "$ ";
+            color: #888;
+        }
+
+        .file-tree {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: monospace;
+            transition: background-color 0.3s ease;
+        }
+
+        .file-tree ul {
+            list-style: none;
+            padding-left: 1.5rem;
+        }
+
+        .file-tree > ul {
+            padding-left: 0;
+        }
+
+        .folder::before {
+            content: "📁 ";
+        }
+
+        .file::before {
+            content: "📄 ";
+        }
+    </style>
+    <script>
+        // Progress tracking
+        let completedSections = new Set();
+        let currentSection = 0;
+
+        // Load saved progress
+        function loadProgress() {
+            const saved = localStorage.getItem('module1-progress');
+            if (saved) {
+                completedSections = new Set(JSON.parse(saved));
+                updateNavigation();
+                updateProgressBar();
+            }
+            
+            // Load theme
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.toggle-icon').textContent = '☀️';
+            }
+        }
+
+        // Save progress
+        function saveProgress() {
+            localStorage.setItem('module1-progress', JSON.stringify([...completedSections]));
+        }
+
+        // Show section
+        function showSection(index) {
+            // Hide all sections
+            document.querySelectorAll('.lesson-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(`section-${index}`).classList.add('active');
+            
+            // Update navigation
+            currentSection = index;
+            updateNavigation();
+            
+            // Mark section as visited
+            completedSections.add(index);
+            saveProgress();
+            updateProgressBar();
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Update navigation
+        function updateNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach((item, index) => {
+                item.classList.remove('active');
+                if (completedSections.has(index)) {
+                    item.classList.add('completed');
+                }
+                if (index === currentSection) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const totalSections = 8;
+            const progress = (completedSections.size / totalSections) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-icon');
+            icon.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+
+        // Code execution
+        function runCode(editorId, outputId) {
+            const code = document.getElementById(editorId).value;
+            const output = document.getElementById(outputId);
+            
+            // For HTML preview
+            if (code.includes('<!DOCTYPE html>') || code.includes('<html>')) {
+                output.innerHTML = '<iframe style="width:100%;height:300px;border:1px solid #ddd;border-radius:5px;" srcdoc="' + code.replace(/"/g, '&quot;') + '"></iframe>';
+            } else {
+                // For JavaScript execution
+                try {
+                    const result = eval(code);
+                    output.textContent = result !== undefined ? result : 'Code executed successfully!';
+                } catch (error) {
+                    output.innerHTML = '<span style="color: var(--danger);">Error: ' + error.message + '</span>';
+                }
+            }
+        }
+
+        // Terminal simulator
+        function simulateTerminal(editorId, outputId) {
+            const commands = document.getElementById(editorId).value.split('\n');
+            const output = document.getElementById(outputId);
+            let result = '';
+            
+            commands.forEach(cmd => {
+                cmd = cmd.trim();
+                if (cmd.startsWith('#') || cmd === '') return;
+                
+                result += '$ ' + cmd + '\n';
+                
+                if (cmd === 'pwd') {
+                    result += '/Users/student/projects/my-website\n';
+                } else if (cmd === 'ls') {
+                    result += 'index.html  style.css  images/  README.md\n';
+                } else if (cmd.startsWith('mkdir')) {
+                    result += 'Directory created successfully.\n';
+                } else if (cmd.startsWith('cd')) {
+                    result += ''; // No output for cd
+                } else {
+                    result += 'Command executed.\n';
+                }
+            });
+            
+            output.textContent = result;
+        }
+
+        // Git simulator
+        function simulateGit(editorId, outputId) {
+            const commands = document.getElementById(editorId).value.split('\n');
+            const output = document.getElementById(outputId);
+            let result = '';
+            
+            commands.forEach(cmd => {
+                cmd = cmd.trim();
+                if (cmd.startsWith('#') || cmd === '') return;
+                
+                result += '$ ' + cmd + '\n';
+                
+                if (cmd === 'git init') {
+                    result += 'Initialized empty Git repository in /Users/student/projects/.git/\n';
+                } else if (cmd === 'git status') {
+                    result += 'On branch main\n\nUntracked files:\n  index.html\n  style.css\n\n';
+                } else if (cmd.startsWith('git add')) {
+                    result += ''; // No output
+                } else if (cmd.startsWith('git commit')) {
+                    result += '[main (root-commit) 1a2b3c4] Add homepage\n 1 file changed, 10 insertions(+)\n';
+                }
+            });
+            
+            output.textContent = result;
+        }
+
+        // Copy code
+        function copyCode(button) {
+            const pre = button.nextElementSibling;
+            const text = pre.textContent;
+            navigator.clipboard.writeText(text);
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = 'Copy';
+            }, 2000);
+        }
+
+        // Toggle spoiler
+        function toggleSpoiler(header) {
+            header.parentElement.classList.toggle('open');
+        }
+
+        // Quiz checking
+        function checkQuiz(option, correctAnswer) {
+            const container = option.parentElement;
+            const resultDiv = container.querySelector('.quiz-result');
+            const allOptions = container.querySelectorAll('.quiz-option');
+            
+            // Disable all options
+            allOptions.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            
+            if (option.querySelector('input').value === correctAnswer) {
+                option.classList.add('correct');
+                resultDiv.innerHTML = '<span style="color: var(--success);">✅ Correct! Great job!</span>';
+                resultDiv.classList.add('show');
+                
+                // Show achievement for first correct answer
+                if (!localStorage.getItem('module1-quiz-completed')) {
+                    showAchievement('Quick Learner!');
+                    localStorage.setItem('module1-quiz-completed', 'true');
+                }
+            } else {
+                option.classList.add('incorrect');
+                resultDiv.innerHTML = '<span style="color: var(--danger);">❌ Not quite. Try reviewing the section!</span>';
+                resultDiv.classList.add('show');
+            }
+        }
+
+        // Final challenge check
+        function checkFinalChallenge(editorId, outputId) {
+            const code = document.getElementById(editorId).value;
+            const output = document.getElementById(outputId);
+            
+            // Check if required elements are present
+            if (code.includes('<h1>') && code.includes('Fun fact:') && code.includes('.card')) {
+                output.innerHTML = '<iframe style="width:100%;height:300px;border:1px solid #ddd;border-radius:5px;" srcdoc="' + code.replace(/"/g, '&quot;') + '"></iframe>';
+                showAchievement('Challenge Master! 🎯');
+            } else {
+                output.innerHTML = '<span style="color: var(--warning);">Make sure to add your name in an h1 tag, a fun fact, and style the .card class!</span>';
+            }
+        }
+
+        // Show achievement
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            document.getElementById('achievementText').textContent = text;
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        // Complete module
+        function completeModule() {
+            // Mark all sections as completed
+            for (let i = 0; i < 8; i++) {
+                completedSections.add(i);
+            }
+            saveProgress();
+            updateProgressBar();
+            updateNavigation();
+            
+            showAchievement('Module 1 Complete! 🎉');
+            
+            // Show completion message
+            setTimeout(() => {
+                alert('Congratulations! You\'ve completed Module 1 and set up your coding environment like a pro! 🚀\n\nYou\'re ready to start building amazing things!');
+            }, 1000);
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadProgress();
+        });
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1>Module 1: The Coder's Toolkit 🧰</h1>
+                <div class="header-subtitle">Get your workspace ready and write code that actually runs!</div>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="toggle-icon">🌙</span>
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav id="lessonNav">
+                <div class="nav-item active" onclick="showSection(0)">🚀 Welcome & Overview</div>
+                <div class="nav-item" onclick="showSection(1)">💻 VS Code Setup</div>
+                <div class="nav-item" onclick="showSection(2)">⚡ Power User Shortcuts</div>
+                <div class="nav-item" onclick="showSection(3)">📁 Project Organization</div>
+                <div class="nav-item" onclick="showSection(4)">🖥️ Terminal Basics</div>
+                <div class="nav-item" onclick="showSection(5)">🕰️ Git Time Machine</div>
+                <div class="nav-item" onclick="showSection(6)">🚢 Deploy Your First Page</div>
+                <div class="nav-item" onclick="showSection(7)">🎯 Final Challenge</div>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Section 0: Welcome -->
+            <section class="lesson-section active" id="section-0">
+                <h2>🚀 Welcome to Your Coding Journey!</h2>
+                <p>Hey there, future developer! 👋 Ready to set up your coding workspace like a pro? By the end of this module, you'll have a fully configured development environment and your first website live on the internet. How cool is that?</p>
+                
+                <p>Think of this module as setting up your digital workshop. Just like a carpenter needs their tools organized and ready, you need your coding environment set up properly. Let's make sure you have everything you need to build amazing things!</p>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Quick check: Why do developers need a special setup?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'productivity')">
+                        <input type="radio" name="q0" value="fun"> Just to look cool with fancy tools
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'productivity')">
+                        <input type="radio" name="q0" value="productivity"> To write code faster and catch mistakes early
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'productivity')">
+                        <input type="radio" name="q0" value="requirement"> Because websites won't work without it
+                    </label>
+                    <div class="quiz-result" id="q0-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" disabled>← Previous</button>
+                    <button class="nav-button" onclick="showSection(1)">Next: VS Code Setup →</button>
+                </div>
+            </section>
+
+            <!-- Section 1: VS Code Setup -->
+            <section class="lesson-section" id="section-1">
+                <h2>💻 Setting Up VS Code - Your Code Editor</h2>
+                <p>VS Code (Visual Studio Code) is like Microsoft Word, but for code! It's free, powerful, and what most professional developers use. Let's get it set up with some awesome features.</p>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Why VS Code and not something else?
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Great question! While there are many code editors out there (Sublime Text, Atom, Vim), VS Code has become the most popular because:</p>
+                        <ul>
+                            <li>It's completely free and open source</li>
+                            <li>Has amazing extensions for every language</li>
+                            <li>Built-in terminal and Git support</li>
+                            <li>Super active community and regular updates</li>
+                            <li>Works the same on Windows, Mac, and Linux</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Step 1: Download and Install</h3>
+                <p>Head over to <span class="highlight">code.visualstudio.com</span> and download VS Code for your operating system. The installation is straightforward - just click through the installer!</p>
+
+                <h3>Step 2: Essential Extensions</h3>
+                <p>Extensions are like apps for your code editor. Here are the must-haves for web development:</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>Essential Extensions:
+1. Live Server - See your changes instantly in the browser
+2. Prettier - Auto-formats your code to look professional
+3. Auto Rename Tag - Rename HTML tags automatically
+4. Color Highlight - See CSS colors visually
+5. GitLens - Supercharge your Git workflow</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Try It Yourself!</h4>
+                    <p>Let's create your first HTML file in VS Code! Type this code and see what happens:</p>
+                    <textarea class="code-editor" id="vscode-demo"><!DOCTYPE html>
+<html>
+<head>
+    <title>My First Page</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>I'm learning to code with VS Code!</p>
+</body>
+</html></textarea>
+                    <button class="run-button" onclick="runCode('vscode-demo', 'vscode-output')">
+                        ▶️ Preview HTML
+                    </button>
+                    <div class="output-box" id="vscode-output">Click "Preview HTML" to see your page!</div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(0)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(2)">Next: Power Shortcuts →</button>
+                </div>
+            </section>
+
+            <!-- Section 2: VS Code Shortcuts -->
+            <section class="lesson-section" id="section-2">
+                <h2>⚡ VS Code Power User Shortcuts</h2>
+                <p>Want to code like you're in a movie? Master these shortcuts and watch your friends' jaws drop! 🎬</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>🔥 Essential VS Code Shortcuts:
+
+Windows/Linux           Mac                 What it does
+─────────────────────────────────────────────────────────
+Ctrl+S                  Cmd+S               Save file
+Ctrl+Z                  Cmd+Z               Undo
+Ctrl+Shift+Z            Cmd+Shift+Z         Redo
+Ctrl+/                  Cmd+/               Comment/uncomment line
+Ctrl+D                  Cmd+D               Select next occurrence
+Alt+Up/Down             Option+Up/Down      Move line up/down
+Ctrl+Space              Cmd+Space           Trigger suggestions
+Ctrl+`                  Cmd+`               Toggle terminal
+Ctrl+P                  Cmd+P               Quick file open
+Ctrl+Shift+P            Cmd+Shift+P         Command palette</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Practice Time!</h4>
+                    <p>Try using the shortcuts in this mini editor. Select some text and try commenting it out!</p>
+                    <textarea class="code-editor" id="shortcut-practice">// Try these shortcuts here!
+// 1. Select this line and press Ctrl/Cmd + D to select the next "line"
+// 2. Select a line and press Alt/Option + Up to move it
+// 3. Type "div" and press Tab to see Emmet in action
+
+function sayHello() {
+    console.log("Hello, World!");
+    console.log("Hello, World!");
+    console.log("Hello, World!");
+}</textarea>
+                    <button class="run-button" onclick="runCode('shortcut-practice', 'shortcut-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="shortcut-output">Output will appear here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Pro Tip: Emmet Shortcuts
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Emmet is built into VS Code and lets you write HTML super fast! Try these:</p>
+                        <ul>
+                            <li><code>!</code> + Tab → Complete HTML boilerplate</li>
+                            <li><code>div.container</code> + Tab → <code>&lt;div class="container"&gt;&lt;/div&gt;</code></li>
+                            <li><code>ul>li*5</code> + Tab → Unordered list with 5 items</li>
+                            <li><code>h1{Hello World}</code> + Tab → <code>&lt;h1&gt;Hello World&lt;/h1&gt;</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(1)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(3)">Next: File Organization →</button>
+                </div>
+            </section>
+
+            <!-- Section 3: File Organization -->
+            <section class="lesson-section" id="section-3">
+                <h2>📁 Project Organization Like a Pro</h2>
+                <p>Ever seen a messy room where you can't find anything? That's what badly organized code looks like! Let's learn how professionals structure their projects.</p>
+
+                <h3>The Golden Rules of File Organization</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>📋 File Naming Rules:
+1. Use lowercase letters: index.html ✅ Index.HTML ❌
+2. No spaces! Use hyphens: my-page.html ✅ my page.html ❌
+3. Be descriptive: contact-form.css ✅ style2.css ❌
+4. Use folders to group related files
+5. Keep it consistent throughout your project</pre>
+                </div>
+
+                <h3>Standard Project Structure</h3>
+                <div class="file-tree">
+                    <ul>
+                        <li class="folder">my-portfolio/
+                            <ul>
+                                <li class="file">index.html (homepage)</li>
+                                <li class="folder">css/
+                                    <ul>
+                                        <li class="file">style.css</li>
+                                        <li class="file">responsive.css</li>
+                                    </ul>
+                                </li>
+                                <li class="folder">js/
+                                    <ul>
+                                        <li class="file">script.js</li>
+                                    </ul>
+                                </li>
+                                <li class="folder">images/
+                                    <ul>
+                                        <li class="file">profile.jpg</li>
+                                        <li class="file">project1.png</li>
+                                    </ul>
+                                </li>
+                                <li class="folder">pages/
+                                    <ul>
+                                        <li class="file">about.html</li>
+                                        <li class="file">contact.html</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Which filename follows best practices?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'hero-section.css')">
+                        <input type="radio" name="q3" value="Hero Section.css"> Hero Section.css
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'hero-section.css')">
+                        <input type="radio" name="q3" value="hero-section.css"> hero-section.css
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'hero-section.css')">
+                        <input type="radio" name="q3" value="herosection.css"> herosection.css
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'hero-section.css')">
+                        <input type="radio" name="q3" value="HERO_SECTION.CSS"> HERO_SECTION.CSS
+                    </label>
+                    <div class="quiz-result" id="q3-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(2)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(4)">Next: Terminal Basics →</button>
+                </div>
+            </section>
+
+            <!-- Section 4: Terminal Basics -->
+            <section class="lesson-section" id="section-4">
+                <h2>🖥️ Terminal Basics - Command Your Computer</h2>
+                <p>The terminal (also called command line) might look scary at first, but it's actually super powerful! Think of it as texting your computer to do things instead of clicking around.</p>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Terminal vs GUI - What's the difference?
+                    </div>
+                    <div class="spoiler-content">
+                        <p>GUI (Graphical User Interface) = clicking with your mouse<br>
+                        CLI (Command Line Interface) = typing commands</p>
+                        <p>Why use terminal?</p>
+                        <ul>
+                            <li>Much faster for many tasks</li>
+                            <li>Can automate repetitive work</li>
+                            <li>Required for Git and many dev tools</li>
+                            <li>Makes you look like a hacker (bonus!)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Essential Terminal Commands</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>🔧 Basic Commands Everyone Should Know:
+
+Command         What it does                Example
+────────────────────────────────────────────────────
+pwd            Show current directory       pwd
+ls             List files                   ls
+cd             Change directory             cd projects
+mkdir          Make directory               mkdir my-website
+touch          Create file                  touch index.html
+rm             Remove file                  rm old-file.txt
+mv             Move/rename file             mv old.html new.html
+code .         Open VS Code here            code .</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Terminal Simulator</h4>
+                    <p>Practice terminal commands safely here! Try typing 'ls' or 'pwd':</p>
+                    <textarea class="code-editor" id="terminal-sim"># Type a command and click Run
+# Try: pwd, ls, or mkdir my-project
+pwd</textarea>
+                    <button class="run-button" onclick="simulateTerminal('terminal-sim', 'terminal-output')">
+                        ▶️ Run Command
+                    </button>
+                    <div class="output-box" id="terminal-output">Terminal output will appear here...</div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(3)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(5)">Next: Git Basics →</button>
+                </div>
+            </section>
+
+            <!-- Section 5: Git Fundamentals -->
+            <section class="lesson-section" id="section-5">
+                <h2>🕰️ Git - Your Code Time Machine</h2>
+                <p>Imagine if you could save your game at any point and come back to it later. That's exactly what Git does for your code! It's like having unlimited save slots for your projects.</p>
+
+                <h3>What is Git?</h3>
+                <p>Git is a version control system that:</p>
+                <ul>
+                    <li>📸 Takes "snapshots" of your code at different points</li>
+                    <li>🔄 Lets you go back to any previous version</li>
+                    <li>👥 Helps you collaborate with others</li>
+                    <li>☁️ Backs up your code online (with GitHub)</li>
+                </ul>
+
+                <h3>Basic Git Workflow</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>🎯 Git Commands You'll Use Every Day:
+
+git init                    # Start tracking a project
+git add .                   # Stage all changes
+git commit -m "Message"     # Save a snapshot
+git status                  # Check what's changed
+git log                     # See history
+git push                    # Upload to GitHub
+git pull                    # Download latest changes</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Git Practice</h4>
+                    <p>Let's simulate making your first Git commit! Follow the commands:</p>
+                    <textarea class="code-editor" id="git-practice"># Initialize a new Git repository
+git init
+
+# Check the status
+git status
+
+# Add your files
+git add index.html
+
+# Commit with a message
+git commit -m "Add homepage"</textarea>
+                    <button class="run-button" onclick="simulateGit('git-practice', 'git-output')">
+                        ▶️ Run Git Commands
+                    </button>
+                    <div class="output-box" id="git-output">Git output will appear here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Writing Good Commit Messages
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Your future self will thank you for clear commit messages!</p>
+                        <p><strong>Good messages:</strong></p>
+                        <ul>
+                            <li>✅ "Add contact form to homepage"</li>
+                            <li>✅ "Fix navigation menu on mobile"</li>
+                            <li>✅ "Update hero section with new images"</li>
+                        </ul>
+                        <p><strong>Bad messages:</strong></p>
+                        <ul>
+                            <li>❌ "stuff"</li>
+                            <li>❌ "asdfasdf"</li>
+                            <li>❌ "fixed it"</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(4)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(6)">Next: Deploy to GitHub Pages →</button>
+                </div>
+            </section>
+
+            <!-- Section 6: GitHub Pages Deployment -->
+            <section class="lesson-section" id="section-6">
+                <h2>🚢 Deploy Your First Website!</h2>
+                <p>This is it - the moment you've been waiting for! Let's put your website on the actual internet where anyone can see it. We'll use GitHub Pages, which is free and perfect for beginners.</p>
+
+                <h3>Step-by-Step Deployment</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>📋 Deployment Checklist:
+
+1. Create a GitHub account (github.com)
+2. Create a new repository named: [username].github.io
+3. Initialize Git in your project folder
+4. Add your files and commit
+5. Add GitHub as remote origin
+6. Push your code
+7. Enable GitHub Pages in settings
+8. Visit https://[username].github.io</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Create Your Deployment Files</h4>
+                    <p>Let's create a simple website to deploy. This will be live on the internet!</p>
+                    <textarea class="code-editor" id="deploy-html"><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        h1 { font-size: 3em; }
+        .date { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <h1>🎉 I'm on the Internet!</h1>
+    <p>This is my first website, deployed with GitHub Pages!</p>
+    <p class="date">Launched on: <span id="date"></span></p>
+    <script>
+        document.getElementById('date').textContent = new Date().toLocaleDateString();
+    </script>
+</body>
+</html></textarea>
+                    <button class="run-button" onclick="runCode('deploy-html', 'deploy-output')">
+                        ▶️ Preview Your Site
+                    </button>
+                    <div class="output-box" id="deploy-output">Your website preview will appear here...</div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(5)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(7)">Next: Final Challenge →</button>
+                </div>
+            </section>
+
+            <!-- Section 7: Final Challenge -->
+            <section class="lesson-section" id="section-7">
+                <h2>🎯 Final Challenge - Put It All Together!</h2>
+                <p>Awesome job making it this far! Now it's time to prove you've mastered the coder's toolkit. Complete this challenge to unlock your achievement!</p>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Challenge 1: Which VS Code shortcut comments out a line?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'Ctrl+/')">
+                        <input type="radio" name="q7a" value="Ctrl+C"> Ctrl+C (or Cmd+C)
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'Ctrl+/')">
+                        <input type="radio" name="q7a" value="Ctrl+/"> Ctrl+/ (or Cmd+/)
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'Ctrl+/')">
+                        <input type="radio" name="q7a" value="Ctrl+X"> Ctrl+X (or Cmd+X)
+                    </label>
+                    <div class="quiz-result" id="q7a-result"></div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Challenge 2: What Git command saves a snapshot of your code?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'commit')">
+                        <input type="radio" name="q7b" value="save"> git save
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'commit')">
+                        <input type="radio" name="q7b" value="commit"> git commit
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'commit')">
+                        <input type="radio" name="q7b" value="push"> git push
+                    </label>
+                    <div class="quiz-result" id="q7b-result"></div>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🏆 Final Coding Challenge</h4>
+                    <p>Create a simple personal card with your name and a fun fact about yourself:</p>
+                    <textarea class="code-editor" id="final-challenge"><!DOCTYPE html>
+<html>
+<head>
+    <title>About Me</title>
+    <style>
+        /* Add your styles here! */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f0f0f0;
+        }
+        .card {
+            /* Style your card */
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <!-- Add your content here -->
+        <h1>Your Name</h1>
+        <p>Fun fact: </p>
+    </div>
+</body>
+</html></textarea>
+                    <button class="run-button" onclick="checkFinalChallenge('final-challenge', 'final-output')">
+                        ▶️ Submit Challenge
+                    </button>
+                    <div class="output-box" id="final-output">Complete the challenge to see your achievement!</div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(6)">← Previous</button>
+                    <button class="nav-button" onclick="completeModule()">Complete Module! 🎉</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement" id="achievement">
+        <h3>🏆 Achievement Unlocked!</h3>
+        <p id="achievementText">Tool Master!</p>
+    </div>
+
+</body>
+</html>

@@ -76,9 +76,9 @@ This implementation plan outlines the development of OfCourse, a premium multi-c
 ### Week 2: Course Catalog & Browse Experience
 
 #### Public Pages Structure
-- [ ] Create `/app/(unauthenticated)/courses/page.tsx` - Main catalog
-- [ ] Create `/app/(unauthenticated)/courses/[category]/page.tsx` - Category view
-- [ ] Create `/app/(unauthenticated)/courses/[category]/[courseSlug]/page.tsx` - Course details
+- [x] Create `/app/(unauthenticated)/courses/page.tsx` - Main catalog
+- [x] Create `/app/(unauthenticated)/courses/[category]/page.tsx` - Category view
+- [x] Create `/app/(unauthenticated)/courses/[category]/[courseSlug]/page.tsx` - Course details
 - [ ] Create `/app/(unauthenticated)/bundles/page.tsx` - Bundle catalog
 
 #### Components

@@ -1,9 +1,18 @@
-import { pgTable, text, uuid, integer, timestamp, jsonb } from "drizzle-orm/pg-core"
+import {
+  pgTable,
+  text,
+  uuid,
+  integer,
+  timestamp,
+  jsonb
+} from "drizzle-orm/pg-core"
 import { courses } from "./courses"
 
 export const modules = pgTable("modules", {
   id: uuid("id").defaultRandom().primaryKey(),
-  courseId: uuid("course_id").references(() => courses.id).notNull(),
+  courseId: uuid("course_id")
+    .references(() => courses.id)
+    .notNull(),
   orderIndex: integer("order_index").notNull(),
   title: text("title").notNull(),
   videoUrl: text("video_url"),

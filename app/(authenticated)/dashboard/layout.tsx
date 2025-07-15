@@ -15,7 +15,7 @@ export default async function DashboardLayout({
   }
 
   const customer = await getCustomerByUserId(user.id)
-console.log('customer',customer)
+  console.log("customer", customer)
   // Gate dashboard access for pro members only
   // Store a message to show why they were redirected
   if (!customer || customer.membership !== "pro") {
