@@ -1,0 +1,2509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 8: Data Persistence - Databases Basics</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a78bfa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --code-bg: #1e293b;
+            --border: #e5e7eb;
+        }
+
+        /* Dark mode variables */
+        body.dark-mode {
+            --dark: #f3f4f6;
+            --light: #1f2937;
+            --white: #111827;
+            --border: #374151;
+            --code-bg: #0f172a;
+            background: #0f172a;
+            color: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 0.2rem;
+        }
+
+        .header-subtitle {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .theme-toggle {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--border);
+            height: 4px;
+            width: 100%;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            flex: 0 0 250px;
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: var(--light);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .nav-item.completed::after {
+            content: " ✓";
+            color: var(--success);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .lesson-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .lesson-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lesson-section h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .lesson-section h3 {
+            color: var(--primary-dark);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .lesson-section p {
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        /* Interactive Components */
+        .try-it-box {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            border: 2px solid var(--border);
+        }
+
+        .try-it-box h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            background: var(--code-bg);
+            color: #f8f8f2;
+            border: none;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 1rem 0;
+            resize: vertical;
+        }
+
+        .run-button {
+            background: var(--success);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .run-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .output-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--dark);
+            color: var(--white);
+            border-radius: 0.5rem;
+            font-family: monospace;
+            min-height: 60px;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            position: relative;
+            margin: 1rem 0;
+            background: var(--code-bg);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .code-block pre {
+            padding: 1rem;
+            color: #f8f8f2;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-question {
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .quiz-option {
+            display: block;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .quiz-result {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            display: none;
+        }
+
+        .quiz-result.show {
+            display: block;
+        }
+
+        .quiz-result.correct {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .quiz-result.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        /* Spoiler/Hint */
+        .spoiler {
+            background: var(--light);
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .spoiler-header {
+            padding: 1rem;
+            background: var(--primary);
+            color: var(--white);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .spoiler-header:hover {
+            background: var(--primary-dark);
+        }
+
+        .spoiler-content {
+            padding: 1rem;
+            display: none;
+        }
+
+        .spoiler.open .spoiler-content {
+            display: block;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .nav-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .nav-button:disabled {
+            background: var(--border);
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Achievement Popup */
+        .achievement {
+            position: fixed;
+            top: -100px;
+            right: 20px;
+            background: var(--success);
+            color: var(--white);
+            padding: 1.5rem 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: top 0.5s ease;
+            z-index: 1000;
+        }
+
+        .achievement.show {
+            top: 20px;
+        }
+
+        .achievement h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Database Visualizer */
+        .db-visualizer {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .db-table {
+            background: var(--white);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .db-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .db-table th {
+            background: var(--primary);
+            color: var(--white);
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .db-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .db-table tr:hover {
+            background: var(--light);
+        }
+
+        /* Interactive SQL */
+        .sql-editor {
+            background: var(--code-bg);
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+        }
+
+        .sql-keyword {
+            color: #66d9ef;
+            font-weight: bold;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .sidebar {
+                position: static;
+                width: 100%;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+
+            .code-editor {
+                font-size: 12px;
+            }
+        }
+
+        /* Completion Styles */
+        .completion-message {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--white);
+            border-radius: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .completion-message h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Schema Designer */
+        .schema-designer {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .schema-table {
+            background: var(--white);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border: 2px solid var(--border);
+        }
+
+        .schema-field {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+
+        .schema-field input,
+        .schema-field select {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1>Module 8: Database Magic 🗄️</h1>
+                <div class="header-subtitle">Save user data and make your apps remember things!</div>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="toggle-icon">🌙</span>
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav id="lessonNav">
+                <div class="nav-item active" onclick="showSection(0)">🎯 Introduction</div>
+                <div class="nav-item" onclick="showSection(1)">📚 Database Basics</div>
+                <div class="nav-item" onclick="showSection(2)">🗂️ SQL vs NoSQL</div>
+                <div class="nav-item" onclick="showSection(3)">✨ CRUD Operations</div>
+                <div class="nav-item" onclick="showSection(4)">🔒 Security Basics</div>
+                <div class="nav-item" onclick="showSection(5)">🏗️ Schema Design</div>
+                <div class="nav-item" onclick="showSection(6)">📝 SQL Practice</div>
+                <div class="nav-item" onclick="showSection(7)">🚀 Build a Guestbook</div>
+                <div class="nav-item" onclick="showSection(8)">👤 User Authentication</div>
+                <div class="nav-item" onclick="showSection(9)">🎉 Final Project</div>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Section 0: Introduction -->
+            <section class="lesson-section active" id="section-0">
+                <h2>🎯 Welcome to Database Magic!</h2>
+                <p>Ever wondered how Instagram remembers your posts? Or how Discord saves your messages? Or how your favorite game keeps track of your high score? That's the magic of databases! 🪄</p>
+                
+                <p>Think of a database like your phone's photo gallery:</p>
+                <ul>
+                    <li>📸 Your photos = Data</li>
+                    <li>📁 Albums = Tables/Collections</li>
+                    <li>🏷️ Tags & dates = Indexes</li>
+                    <li>🔍 Search = Queries</li>
+                </ul>
+
+                <h3>What You'll Build in This Module</h3>
+                <p>By the end of this module, you'll create:</p>
+                <ul>
+                    <li>✅ A guestbook where visitors can leave messages</li>
+                    <li>✅ An admin panel to manage your portfolio projects</li>
+                    <li>✅ A user authentication system (login/signup)</li>
+                    <li>✅ A comment system for your blog</li>
+                </ul>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Why Should You Care About Databases?
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Every app you love uses databases:</p>
+                        <ul>
+                            <li><strong>TikTok:</strong> Stores videos, likes, comments, follows</li>
+                            <li><strong>Spotify:</strong> Saves playlists, listening history, preferences</li>
+                            <li><strong>Games:</strong> Tracks scores, items, player progress</li>
+                            <li><strong>Banking apps:</strong> Records transactions (very carefully!)</li>
+                        </ul>
+                        <p>Without databases, every time you close an app, you'd lose everything! 😱</p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" disabled>← Previous</button>
+                    <button class="nav-button" onclick="showSection(1)">Next: Database Basics →</button>
+                </div>
+            </section>
+
+            <!-- Section 1: Database Basics -->
+            <section class="lesson-section" id="section-1">
+                <h2>📚 What is a Database?</h2>
+                <p>A database is like a super-organized digital filing cabinet. Instead of throwing all your data in one messy folder, databases organize information so you can find it instantly!</p>
+
+                <h3>Real-World Analogy</h3>
+                <p>Imagine your school:</p>
+                <div class="code-block">
+                    <pre>School Database
+├── Students Table
+│   ├── ID | Name      | Grade | Email
+│   ├── 1  | Alex Chen | 10    | alex@school.edu
+│   ├── 2  | Sam Smith | 11    | sam@school.edu
+│   └── 3  | Jordan Lee| 10    | jordan@school.edu
+│
+├── Classes Table
+│   ├── ID | Name        | Teacher    | Room
+│   ├── 101| Algebra II  | Ms. Johnson| A204
+│   ├── 102| Chemistry   | Mr. Garcia | B110
+│   └── 103| History     | Ms. Park   | C301
+│
+└── Enrollments Table (connects students to classes)
+    ├── StudentID | ClassID | Grade
+    ├── 1         | 101     | A
+    ├── 1         | 102     | B+
+    └── 2         | 101     | A-</pre>
+                </div>
+
+                <h3>Key Database Concepts</h3>
+                <div class="try-it-box">
+                    <h4>🎮 Interactive Database Explorer</h4>
+                    <p>Let's explore a simple social media database! Click the buttons to run different queries:</p>
+                    
+                    <div class="db-visualizer">
+                        <div class="db-table">
+                            <h4>Users Table</h4>
+                            <table id="usersTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Joined</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>coolcoder123</td>
+                                        <td>alex@email.com</td>
+                                        <td>2024-01-15</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>gamerpro456</td>
+                                        <td>sam@email.com</td>
+                                        <td>2024-02-20</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>musicfan789</td>
+                                        <td>jordan@email.com</td>
+                                        <td>2024-03-10</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="db-table" style="margin-top: 1rem;">
+                            <h4>Posts Table</h4>
+                            <table id="postsTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>UserID</th>
+                                        <th>Content</th>
+                                        <th>Likes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>1</td>
+                                        <td>Just finished my first app! 🚀</td>
+                                        <td>42</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>2</td>
+                                        <td>New high score! 🎮</td>
+                                        <td>28</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>1</td>
+                                        <td>Learning databases is fun!</td>
+                                        <td>35</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <button class="run-button" onclick="runDatabaseQuery('all-users')">Show All Users</button>
+                    <button class="run-button" onclick="runDatabaseQuery('user-posts')">Show User 1's Posts</button>
+                    <button class="run-button" onclick="runDatabaseQuery('popular-posts')">Show Popular Posts (>30 likes)</button>
+                    
+                    <div class="output-box" id="dbOutput">Query results will appear here...</div>
+                </div>
+
+                <h3>Database Vocabulary</h3>
+                <ul>
+                    <li><strong>Table:</strong> Like a spreadsheet (Users, Posts, Comments)</li>
+                    <li><strong>Row/Record:</strong> One entry (one user, one post)</li>
+                    <li><strong>Column/Field:</strong> Type of data (username, email)</li>
+                    <li><strong>Primary Key:</strong> Unique ID for each row</li>
+                    <li><strong>Query:</strong> Question you ask the database</li>
+                </ul>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What is the primary key in our Users table?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'ID')">
+                        <input type="radio" name="q1" value="ID"> ID
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'ID')">
+                        <input type="radio" name="q1" value="Username"> Username
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'ID')">
+                        <input type="radio" name="q1" value="Email"> Email
+                    </label>
+                    <div class="quiz-result" id="q1-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(0)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(2)">Next: SQL vs NoSQL →</button>
+                </div>
+            </section>
+
+            <!-- Section 2: SQL vs NoSQL -->
+            <section class="lesson-section" id="section-2">
+                <h2>🗂️ SQL vs NoSQL: Choose Your Fighter!</h2>
+                <p>There are two main types of databases. Think of them like organizing your closet:</p>
+
+                <h3>SQL Databases (Structured) 📊</h3>
+                <p>Like a super-organized closet with labeled drawers:</p>
+                <ul>
+                    <li>Everything has a specific place</li>
+                    <li>All t-shirts must have size, color, brand</li>
+                    <li>Very organized, but less flexible</li>
+                </ul>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>-- SQL Example: Creating a users table
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    age INTEGER CHECK (age >= 13),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</pre>
+                </div>
+
+                <h3>NoSQL Databases (Flexible) 🎨</h3>
+                <p>Like throwing things in bins by category:</p>
+                <ul>
+                    <li>More flexible structure</li>
+                    <li>Can add new fields anytime</li>
+                    <li>Great for varied data</li>
+                </ul>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// NoSQL Example: MongoDB document
+{
+    "_id": "507f1f77bcf86cd799439011",
+    "username": "coolcoder123",
+    "email": "alex@email.com",
+    "profile": {
+        "bio": "Love coding and gaming!",
+        "interests": ["JavaScript", "Games", "Music"],
+        "social": {
+            "twitter": "@coolcoder123",
+            "github": "coolcoder123"
+        }
+    }
+}</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 SQL vs NoSQL Playground</h4>
+                    <p>See the difference! Add a new user to each database type:</p>
+                    
+                    <h5>SQL Version (Strict Structure)</h5>
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input type="text" id="sqlUsername" placeholder="Required">
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="sqlEmail" placeholder="Required">
+                    </div>
+                    <div class="form-group">
+                        <label>Age:</label>
+                        <input type="number" id="sqlAge" placeholder="Required (13+)">
+                    </div>
+                    <button class="run-button" onclick="addSQLUser()">Add to SQL Database</button>
+                    
+                    <h5 style="margin-top: 2rem;">NoSQL Version (Flexible)</h5>
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input type="text" id="noSqlUsername" placeholder="Required">
+                    </div>
+                    <div class="form-group">
+                        <label>Add any extra fields (optional):</label>
+                        <input type="text" id="noSqlExtra" placeholder="e.g., favoriteGame, mood, anything!">
+                    </div>
+                    <button class="run-button" onclick="addNoSQLUser()">Add to NoSQL Database</button>
+                    
+                    <div class="output-box" id="dbCompareOutput">Results will appear here...</div>
+                </div>
+
+                <h3>When to Use Which?</h3>
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Quick Decision Guide
+                    </div>
+                    <div class="spoiler-content">
+                        <p><strong>Use SQL when:</strong></p>
+                        <ul>
+                            <li>Your data has clear relationships (users → posts → comments)</li>
+                            <li>You need complex queries (find all users who posted in the last week AND have >100 followers)</li>
+                            <li>Data consistency is critical (banking, grades)</li>
+                            <li>Examples: PostgreSQL, MySQL, SQLite</li>
+                        </ul>
+                        
+                        <p><strong>Use NoSQL when:</strong></p>
+                        <ul>
+                            <li>Your data structure varies (user profiles with different fields)</li>
+                            <li>You need to scale massively (millions of users)</li>
+                            <li>Real-time features (chat, live feeds)</li>
+                            <li>Examples: MongoDB, Firebase, Redis</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Which database type would be best for a school grading system?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'SQL')">
+                        <input type="radio" name="q2" value="SQL"> SQL - Because grades need strict structure and relationships
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'SQL')">
+                        <input type="radio" name="q2" value="NoSQL"> NoSQL - Because it's more flexible
+                    </label>
+                    <div class="quiz-result" id="q2-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(1)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(3)">Next: CRUD Operations →</button>
+                </div>
+            </section>
+
+            <!-- Section 3: CRUD Operations -->
+            <section class="lesson-section" id="section-3">
+                <h2>✨ CRUD Operations: The Database Fundamentals</h2>
+                <p>CRUD = Create, Read, Update, Delete. These are the four superpowers you have with any database!</p>
+
+                <p>Think of CRUD like managing your Instagram:</p>
+                <ul>
+                    <li><strong>Create:</strong> Post a new photo 📸</li>
+                    <li><strong>Read:</strong> Scroll through your feed 📱</li>
+                    <li><strong>Update:</strong> Edit your caption ✏️</li>
+                    <li><strong>Delete:</strong> Remove that embarrassing post 🗑️</li>
+                </ul>
+
+                <div class="try-it-box">
+                    <h4>🎮 CRUD Playground - Build a Todo List!</h4>
+                    <p>Let's practice all four CRUD operations:</p>
+                    
+                    <div class="db-visualizer">
+                        <h5>Your Todo Database</h5>
+                        <div class="db-table">
+                            <table id="todoTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Task</th>
+                                        <th>Completed</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="todoTableBody">
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Learn databases</td>
+                                        <td>false</td>
+                                        <td>
+                                            <button onclick="updateTodo(1)">✏️</button>
+                                            <button onclick="deleteTodo(1)">🗑️</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h5>Create - Add New Todo</h5>
+                    <div class="form-group">
+                        <input type="text" id="newTodo" placeholder="Enter a new task...">
+                        <button class="run-button" onclick="createTodo()">➕ Create Todo</button>
+                    </div>
+
+                    <h5>Read - Query Todos</h5>
+                    <button class="run-button" onclick="readTodos('all')">📖 Read All</button>
+                    <button class="run-button" onclick="readTodos('incomplete')">⏳ Read Incomplete</button>
+
+                    <h5>SQL Commands Used:</h5>
+                    <div class="output-box" id="crudOutput">SQL commands will appear here...</div>
+                </div>
+
+                <h3>CRUD in Different Languages</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// JavaScript with SQL
+// CREATE
+const createUser = async (name, email) => {
+    const result = await db.query(
+        'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
+        [name, email]
+    );
+    return result.rows[0];
+};
+
+// READ
+const getUser = async (id) => {
+    const result = await db.query(
+        'SELECT * FROM users WHERE id = $1',
+        [id]
+    );
+    return result.rows[0];
+};
+
+// UPDATE
+const updateUser = async (id, updates) => {
+    const result = await db.query(
+        'UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *',
+        [updates.name, updates.email, id]
+    );
+    return result.rows[0];
+};
+
+// DELETE
+const deleteUser = async (id) => {
+    await db.query('DELETE FROM users WHERE id = $1', [id]);
+};</pre>
+                </div>
+
+                <h3>CRUD Best Practices</h3>
+                <ul>
+                    <li>✅ Always validate data before Creating</li>
+                    <li>✅ Use specific fields when Reading (not SELECT *)</li>
+                    <li>✅ Check if record exists before Updating</li>
+                    <li>✅ Soft delete (mark as deleted) vs hard delete</li>
+                </ul>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Which CRUD operation would you use to change your username?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'UPDATE')">
+                        <input type="radio" name="q3" value="CREATE"> CREATE
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'UPDATE')">
+                        <input type="radio" name="q3" value="READ"> READ
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'UPDATE')">
+                        <input type="radio" name="q3" value="UPDATE"> UPDATE
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'UPDATE')">
+                        <input type="radio" name="q3" value="DELETE"> DELETE
+                    </label>
+                    <div class="quiz-result" id="q3-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(2)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(4)">Next: Security Basics →</button>
+                </div>
+            </section>
+
+            <!-- Section 4: Security Basics -->
+            <section class="lesson-section" id="section-4">
+                <h2>🔒 Database Security: Protect Your Data!</h2>
+                <p>With great database power comes great responsibility! Let's learn how to keep data safe from hackers.</p>
+
+                <h3>The Golden Rules of Database Security</h3>
+                <ul>
+                    <li>🚫 Never store passwords as plain text</li>
+                    <li>🛡️ Always validate user input</li>
+                    <li>🔐 Use parameterized queries</li>
+                    <li>👤 Give users minimal permissions</li>
+                </ul>
+
+                <div class="try-it-box">
+                    <h4>🎮 Security Simulator - Spot the Vulnerability!</h4>
+                    <p>Can you identify the security problems in this code?</p>
+                    
+                    <textarea class="code-editor" id="securityCode" readonly>
+// ❌ BAD CODE - Full of security holes!
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    
+    // Problem 1: SQL Injection vulnerability
+    const user = await db.query(
+        `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`
+    );
+    
+    // Problem 2: Storing plain text password
+    if (user) {
+        res.json({ success: true, user });
+    }
+});
+
+// ✅ GOOD CODE - Secure version
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    
+    // Use parameterized query (prevents SQL injection)
+    const user = await db.query(
+        'SELECT * FROM users WHERE username = $1',
+        [username]
+    );
+    
+    // Check hashed password
+    if (user && await bcrypt.compare(password, user.hashed_password)) {
+        res.json({ success: true, userId: user.id });
+    }
+});</textarea>
+                    
+                    <button class="run-button" onclick="testSQLInjection()">🧪 Test SQL Injection Attack</button>
+                    <button class="run-button" onclick="showSecureSolution()">🛡️ Show Secure Solution</button>
+                    
+                    <div class="output-box" id="securityOutput">Click buttons to see security demos...</div>
+                </div>
+
+                <h3>Password Hashing Explained</h3>
+                <p>Never store: <code>password123</code></p>
+                <p>Always store: <code>$2b$10$N9qo8uLOickgx2ZMRZoMye...</code> (hashed version)</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// How to hash passwords properly
+const bcrypt = require('bcrypt');
+
+// When user signs up
+async function hashPassword(plainPassword) {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
+    return hashedPassword;
+}
+
+// When user logs in
+async function checkPassword(plainPassword, hashedPassword) {
+    const match = await bcrypt.compare(plainPassword, hashedPassword);
+    return match; // true or false
+}</pre>
+                </div>
+
+                <h3>SQL Injection Prevention</h3>
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 What is SQL Injection?
+                    </div>
+                    <div class="spoiler-content">
+                        <p>SQL injection is when hackers insert malicious SQL code through your input fields. Example:</p>
+                        <p>If someone enters this as their username: <code>admin' OR '1'='1</code></p>
+                        <p>It could turn your query into:</p>
+                        <code>SELECT * FROM users WHERE username = 'admin' OR '1'='1'</code>
+                        <p>This would return ALL users because '1'='1' is always true! 😱</p>
+                    </div>
+                </div>
+
+                <h3>Database Permissions</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>-- Create different database users with limited permissions
+
+-- Read-only user for public data
+CREATE USER 'app_reader'@'localhost' IDENTIFIED BY 'secure_password';
+GRANT SELECT ON myapp.posts TO 'app_reader'@'localhost';
+
+-- Regular app user
+CREATE USER 'app_user'@'localhost' IDENTIFIED BY 'secure_password';
+GRANT SELECT, INSERT, UPDATE ON myapp.* TO 'app_user'@'localhost';
+
+-- Admin user (use sparingly!)
+CREATE USER 'app_admin'@'localhost' IDENTIFIED BY 'very_secure_password';
+GRANT ALL PRIVILEGES ON myapp.* TO 'app_admin'@'localhost';</pre>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What's the safest way to store user passwords?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'hashed')">
+                        <input type="radio" name="q4" value="plain"> As plain text in the database
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'hashed')">
+                        <input type="radio" name="q4" value="encrypted"> Encrypted with a secret key
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'hashed')">
+                        <input type="radio" name="q4" value="hashed"> Hashed with bcrypt or similar
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'hashed')">
+                        <input type="radio" name="q4" value="none"> Don't store passwords at all
+                    </label>
+                    <div class="quiz-result" id="q4-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(3)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(5)">Next: Schema Design →</button>
+                </div>
+            </section>
+
+            <!-- Section 5: Database Design -->
+            <section class="lesson-section" id="section-5">
+                <h2>🏗️ Database Design: Plan Before You Build!</h2>
+                <p>Designing a database is like planning a city - you need to think about how everything connects!</p>
+
+                <h3>Relationships Between Tables</h3>
+                <p>Just like in real life, data has relationships:</p>
+                <ul>
+                    <li><strong>One-to-One:</strong> One person → One passport</li>
+                    <li><strong>One-to-Many:</strong> One user → Many posts</li>
+                    <li><strong>Many-to-Many:</strong> Many students → Many classes</li>
+                </ul>
+
+                <div class="try-it-box">
+                    <h4>🎮 Design a Social Media Database!</h4>
+                    <p>Let's design tables for a mini social media app:</p>
+                    
+                    <div class="schema-designer">
+                        <div class="schema-table">
+                            <h5>👤 Users Table</h5>
+                            <div class="schema-field">
+                                <input type="text" value="id" readonly>
+                                <select disabled>
+                                    <option>INT PRIMARY KEY</option>
+                                </select>
+                            </div>
+                            <div class="schema-field">
+                                <input type="text" placeholder="Field name" id="userField1">
+                                <select id="userType1">
+                                    <option>VARCHAR(50)</option>
+                                    <option>TEXT</option>
+                                    <option>INT</option>
+                                    <option>TIMESTAMP</option>
+                                </select>
+                            </div>
+                            <button class="run-button" onclick="addSchemaField('user')">+ Add Field</button>
+                        </div>
+
+                        <div class="schema-table">
+                            <h5>📝 Posts Table</h5>
+                            <div class="schema-field">
+                                <input type="text" value="id" readonly>
+                                <select disabled>
+                                    <option>INT PRIMARY KEY</option>
+                                </select>
+                            </div>
+                            <div class="schema-field">
+                                <input type="text" value="user_id" readonly>
+                                <select disabled>
+                                    <option>INT FOREIGN KEY → Users(id)</option>
+                                </select>
+                            </div>
+                            <button class="run-button" onclick="addSchemaField('post')">+ Add Field</button>
+                        </div>
+
+                        <button class="run-button" onclick="generateSchema()">🔨 Generate SQL Schema</button>
+                        <div class="output-box" id="schemaOutput">Your SQL schema will appear here...</div>
+                    </div>
+                </div>
+
+                <h3>Normalization - Avoiding Duplicate Data</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>-- ❌ BAD: Repeating data
+CREATE TABLE orders_bad (
+    id INT PRIMARY KEY,
+    product_name VARCHAR(100),
+    product_price DECIMAL(10,2),
+    customer_name VARCHAR(100),
+    customer_email VARCHAR(100),
+    customer_address TEXT
+);
+
+-- ✅ GOOD: Normalized tables
+CREATE TABLE products (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    price DECIMAL(10,2)
+);
+
+CREATE TABLE customers (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    address TEXT
+);
+
+CREATE TABLE orders (
+    id INT PRIMARY KEY,
+    product_id INT REFERENCES products(id),
+    customer_id INT REFERENCES customers(id),
+    quantity INT,
+    order_date TIMESTAMP
+);</pre>
+                </div>
+
+                <h3>Indexes - Making Queries Fast</h3>
+                <p>Indexes are like a book's table of contents - they help find data quickly!</p>
+                
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 When to Add Indexes
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Add indexes on columns you:</p>
+                        <ul>
+                            <li>Search by frequently (WHERE username = ?)</li>
+                            <li>Sort by often (ORDER BY created_at)</li>
+                            <li>Join tables on (JOIN ON user_id = users.id)</li>
+                        </ul>
+                        <p>Don't over-index! Each index slows down INSERT/UPDATE operations.</p>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">In a blog system, what relationship exists between Users and Posts?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'one-to-many')">
+                        <input type="radio" name="q5" value="one-to-one"> One-to-One
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'one-to-many')">
+                        <input type="radio" name="q5" value="one-to-many"> One-to-Many
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'one-to-many')">
+                        <input type="radio" name="q5" value="many-to-many"> Many-to-Many
+                    </label>
+                    <div class="quiz-result" id="q5-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(4)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(6)">Next: SQL Practice →</button>
+                </div>
+            </section>
+
+            <!-- Section 6: SQL Practice -->
+            <section class="lesson-section" id="section-6">
+                <h2>📝 SQL Practice: Write Real Queries!</h2>
+                <p>Time to practice writing SQL queries! SQL is like asking your database questions in a special language.</p>
+
+                <h3>Basic SQL Commands</h3>
+                <ul>
+                    <li><strong>SELECT:</strong> Get data</li>
+                    <li><strong>INSERT:</strong> Add new data</li>
+                    <li><strong>UPDATE:</strong> Change existing data</li>
+                    <li><strong>DELETE:</strong> Remove data</li>
+                </ul>
+
+                <div class="try-it-box">
+                    <h4>🎮 Interactive SQL Playground</h4>
+                    <p>Practice writing SQL queries on a music streaming database!</p>
+                    
+                    <div class="db-visualizer">
+                        <h5>🎵 Music Database Schema</h5>
+                        <p><strong>Artists:</strong> id, name, genre</p>
+                        <p><strong>Songs:</strong> id, title, artist_id, duration, plays</p>
+                        <p><strong>Playlists:</strong> id, name, user_id, created_at</p>
+                    </div>
+
+                    <h5>Write your SQL query:</h5>
+                    <textarea class="code-editor" id="sqlEditor" placeholder="-- Example: SELECT * FROM songs WHERE plays > 1000000">SELECT * FROM songs;</textarea>
+                    
+                    <button class="run-button" onclick="runSQL()">▶️ Run Query</button>
+                    
+                    <div class="sql-hints">
+                        <p>Try these queries:</p>
+                        <ul>
+                            <li>Find all songs by artist_id 1</li>
+                            <li>Get songs with over 1 million plays</li>
+                            <li>Count total songs per artist</li>
+                            <li>Find the most played song</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="output-box" id="sqlOutput">Query results will appear here...</div>
+                </div>
+
+                <h3>Common SQL Patterns</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>-- Filtering with WHERE
+SELECT * FROM users WHERE age >= 18;
+
+-- Sorting
+SELECT * FROM posts ORDER BY created_at DESC;
+
+-- Limiting results
+SELECT * FROM comments LIMIT 10;
+
+-- Joining tables
+SELECT posts.title, users.username 
+FROM posts 
+JOIN users ON posts.user_id = users.id;
+
+-- Grouping and counting
+SELECT genre, COUNT(*) as song_count 
+FROM songs 
+GROUP BY genre;
+
+-- Using LIKE for pattern matching
+SELECT * FROM users WHERE email LIKE '%@gmail.com';</pre>
+                </div>
+
+                <h3>Advanced Queries</h3>
+                <div class="try-it-box">
+                    <h4>🎮 SQL Challenge!</h4>
+                    <p>Can you write queries to answer these questions?</p>
+                    
+                    <ol>
+                        <li>Find all artists who have songs with over 5 million plays</li>
+                        <li>Get the average song duration by genre</li>
+                        <li>Find users who created playlists in the last 30 days</li>
+                    </ol>
+                    
+                    <textarea class="code-editor" id="sqlChallenge" placeholder="Write your challenge query here..."></textarea>
+                    <button class="run-button" onclick="checkSQLChallenge()">Check Answer</button>
+                    
+                    <div class="output-box" id="challengeOutput">Your results will appear here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 SQL Pro Tips
+                    </div>
+                    <div class="spoiler-content">
+                        <ul>
+                            <li>Use <code>EXPLAIN</code> to see how your query runs</li>
+                            <li>Always specify columns instead of using SELECT *</li>
+                            <li>Use meaningful table aliases in joins</li>
+                            <li>Test queries on small datasets first</li>
+                            <li>Add comments to complex queries</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(5)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(7)">Next: Build a Guestbook →</button>
+                </div>
+            </section>
+
+            <!-- Section 7: Build a Guestbook -->
+            <section class="lesson-section" id="section-7">
+                <h2>🚀 Project: Build a Guestbook!</h2>
+                <p>Let's put everything together and build a real feature - a guestbook where visitors can leave messages!</p>
+
+                <h3>Planning Our Database</h3>
+                <p>First, let's design our guestbook table:</p>
+                
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>CREATE TABLE guestbook (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    visitor_name VARCHAR(50) NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ip_address VARCHAR(45),
+    is_approved BOOLEAN DEFAULT true
+);</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Live Guestbook Demo</h4>
+                    <p>Try out a working guestbook right here!</p>
+                    
+                    <div class="form-group">
+                        <label>Your Name:</label>
+                        <input type="text" id="guestName" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label>Your Message:</label>
+                        <textarea id="guestMessage" placeholder="Leave a nice message!" style="width: 100%; min-height: 80px;"></textarea>
+                    </div>
+                    <button class="run-button" onclick="addGuestbookEntry()">📝 Sign Guestbook</button>
+                    
+                    <h5>Recent Messages:</h5>
+                    <div class="db-visualizer" id="guestbookEntries">
+                        <div style="padding: 1rem; background: var(--white); border-radius: 0.5rem; margin-bottom: 0.5rem;">
+                            <strong>Alex</strong> <small style="color: #999;">- 2 hours ago</small>
+                            <p>Love this site! The database tutorial is amazing! 🚀</p>
+                        </div>
+                        <div style="padding: 1rem; background: var(--white); border-radius: 0.5rem;">
+                            <strong>Sam</strong> <small style="color: #999;">- 5 hours ago</small>
+                            <p>Finally understand databases thanks to this! 💡</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Backend Code</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Express.js backend for guestbook
+const express = require('express');
+const sqlite3 = require('sqlite3');
+const app = express();
+
+// Create database connection
+const db = new sqlite3.Database('./guestbook.db');
+
+// Create guestbook entries
+app.post('/api/guestbook', async (req, res) => {
+    const { name, message } = req.body;
+    
+    // Validate input
+    if (!name || !message) {
+        return res.status(400).json({ error: 'Name and message required' });
+    }
+    
+    // Insert into database
+    db.run(
+        'INSERT INTO guestbook (visitor_name, message, ip_address) VALUES (?, ?, ?)',
+        [name, message, req.ip],
+        function(err) {
+            if (err) {
+                res.status(500).json({ error: 'Database error' });
+            } else {
+                res.json({ id: this.lastID, success: true });
+            }
+        }
+    );
+});
+
+// Get guestbook entries
+app.get('/api/guestbook', (req, res) => {
+    db.all(
+        'SELECT * FROM guestbook WHERE is_approved = true ORDER BY created_at DESC LIMIT 20',
+        [],
+        (err, rows) => {
+            if (err) {
+                res.status(500).json({ error: 'Database error' });
+            } else {
+                res.json(rows);
+            }
+        }
+    );
+});</pre>
+                </div>
+
+                <h3>Frontend Code</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Frontend JavaScript
+async function submitGuestbook() {
+    const name = document.getElementById('name').value;
+    const message = document.getElementById('message').value;
+    
+    // Send to backend
+    const response = await fetch('/api/guestbook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, message })
+    });
+    
+    if (response.ok) {
+        // Clear form
+        document.getElementById('guestbookForm').reset();
+        // Reload entries
+        loadGuestbookEntries();
+        alert('Thanks for signing the guestbook!');
+    }
+}
+
+async function loadGuestbookEntries() {
+    const response = await fetch('/api/guestbook');
+    const entries = await response.json();
+    
+    const container = document.getElementById('entries');
+    container.innerHTML = entries.map(entry => `
+        <div class="entry">
+            <strong>${escapeHtml(entry.visitor_name)}</strong>
+            <small>${new Date(entry.created_at).toLocaleDateString()}</small>
+            <p>${escapeHtml(entry.message)}</p>
+        </div>
+    `).join('');
+}</pre>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Security Considerations
+                    </div>
+                    <div class="spoiler-content">
+                        <ul>
+                            <li>Always escape HTML to prevent XSS attacks</li>
+                            <li>Limit message length to prevent spam</li>
+                            <li>Add rate limiting (max 3 entries per hour per IP)</li>
+                            <li>Consider moderation for inappropriate content</li>
+                            <li>Store IP addresses for abuse tracking</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(6)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(8)">Next: User Authentication →</button>
+                </div>
+            </section>
+
+            <!-- Section 8: User Authentication -->
+            <section class="lesson-section" id="section-8">
+                <h2>👤 User Authentication: Login & Signup</h2>
+                <p>Time to add user accounts to your app! This is how apps know who you are.</p>
+
+                <h3>Authentication Flow</h3>
+                <ol>
+                    <li>User signs up (create account)</li>
+                    <li>Password gets hashed (never stored as plain text!)</li>
+                    <li>User logs in</li>
+                    <li>Server creates a session/token</li>
+                    <li>User stays logged in with that token</li>
+                </ol>
+
+                <div class="try-it-box">
+                    <h4>🎮 Build a Login System!</h4>
+                    <p>Let's create a simple but secure authentication system:</p>
+                    
+                    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 250px;">
+                            <h5>Sign Up</h5>
+                            <div class="form-group">
+                                <label>Username:</label>
+                                <input type="text" id="signupUsername" placeholder="Choose a username">
+                            </div>
+                            <div class="form-group">
+                                <label>Email:</label>
+                                <input type="email" id="signupEmail" placeholder="your@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Password:</label>
+                                <input type="password" id="signupPassword" placeholder="Min 8 characters">
+                            </div>
+                            <button class="run-button" onclick="signUp()">Create Account</button>
+                        </div>
+                        
+                        <div style="flex: 1; min-width: 250px;">
+                            <h5>Login</h5>
+                            <div class="form-group">
+                                <label>Username:</label>
+                                <input type="text" id="loginUsername" placeholder="Your username">
+                            </div>
+                            <div class="form-group">
+                                <label>Password:</label>
+                                <input type="password" id="loginPassword" placeholder="Your password">
+                            </div>
+                            <button class="run-button" onclick="login()">Login</button>
+                        </div>
+                    </div>
+                    
+                    <div class="output-box" id="authOutput" style="margin-top: 1rem;">Authentication status will appear here...</div>
+                </div>
+
+                <h3>Database Schema for Users</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username VARCHAR(30) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP,
+    is_active BOOLEAN DEFAULT true,
+    role VARCHAR(20) DEFAULT 'user'
+);
+
+-- Sessions table for logged-in users
+CREATE TABLE sessions (
+    id VARCHAR(36) PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</pre>
+                </div>
+
+                <h3>Complete Authentication Code</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Backend authentication with Express.js
+const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
+
+// Sign up endpoint
+app.post('/api/signup', async (req, res) => {
+    const { username, email, password } = req.body;
+    
+    // Validation
+    if (!username || !email || !password) {
+        return res.status(400).json({ error: 'All fields required' });
+    }
+    
+    if (password.length < 8) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+    
+    try {
+        // Check if user exists
+        const existing = await db.get(
+            'SELECT id FROM users WHERE username = ? OR email = ?',
+            [username, email]
+        );
+        
+        if (existing) {
+            return res.status(400).json({ error: 'Username or email already exists' });
+        }
+        
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        // Create user
+        const result = await db.run(
+            'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
+            [username, email, hashedPassword]
+        );
+        
+        // Create session
+        const sessionId = uuidv4();
+        await db.run(
+            'INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)',
+            [sessionId, result.lastID, new Date(Date.now() + 24*60*60*1000)]
+        );
+        
+        res.json({ 
+            success: true, 
+            sessionId,
+            username 
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Login endpoint
+app.post('/api/login', async (req, res) => {
+    const { username, password } = req.body;
+    
+    try {
+        // Get user
+        const user = await db.get(
+            'SELECT * FROM users WHERE username = ?',
+            [username]
+        );
+        
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        
+        // Check password
+        const validPassword = await bcrypt.compare(password, user.password_hash);
+        if (!validPassword) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        
+        // Update last login
+        await db.run(
+            'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?',
+            [user.id]
+        );
+        
+        // Create session
+        const sessionId = uuidv4();
+        await db.run(
+            'INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)',
+            [sessionId, user.id, new Date(Date.now() + 24*60*60*1000)]
+        );
+        
+        res.json({ 
+            success: true, 
+            sessionId,
+            username: user.username 
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Middleware to check authentication
+async function requireAuth(req, res, next) {
+    const sessionId = req.headers.authorization;
+    
+    if (!sessionId) {
+        return res.status(401).json({ error: 'Not authenticated' });
+    }
+    
+    const session = await db.get(
+        'SELECT * FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP',
+        [sessionId]
+    );
+    
+    if (!session) {
+        return res.status(401).json({ error: 'Invalid or expired session' });
+    }
+    
+    req.userId = session.user_id;
+    next();
+}
+
+// Protected route example
+app.get('/api/profile', requireAuth, async (req, res) => {
+    const user = await db.get(
+        'SELECT id, username, email, created_at FROM users WHERE id = ?',
+        [req.userId]
+    );
+    res.json(user);
+});</pre>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Why do we hash passwords instead of encrypting them?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'one-way')">
+                        <input type="radio" name="q6" value="faster"> Hashing is faster
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'one-way')">
+                        <input type="radio" name="q6" value="one-way"> Hashing is one-way (can't be reversed)
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'one-way')">
+                        <input type="radio" name="q6" value="smaller"> Hashed passwords are smaller
+                    </label>
+                    <div class="quiz-result" id="q6-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(7)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(9)">Next: Final Project →</button>
+                </div>
+            </section>
+
+            <!-- Section 9: Final Project -->
+            <section class="lesson-section" id="section-9">
+                <h2>🎉 Final Project: Build a Comment System!</h2>
+                <p>Let's combine everything you've learned to build a full comment system for your blog!</p>
+
+                <h3>Project Requirements</h3>
+                <ul>
+                    <li>✅ Users can sign up and login</li>
+                    <li>✅ Logged-in users can post comments</li>
+                    <li>✅ Comments show username and timestamp</li>
+                    <li>✅ Users can edit/delete their own comments</li>
+                    <li>✅ Admin can moderate all comments</li>
+                </ul>
+
+                <h3>Database Design</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>-- Complete schema for comment system
+CREATE TABLE posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title VARCHAR(200) NOT NULL,
+    content TEXT NOT NULL,
+    author_id INTEGER REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id),
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT false
+);
+
+-- Index for faster queries
+CREATE INDEX idx_comments_post_id ON comments(post_id);
+CREATE INDEX idx_comments_user_id ON comments(user_id);</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Live Comment System Demo</h4>
+                    <p>Try out the complete comment system!</p>
+                    
+                    <div class="db-visualizer" style="background: var(--white); padding: 1.5rem; border-radius: 0.5rem;">
+                        <h5>📝 Blog Post: "My Database Learning Journey"</h5>
+                        <p>Today I learned how to build a complete comment system with authentication!</p>
+                        
+                        <hr style="margin: 1rem 0;">
+                        
+                        <h5>💬 Comments (3)</h5>
+                        <div id="commentsList">
+                            <div style="margin-bottom: 1rem; padding: 1rem; background: var(--light); border-radius: 0.5rem;">
+                                <strong>coolcoder123</strong> <small>- 10 minutes ago</small>
+                                <p>Great post! The SQL examples really helped me understand joins.</p>
+                            </div>
+                            <div style="margin-bottom: 1rem; padding: 1rem; background: var(--light); border-radius: 0.5rem;">
+                                <strong>dbmaster</strong> <small>- 1 hour ago</small>
+                                <p>Don't forget about indexing for performance!</p>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <textarea id="newComment" placeholder="Add a comment..." style="width: 100%; min-height: 80px; padding: 0.5rem; border: 2px solid var(--border); border-radius: 0.5rem;"></textarea>
+                            <button class="run-button" onclick="postComment()">Post Comment</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Complete Implementation</h3>
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Full Backend Code
+                    </div>
+                    <div class="spoiler-content">
+                        <pre>// Comment system endpoints
+app.post('/api/posts/:postId/comments', requireAuth, async (req, res) => {
+    const { postId } = req.params;
+    const { content } = req.body;
+    
+    if (!content || content.trim().length === 0) {
+        return res.status(400).json({ error: 'Comment cannot be empty' });
+    }
+    
+    const result = await db.run(
+        'INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)',
+        [postId, req.userId, content]
+    );
+    
+    res.json({ id: result.lastID, success: true });
+});
+
+app.get('/api/posts/:postId/comments', async (req, res) => {
+    const { postId } = req.params;
+    
+    const comments = await db.all(`
+        SELECT 
+            c.id, 
+            c.content, 
+            c.created_at,
+            c.updated_at,
+            u.username,
+            u.id as user_id
+        FROM comments c
+        JOIN users u ON c.user_id = u.id
+        WHERE c.post_id = ? AND c.is_deleted = false
+        ORDER BY c.created_at DESC
+    `, [postId]);
+    
+    res.json(comments);
+});
+
+app.put('/api/comments/:id', requireAuth, async (req, res) => {
+    const { id } = req.params;
+    const { content } = req.body;
+    
+    // Check ownership
+    const comment = await db.get(
+        'SELECT user_id FROM comments WHERE id = ?',
+        [id]
+    );
+    
+    if (!comment || comment.user_id !== req.userId) {
+        return res.status(403).json({ error: 'Cannot edit this comment' });
+    }
+    
+    await db.run(
+        'UPDATE comments SET content = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [content, id]
+    );
+    
+    res.json({ success: true });
+});
+
+app.delete('/api/comments/:id', requireAuth, async (req, res) => {
+    const { id } = req.params;
+    
+    // Soft delete
+    await db.run(
+        'UPDATE comments SET is_deleted = true WHERE id = ? AND user_id = ?',
+        [id, req.userId]
+    );
+    
+    res.json({ success: true });
+});</pre>
+                    </div>
+                </div>
+
+                <h3>Congratulations! 🎉</h3>
+                <div class="completion-message">
+                    <h2>You're Now a Database Developer!</h2>
+                    <p>You've learned:</p>
+                    <ul style="text-align: left; max-width: 600px; margin: 0 auto;">
+                        <li>✅ How databases work</li>
+                        <li>✅ SQL vs NoSQL differences</li>
+                        <li>✅ CRUD operations</li>
+                        <li>✅ Database security</li>
+                        <li>✅ Schema design</li>
+                        <li>✅ User authentication</li>
+                        <li>✅ Building real features</li>
+                    </ul>
+                    <p style="margin-top: 2rem;">Ready for the next module? Let's learn about modern frameworks! 🚀</p>
+                    <button class="nav-button" onclick="completeModule()">Complete Module</button>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(8)">← Previous</button>
+                    <button class="nav-button" onclick="completeModule()">Complete Module! 🎉</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement" id="achievement">
+        <h3>🏆 Achievement Unlocked!</h3>
+        <p id="achievementText">Database Master!</p>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Global variables
+        let currentSection = 0;
+        let completedSections = new Set();
+        let todos = [
+            { id: 1, task: 'Learn databases', completed: false }
+        ];
+        let todoIdCounter = 2;
+
+        // Navigation
+        function showSection(index) {
+            const sections = document.querySelectorAll('.lesson-section');
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            sections.forEach(section => section.classList.remove('active'));
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            sections[index].classList.add('active');
+            navItems[index].classList.add('active');
+            
+            currentSection = index;
+            completedSections.add(index);
+            
+            updateProgressBar();
+            updateNavigation();
+            
+            // Check for achievements
+            if (completedSections.size === 3) {
+                showAchievement('Database Explorer - Completed 3 sections!');
+            }
+            if (completedSections.size === 6) {
+                showAchievement('SQL Master - Halfway there!');
+            }
+            
+            // Save progress
+            localStorage.setItem('module8_progress', JSON.stringify({
+                currentSection,
+                completedSections: Array.from(completedSections)
+            }));
+        }
+
+        // Progress tracking
+        function updateProgressBar() {
+            const totalSections = document.querySelectorAll('.lesson-section').length;
+            const progress = (completedSections.size / totalSections) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function updateNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            completedSections.forEach(index => {
+                navItems[index].classList.add('completed');
+            });
+        }
+
+        // Theme management
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.querySelector('.toggle-icon');
+            
+            body.classList.toggle('dark-mode');
+            icon.textContent = body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            
+            localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+
+        // Code execution
+        function runCode(editorId, outputId) {
+            const code = document.getElementById(editorId).value;
+            const output = document.getElementById(outputId);
+            
+            try {
+                // Simple SQL simulation
+                output.textContent = 'Query executed successfully!\n';
+                output.textContent += 'Results: ' + code;
+            } catch (error) {
+                output.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        // Database query simulation
+        function runDatabaseQuery(queryType) {
+            const output = document.getElementById('dbOutput');
+            
+            switch(queryType) {
+                case 'all-users':
+                    output.textContent = 'SELECT * FROM users;\n\n';
+                    output.textContent += 'Results (3 rows):\n';
+                    output.textContent += 'ID | Username      | Email            | Joined\n';
+                    output.textContent += '1  | coolcoder123  | alex@email.com   | 2024-01-15\n';
+                    output.textContent += '2  | gamerpro456   | sam@email.com    | 2024-02-20\n';
+                    output.textContent += '3  | musicfan789   | jordan@email.com | 2024-03-10';
+                    break;
+                case 'user-posts':
+                    output.textContent = 'SELECT * FROM posts WHERE user_id = 1;\n\n';
+                    output.textContent += 'Results (2 rows):\n';
+                    output.textContent += 'ID | UserID | Content                         | Likes\n';
+                    output.textContent += '1  | 1      | Just finished my first app! 🚀  | 42\n';
+                    output.textContent += '3  | 1      | Learning databases is fun!      | 35';
+                    break;
+                case 'popular-posts':
+                    output.textContent = 'SELECT * FROM posts WHERE likes > 30;\n\n';
+                    output.textContent += 'Results (2 rows):\n';
+                    output.textContent += 'ID | UserID | Content                         | Likes\n';
+                    output.textContent += '1  | 1      | Just finished my first app! 🚀  | 42\n';
+                    output.textContent += '3  | 1      | Learning databases is fun!      | 35';
+                    break;
+            }
+        }
+
+        // SQL vs NoSQL demo
+        function addSQLUser() {
+            const username = document.getElementById('sqlUsername').value;
+            const email = document.getElementById('sqlEmail').value;
+            const age = document.getElementById('sqlAge').value;
+            const output = document.getElementById('dbCompareOutput');
+            
+            if (!username || !email || !age) {
+                output.textContent = '❌ SQL Error: All fields are required!';
+                output.style.color = 'var(--danger)';
+                return;
+            }
+            
+            if (parseInt(age) < 13) {
+                output.textContent = '❌ SQL Error: CHECK constraint failed (age >= 13)';
+                output.style.color = 'var(--danger)';
+                return;
+            }
+            
+            output.style.color = 'var(--success)';
+            output.textContent = '✅ SQL Success!\n\n';
+            output.textContent += `INSERT INTO users (username, email, age) VALUES ('${username}', '${email}', ${age});\n\n`;
+            output.textContent += 'User added with strict validation!';
+        }
+
+        function addNoSQLUser() {
+            const username = document.getElementById('noSqlUsername').value;
+            const extra = document.getElementById('noSqlExtra').value;
+            const output = document.getElementById('dbCompareOutput');
+            
+            if (!username) {
+                output.textContent = '❌ Username is required!';
+                output.style.color = 'var(--danger)';
+                return;
+            }
+            
+            output.style.color = 'var(--success)';
+            output.textContent = '✅ NoSQL Success!\n\n';
+            output.textContent += '{\n';
+            output.textContent += `  "_id": ObjectId("${Date.now()}"),\n`;
+            output.textContent += `  "username": "${username}",\n`;
+            if (extra) {
+                output.textContent += `  "customField": "${extra}",\n`;
+            }
+            output.textContent += `  "createdAt": new Date()\n`;
+            output.textContent += '}\n\n';
+            output.textContent += 'Document added with flexible schema!';
+        }
+
+        // CRUD operations
+        function createTodo() {
+            const input = document.getElementById('newTodo');
+            const task = input.value.trim();
+            
+            if (!task) return;
+            
+            const newTodo = {
+                id: todoIdCounter++,
+                task: task,
+                completed: false
+            };
+            
+            todos.push(newTodo);
+            input.value = '';
+            
+            updateTodoTable();
+            
+            const output = document.getElementById('crudOutput');
+            output.textContent = `CREATE - SQL Command:\n`;
+            output.textContent += `INSERT INTO todos (task, completed) VALUES ('${task}', false);\n\n`;
+            output.textContent += `New todo created with ID: ${newTodo.id}`;
+        }
+
+        function readTodos(filter) {
+            const output = document.getElementById('crudOutput');
+            
+            if (filter === 'all') {
+                output.textContent = 'READ - SQL Command:\n';
+                output.textContent += 'SELECT * FROM todos;\n\n';
+                output.textContent += `Found ${todos.length} todos`;
+            } else if (filter === 'incomplete') {
+                const incomplete = todos.filter(t => !t.completed);
+                output.textContent = 'READ - SQL Command:\n';
+                output.textContent += 'SELECT * FROM todos WHERE completed = false;\n\n';
+                output.textContent += `Found ${incomplete.length} incomplete todos`;
+            }
+        }
+
+        function updateTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                updateTodoTable();
+                
+                const output = document.getElementById('crudOutput');
+                output.textContent = 'UPDATE - SQL Command:\n';
+                output.textContent += `UPDATE todos SET completed = ${todo.completed} WHERE id = ${id};\n\n`;
+                output.textContent += `Todo ${id} updated!`;
+            }
+        }
+
+        function deleteTodo(id) {
+            const index = todos.findIndex(t => t.id === id);
+            if (index !== -1) {
+                todos.splice(index, 1);
+                updateTodoTable();
+                
+                const output = document.getElementById('crudOutput');
+                output.textContent = 'DELETE - SQL Command:\n';
+                output.textContent += `DELETE FROM todos WHERE id = ${id};\n\n`;
+                output.textContent += `Todo ${id} deleted!`;
+            }
+        }
+
+        function updateTodoTable() {
+            const tbody = document.getElementById('todoTableBody');
+            tbody.innerHTML = todos.map(todo => `
+                <tr>
+                    <td>${todo.id}</td>
+                    <td>${todo.task}</td>
+                    <td>${todo.completed}</td>
+                    <td>
+                        <button onclick="updateTodo(${todo.id})">✏️</button>
+                        <button onclick="deleteTodo(${todo.id})">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Security demos
+        function testSQLInjection() {
+            const output = document.getElementById('securityOutput');
+            output.textContent = '🧪 SQL Injection Test:\n\n';
+            output.textContent += 'Malicious input: admin\' OR \'1\'=\'1\n\n';
+            output.textContent += 'BAD Query becomes:\n';
+            output.textContent += 'SELECT * FROM users WHERE username = \'admin\' OR \'1\'=\'1\' AND password = \'...\'\n\n';
+            output.textContent += '⚠️ This returns ALL users because \'1\'=\'1\' is always true!\n\n';
+            output.textContent += 'GOOD Query with parameters:\n';
+            output.textContent += 'SELECT * FROM users WHERE username = $1\n';
+            output.textContent += 'Parameters: [\'admin\' OR \'1\'=\'1\']\n\n';
+            output.textContent += '✅ This searches for a user literally named "admin\' OR \'1\'=\'1"';
+        }
+
+        function showSecureSolution() {
+            const output = document.getElementById('securityOutput');
+            output.textContent = '🛡️ Secure Authentication Flow:\n\n';
+            output.textContent += '1. User enters: username="alex", password="mypassword"\n';
+            output.textContent += '2. Query database safely: SELECT * FROM users WHERE username = $1\n';
+            output.textContent += '3. Get hashed password: $2b$10$N9qo8uLOickgx2ZMRZoMye...\n';
+            output.textContent += '4. Compare with bcrypt.compare()\n';
+            output.textContent += '5. Never expose the hash to the user!\n\n';
+            output.textContent += '✅ Password is never stored or compared as plain text';
+        }
+
+        // Schema designer
+        function addSchemaField(table) {
+            // Simple demo - in real app, would add dynamic fields
+            alert('Field added! In a real app, this would add a new input row.');
+        }
+
+        function generateSchema() {
+            const output = document.getElementById('schemaOutput');
+            output.textContent = '-- Generated SQL Schema\n\n';
+            output.textContent += 'CREATE TABLE users (\n';
+            output.textContent += '    id INTEGER PRIMARY KEY AUTOINCREMENT,\n';
+            output.textContent += '    username VARCHAR(50) UNIQUE NOT NULL,\n';
+            output.textContent += '    email VARCHAR(100) UNIQUE NOT NULL,\n';
+            output.textContent += '    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n';
+            output.textContent += ');\n\n';
+            output.textContent += 'CREATE TABLE posts (\n';
+            output.textContent += '    id INTEGER PRIMARY KEY AUTOINCREMENT,\n';
+            output.textContent += '    user_id INTEGER REFERENCES users(id),\n';
+            output.textContent += '    title VARCHAR(200) NOT NULL,\n';
+            output.textContent += '    content TEXT,\n';
+            output.textContent += '    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n';
+            output.textContent += ');\n\n';
+            output.textContent += '-- Don\'t forget to add indexes for foreign keys!\n';
+            output.textContent += 'CREATE INDEX idx_posts_user_id ON posts(user_id);';
+        }
+
+        // SQL practice
+        function runSQL() {
+            const query = document.getElementById('sqlEditor').value;
+            const output = document.getElementById('sqlOutput');
+            
+            // Simple SQL simulation
+            if (query.toLowerCase().includes('select * from songs where artist_id = 1')) {
+                output.textContent = 'Query Results:\n\n';
+                output.textContent += 'ID | Title              | Artist_ID | Duration | Plays\n';
+                output.textContent += '1  | "Blinding Lights"  | 1         | 3:20     | 3500000\n';
+                output.textContent += '3  | "Save Your Tears"  | 1         | 3:35     | 2100000\n';
+                output.textContent += '5  | "In Your Eyes"     | 1         | 3:57     | 1800000';
+            } else if (query.toLowerCase().includes('select * from songs where plays > 1000000')) {
+                output.textContent = 'Query Results:\n\n';
+                output.textContent += 'ID | Title              | Artist_ID | Duration | Plays\n';
+                output.textContent += '1  | "Blinding Lights"  | 1         | 3:20     | 3500000\n';
+                output.textContent += '2  | "Levitating"       | 2         | 3:23     | 2800000\n';
+                output.textContent += '3  | "Save Your Tears"  | 1         | 3:35     | 2100000';
+            } else {
+                output.textContent = 'Query executed!\n\n';
+                output.textContent += 'Try these examples:\n';
+                output.textContent += '- SELECT * FROM songs WHERE artist_id = 1\n';
+                output.textContent += '- SELECT * FROM songs WHERE plays > 1000000\n';
+                output.textContent += '- SELECT COUNT(*) FROM songs GROUP BY artist_id';
+            }
+        }
+
+        function checkSQLChallenge() {
+            const output = document.getElementById('challengeOutput');
+            output.textContent = '✅ Great job! Here are the solutions:\n\n';
+            output.textContent += '1. Artists with songs over 5M plays:\n';
+            output.textContent += 'SELECT DISTINCT a.name FROM artists a\n';
+            output.textContent += 'JOIN songs s ON a.id = s.artist_id\n';
+            output.textContent += 'WHERE s.plays > 5000000;\n\n';
+            output.textContent += '2. Average song duration by genre:\n';
+            output.textContent += 'SELECT a.genre, AVG(s.duration) as avg_duration\n';
+            output.textContent += 'FROM artists a JOIN songs s ON a.id = s.artist_id\n';
+            output.textContent += 'GROUP BY a.genre;\n\n';
+            output.textContent += '3. Recent playlist creators:\n';
+            output.textContent += 'SELECT DISTINCT u.username FROM users u\n';
+            output.textContent += 'JOIN playlists p ON u.id = p.user_id\n';
+            output.textContent += 'WHERE p.created_at > DATE_SUB(NOW(), INTERVAL 30 DAY);';
+        }
+
+        // Guestbook demo
+        function addGuestbookEntry() {
+            const name = document.getElementById('guestName').value;
+            const message = document.getElementById('guestMessage').value;
+            
+            if (!name || !message) {
+                alert('Please fill in both fields!');
+                return;
+            }
+            
+            const entries = document.getElementById('guestbookEntries');
+            const newEntry = document.createElement('div');
+            newEntry.style.cssText = 'padding: 1rem; background: var(--white); border-radius: 0.5rem; margin-bottom: 0.5rem;';
+            newEntry.innerHTML = `
+                <strong>${escapeHtml(name)}</strong> <small style="color: #999;">- just now</small>
+                <p>${escapeHtml(message)}</p>
+            `;
+            entries.insertBefore(newEntry, entries.firstChild);
+            
+            // Clear form
+            document.getElementById('guestName').value = '';
+            document.getElementById('guestMessage').value = '';
+            
+            showAchievement('Guestbook Entry Added!');
+        }
+
+        // Authentication demo
+        function signUp() {
+            const username = document.getElementById('signupUsername').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const output = document.getElementById('authOutput');
+            
+            if (!username || !email || !password) {
+                output.textContent = '❌ All fields are required!';
+                output.style.color = 'var(--danger)';
+                return;
+            }
+            
+            if (password.length < 8) {
+                output.textContent = '❌ Password must be at least 8 characters!';
+                output.style.color = 'var(--danger)';
+                return;
+            }
+            
+            output.style.color = 'var(--success)';
+            output.textContent = `✅ Account created successfully!\n\n`;
+            output.textContent += `Username: ${username}\n`;
+            output.textContent += `Email: ${email}\n`;
+            output.textContent += `Password: [HASHED: $2b$10$...]\n\n`;
+            output.textContent += `Session ID: ${generateSessionId()}\n`;
+            output.textContent += `You are now logged in!`;
+            
+            showAchievement('First User Created!');
+        }
+
+        function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const output = document.getElementById('authOutput');
+            
+            if (!username || !password) {
+                output.textContent = '❌ Please enter username and password!';
+                output.style.color = 'var(--danger)';
+                return;
+            }
+            
+            // Simulate login
+            output.style.color = 'var(--success)';
+            output.textContent = `✅ Login successful!\n\n`;
+            output.textContent += `Welcome back, ${username}!\n`;
+            output.textContent += `Session ID: ${generateSessionId()}\n`;
+            output.textContent += `Last login: ${new Date().toLocaleString()}`;
+        }
+
+        function generateSessionId() {
+            return 'sess_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Comment system demo
+        function postComment() {
+            const comment = document.getElementById('newComment').value;
+            
+            if (!comment.trim()) {
+                alert('Please write a comment!');
+                return;
+            }
+            
+            const commentsList = document.getElementById('commentsList');
+            const newComment = document.createElement('div');
+            newComment.style.cssText = 'margin-bottom: 1rem; padding: 1rem; background: var(--light); border-radius: 0.5rem;';
+            newComment.innerHTML = `
+                <strong>You</strong> <small>- just now</small>
+                <p>${escapeHtml(comment)}</p>
+            `;
+            commentsList.insertBefore(newComment, commentsList.firstChild);
+            
+            document.getElementById('newComment').value = '';
+            showAchievement('Comment Posted!');
+        }
+
+        // Utility functions
+        function copyCode(button) {
+            const code = button.nextElementSibling.textContent;
+            navigator.clipboard.writeText(code);
+            button.textContent = 'Copied!';
+            setTimeout(() => button.textContent = 'Copy', 2000);
+        }
+
+        function toggleSpoiler(header) {
+            header.parentElement.classList.toggle('open');
+        }
+
+        function checkQuiz(option, correctAnswer) {
+            const container = option.parentElement;
+            const resultDiv = container.querySelector('.quiz-result');
+            const allOptions = container.querySelectorAll('.quiz-option');
+            
+            allOptions.forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+                opt.style.pointerEvents = 'none';
+            });
+            
+            if (option.querySelector('input').value === correctAnswer) {
+                option.classList.add('correct');
+                resultDiv.textContent = '✅ Correct! Well done!';
+                resultDiv.className = 'quiz-result show correct';
+                showAchievement('Quiz Master!');
+            } else {
+                option.classList.add('incorrect');
+                resultDiv.textContent = '❌ Not quite. Try reviewing the section!';
+                resultDiv.className = 'quiz-result show incorrect';
+            }
+        }
+
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            document.getElementById('achievementText').textContent = text;
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        function completeModule() {
+            showAchievement('Module 8 Complete! You\'re a Database Developer! 🎉');
+            localStorage.setItem('module8_completed', 'true');
+            
+            // In a real app, this would redirect to the next module
+            setTimeout(() => {
+                alert('Congratulations! You\'ve mastered databases! Ready for Module 9?');
+            }, 1000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            // Load saved progress
+            const savedProgress = localStorage.getItem('module8_progress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                completedSections = new Set(progress.completedSections);
+                showSection(progress.currentSection);
+            }
+            
+            // Load theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.toggle-icon').textContent = '☀️';
+            }
+            
+            updateProgressBar();
+            updateNavigation();
+        });
+    </script>
+</body>
+</html>

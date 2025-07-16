@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/utils";
+import { CourseEnrollButton } from "@/components/courses/course-enroll-button";
 import { 
   Star, 
   Clock, 
@@ -282,10 +283,7 @@ function CourseHero({
                   </Button>
                 ) : (
                   <>
-                    <Button size="lg" className="w-full gap-2">
-                      <Shield className="h-4 w-4" />
-                      Enroll Now
-                    </Button>
+                    <CourseEnrollButton courseId={course.id} price={course.price} />
                     <Button size="lg" variant="outline" className="w-full gap-2">
                       <Heart className="h-4 w-4" />
                       Add to Wishlist

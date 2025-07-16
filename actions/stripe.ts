@@ -13,6 +13,8 @@ import { eq, and, inArray } from "drizzle-orm"
 import { stripe } from "@/lib/stripe"
 import { auth } from "@clerk/nextjs/server"
 import Stripe from "stripe"
+import { sendPurchaseConfirmationEmail } from "@/lib/email"
+import { clerkClient } from "@clerk/nextjs/server"
 
 type MembershipStatus = SelectCustomer["membership"]
 
@@ -170,13 +172,12 @@ export const createCheckoutUrl = async (
 
 // Create checkout session for a single course purchase
 export const createCourseCheckout = async (
-  courseId: string,
-  userId: string
+  courseId: string
 ): Promise<{ url: string | null; error: string | null }> => {
   try {
-    const { userId: authUserId } = await auth()
+    const { userId } = await auth()
     
-    if (!authUserId || authUserId !== userId) {
+    if (!userId) {
       return { url: null, error: "User must be authenticated" }
     }
 
@@ -277,13 +278,12 @@ export const createCourseCheckout = async (
 
 // Create checkout session for a bundle purchase
 export const createBundleCheckout = async (
-  bundleId: string,
-  userId: string
+  bundleId: string
 ): Promise<{ url: string | null; error: string | null }> => {
   try {
-    const { userId: authUserId } = await auth()
+    const { userId } = await auth()
     
-    if (!authUserId || authUserId !== userId) {
+    if (!userId) {
       return { url: null, error: "User must be authenticated" }
     }
 
@@ -426,6 +426,31 @@ export const handleCoursePaymentSuccess = async (sessionId: string) => {
         grantedVia: "purchase"
       }).onConflictDoNothing()
 
+      // Send confirmation email
+      try {
+        const [course] = await db.select().from(courses).where(eq(courses.id, courseId)).limit(1)
+        const user = await clerkClient.users.getUser(userId)
+        
+        if (course && user.emailAddresses.length > 0) {
+          await sendPurchaseConfirmationEmail({
+            to: user.emailAddresses[0].emailAddress,
+            userName: user.firstName || user.username || "Student",
+            purchaseType: "course",
+            itemName: course.title,
+            price: purchaseData.pricePaid,
+            purchaseDate: new Date().toLocaleDateString("en-US", { 
+              year: "numeric", 
+              month: "long", 
+              day: "numeric" 
+            }),
+            accessUrl: `${process.env.NEXT_PUBLIC_URL}/dashboard/courses/${courseId}`
+          })
+        }
+      } catch (emailError) {
+        console.error("Failed to send confirmation email:", emailError)
+        // Don't throw - email failure shouldn't break the purchase flow
+      }
+
     } else if (type === "bundle" && bundleId) {
       // Bundle purchase
       await db.insert(purchases).values({
@@ -441,10 +466,35 @@ export const handleCoursePaymentSuccess = async (sessionId: string) => {
         const userCourseEntries = courseIdArray.map(courseId => ({
           userId,
           courseId,
-          grantedVia: "bundle" as const
+          grantedVia: `bundle:${bundleId}`
         }))
         
         await db.insert(userCourses).values(userCourseEntries).onConflictDoNothing()
+      }
+
+      // Send confirmation email
+      try {
+        const [bundle] = await db.select().from(bundles).where(eq(bundles.id, bundleId)).limit(1)
+        const user = await clerkClient.users.getUser(userId)
+        
+        if (bundle && user.emailAddresses.length > 0) {
+          await sendPurchaseConfirmationEmail({
+            to: user.emailAddresses[0].emailAddress,
+            userName: user.firstName || user.username || "Student",
+            purchaseType: "bundle",
+            itemName: bundle.name,
+            price: purchaseData.pricePaid,
+            purchaseDate: new Date().toLocaleDateString("en-US", { 
+              year: "numeric", 
+              month: "long", 
+              day: "numeric" 
+            }),
+            accessUrl: `${process.env.NEXT_PUBLIC_URL}/dashboard/courses`
+          })
+        }
+      } catch (emailError) {
+        console.error("Failed to send confirmation email:", emailError)
+        // Don't throw - email failure shouldn't break the purchase flow
       }
     }
 

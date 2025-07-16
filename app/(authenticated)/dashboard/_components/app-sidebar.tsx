@@ -1,6 +1,19 @@
 "use client"
 
-import { Link, Settings2, User, Users } from "lucide-react"
+import { 
+  Link, 
+  Settings2, 
+  User, 
+  Users, 
+  BookOpen, 
+  Home, 
+  CreditCard, 
+  HelpCircle,
+  GraduationCap,
+  Library,
+  Trophy,
+  BarChart3
+} from "lucide-react"
 import * as React from "react"
 
 import {
@@ -51,30 +64,58 @@ export function AppSidebar({
     ],
     navMain: [
       {
-        title: "Nav Item 1",
-        url: "#",
-        icon: Link,
+        title: "Dashboard",
+        url: "/dashboard",
+        icon: Home
+      },
+      {
+        title: "My Courses",
+        url: "/dashboard/courses",
+        icon: BookOpen,
         items: [
           {
-            title: "Sub Item 1",
-            url: "/dashboard/nav-item-1"
+            title: "All Courses",
+            url: "/dashboard/courses"
           },
           {
-            title: "Sub Item 2",
-            url: "/dashboard/nav-item-2"
+            title: "In Progress",
+            url: "/dashboard/courses/in-progress"
+          },
+          {
+            title: "Completed",
+            url: "/dashboard/courses/completed"
           }
         ]
       },
       {
-        title: "Nav Item 2",
-        url: "#",
-        icon: Link,
-        items: [
-          {
-            title: "Sub Item 1",
-            url: "/dashboard/nav-item-1"
-          }
-        ]
+        title: "Learning Paths",
+        url: "/dashboard/learning-paths",
+        icon: GraduationCap
+      },
+      {
+        title: "Library",
+        url: "/dashboard/library",
+        icon: Library
+      },
+      {
+        title: "Achievements",
+        url: "/dashboard/achievements",
+        icon: Trophy
+      },
+      {
+        title: "Progress",
+        url: "/dashboard/progress",
+        icon: BarChart3
+      },
+      {
+        title: "Billing",
+        url: "/dashboard/billing",
+        icon: CreditCard
+      },
+      {
+        title: "Support",
+        url: "/dashboard/support",
+        icon: HelpCircle
       },
       {
         title: "Settings",
@@ -84,6 +125,14 @@ export function AppSidebar({
           {
             title: "General",
             url: "/dashboard/settings"
+          },
+          {
+            title: "Preferences",
+            url: "/dashboard/settings/preferences"
+          },
+          {
+            title: "Notifications",
+            url: "/dashboard/settings/notifications"
           }
         ]
       }

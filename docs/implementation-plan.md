@@ -113,33 +113,33 @@ This implementation plan outlines the development of OfCourse, a premium multi-c
 - [ ] Test payment flow with test cards
 
 #### Access Control
-- [ ] Create middleware for course access: `/middleware/course-access.ts`
-- [ ] Implement `hasAccessToCourse(userId, courseId)` helper
-- [ ] Add access checks to course pages
-- [ ] Create "Upgrade to Access" paywall component
-- [ ] Handle bundle access logic
+- [x] Create middleware for course access: `/middleware/course-access.ts`
+- [x] Implement `hasAccessToCourse(userId, courseId)` helper
+- [x] Add access checks to course pages
+- [x] Create "Upgrade to Access" paywall component
+- [x] Handle bundle access logic
 
 #### Purchase UI
-- [ ] Create `/components/payments/course-checkout-button.tsx`
-- [ ] Create `/components/payments/bundle-checkout-button.tsx`
-- [ ] Add loading states during checkout
-- [ ] Implement error handling for failed payments
-- [ ] Create purchase confirmation email template
+- [x] Create `/components/payments/course-checkout-button.tsx`
+- [x] Create `/components/payments/bundle-checkout-button.tsx`
+- [x] Add loading states during checkout
+- [x] Implement error handling for failed payments
+- [x] Create purchase confirmation email template
 
 ### Week 4: Student Dashboard
 
 #### Dashboard Pages
-- [ ] Update `/app/(authenticated)/dashboard/page.tsx` - Overview
-- [ ] Create `/app/(authenticated)/dashboard/courses/page.tsx` - My courses
-- [ ] Create `/app/(authenticated)/dashboard/courses/[id]/page.tsx` - Course player
-- [ ] Update navigation to include courses section
+- [x] Update `/app/(authenticated)/dashboard/page.tsx` - Overview
+- [x] Update `/app/(authenticated)/dashboard/courses/page.tsx` - My courses
+- [x] Update `/app/(authenticated)/dashboard/courses/[id]/page.tsx` - Course player
+- [x] Update navigation to include courses section
 
 #### Dashboard Components
-- [ ] Create `/components/dashboard/course-progress-card.tsx`
-- [ ] Create `/components/dashboard/continue-learning.tsx`
-- [ ] Create `/components/dashboard/recommended-courses.tsx`
-- [ ] Create `/components/dashboard/achievement-badges.tsx`
-- [ ] Update sidebar navigation with course links
+- [x] Create `/components/dashboard/course-progress-card.tsx`
+- [x] Create `/components/dashboard/continue-learning.tsx`
+- [x] Create `/components/dashboard/recommended-courses.tsx`
+- [x] Create `/components/dashboard/achievement-badges.tsx`
+- [x] Update sidebar navigation with course links
 
 #### Progress Tracking
 - [ ] Add `progress` table to schema
