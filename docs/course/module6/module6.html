@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6: Dynamic Data - Working with APIs</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a78bfa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --code-bg: #1e293b;
+            --border: #e5e7eb;
+        }
+
+        /* Dark mode variables */
+        body.dark-mode {
+            --dark: #f3f4f6;
+            --light: #1f2937;
+            --white: #111827;
+            --border: #374151;
+            --code-bg: #0f172a;
+            background: #0f172a;
+            color: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            color: var(--dark);
+            opacity: 0.8;
+            font-size: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        .theme-toggle {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary-dark);
+        }
+
+        .progress-container {
+            height: 4px;
+            background: var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Layout Styles */
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 100px auto 2rem;
+            padding: 0 2rem;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            width: 250px;
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+
+        .sidebar nav {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            color: var(--dark);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item:hover {
+            background: var(--light);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-item.completed::after {
+            content: '✓';
+            position: absolute;
+            right: 1rem;
+            color: var(--success);
+        }
+
+        .content {
+            flex: 1;
+            max-width: 800px;
+        }
+
+        .lesson-section {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .lesson-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .lesson-section h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .lesson-section h3 {
+            color: var(--primary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .lesson-section p {
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        /* Code Block Styles */
+        .code-block {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            color: #e2e8f0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background: var(--primary-dark);
+        }
+
+        .copy-button.copied {
+            background: var(--success);
+        }
+
+        /* Try It Box Styles */
+        .try-it-box {
+            background: var(--light);
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .try-it-box h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: 150px;
+            background: var(--code-bg);
+            color: #e2e8f0;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        .run-button {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .run-button:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .output-box {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            min-height: 60px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-question {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .quiz-option {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .quiz-result {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-result.show {
+            display: block;
+        }
+
+        .quiz-result.correct {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .quiz-result.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        /* Spoiler Styles */
+        .spoiler {
+            background: var(--light);
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .spoiler-header {
+            padding: 1rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .spoiler-header:hover {
+            background: var(--primary-dark);
+        }
+
+        .spoiler-content {
+            padding: 1.5rem;
+            display: none;
+            background: var(--white);
+        }
+
+        .spoiler.open .spoiler-content {
+            display: block;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Achievement Styles */
+        .achievement {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--success);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(150%);
+            transition: transform 0.5s ease;
+            z-index: 1001;
+        }
+
+        .achievement.show {
+            transform: translateY(0);
+        }
+
+        .achievement h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.2rem;
+        }
+
+        .achievement p {
+            margin: 0;
+            color: white;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .success-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* API Demo Styles */
+        .api-demo {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .api-result {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .api-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+
+        .api-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                margin-top: 80px;
+                padding: 0 1rem;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 2rem;
+            }
+
+            .header-content {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .lesson-section {
+                padding: 1.5rem;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1>Module 6: Dynamic Data 🌐</h1>
+                <div class="header-subtitle">Connect your site to the real world with live data!</div>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="toggle-icon">🌙</span>
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <nav id="lessonNav">
+                <a href="#" class="nav-item active" onclick="showSection(0)">1. Introduction to APIs</a>
+                <a href="#" class="nav-item" onclick="showSection(1)">2. The Fetch API</a>
+                <a href="#" class="nav-item" onclick="showSection(2)">3. Understanding JSON</a>
+                <a href="#" class="nav-item" onclick="showSection(3)">4. Promises & Async/Await</a>
+                <a href="#" class="nav-item" onclick="showSection(4)">5. Error Handling</a>
+                <a href="#" class="nav-item" onclick="showSection(5)">6. Loading States & UX</a>
+                <a href="#" class="nav-item" onclick="showSection(6)">7. GitHub API Project</a>
+                <a href="#" class="nav-item" onclick="showSection(7)">8. Weather Widget</a>
+                <a href="#" class="nav-item" onclick="showSection(8)">9. Quote Generator</a>
+                <a href="#" class="nav-item" onclick="showSection(9)">10. Final Challenge</a>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <!-- Section 1: Introduction to APIs -->
+            <section class="lesson-section active" id="section-0">
+                <h2>🌐 Welcome to the World of APIs!</h2>
+                <p>Imagine if your website could talk to other websites and get information from them. That's exactly what APIs let you do! API stands for Application Programming Interface, but think of it as a restaurant menu for websites.</p>
+
+                <div class="info-box">
+                    <strong>Real-world analogy:</strong> When you go to a restaurant, you don't go into the kitchen and cook your own food. You look at a menu (the API), tell the waiter what you want (make a request), and they bring you your food (the response). APIs work the same way!
+                </div>
+
+                <h3>What Can You Do with APIs?</h3>
+                <p>APIs open up a world of possibilities! Here are some cool things you can build:</p>
+                <ul>
+                    <li>📱 Show your latest Instagram posts on your website</li>
+                    <li>🌤️ Display current weather for any city</li>
+                    <li>📊 Get real-time cryptocurrency prices</li>
+                    <li>🎮 Show your gaming stats from Steam or Xbox</li>
+                    <li>📝 Automatically update your GitHub projects</li>
+                </ul>
+
+                <h3>How APIs Work</h3>
+                <p>APIs use URLs just like websites, but instead of returning HTML, they return data (usually in JSON format). Let's see a simple example:</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// A typical API URL
+https://api.github.com/users/octocat
+
+// When you visit this URL, you get data like:
+{
+  "login": "octocat",
+  "name": "The Octocat",
+  "followers": 3789,
+  "public_repos": 8
+}</pre>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Fun Fact: Why JSON?
+                    </div>
+                    <div class="spoiler-content">
+                        <p>JSON (JavaScript Object Notation) became the standard for APIs because it's easy for both humans and computers to read. It looks just like JavaScript objects, which makes it perfect for web development!</p>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What does API stand for?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'c')">
+                        <input type="radio" name="q1" value="a"> Advanced Programming Interface
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'c')">
+                        <input type="radio" name="q1" value="b"> Automatic Program Integration
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'c')">
+                        <input type="radio" name="q1" value="c"> Application Programming Interface
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'c')">
+                        <input type="radio" name="q1" value="d"> App Protocol Internet
+                    </label>
+                    <div class="quiz-result" id="q1-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" disabled>← Previous</button>
+                    <button class="nav-button" onclick="showSection(1)">Next: The Fetch API →</button>
+                </div>
+            </section>
+
+            <!-- Section 2: The Fetch API -->
+            <section class="lesson-section" id="section-1">
+                <h2>🎣 The Fetch API - Getting Data from the Internet</h2>
+                <p>The Fetch API is JavaScript's built-in way to get data from other websites. It's like sending a messenger to get information and bring it back to you!</p>
+
+                <h3>Basic Fetch Syntax</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// The simplest fetch request
+fetch('https://api.example.com/data')
+  .then(response => response.json())
+  .then(data => console.log(data));</pre>
+                </div>
+
+                <p>Let's break this down step by step:</p>
+                <ol>
+                    <li><strong>fetch()</strong> - Starts the request to get data</li>
+                    <li><strong>.then(response => response.json())</strong> - Converts the response to JSON</li>
+                    <li><strong>.then(data => console.log(data))</strong> - Uses the data</li>
+                </ol>
+
+                <div class="try-it-box">
+                    <h4>🎮 Try It Yourself!</h4>
+                    <p>Let's fetch some real data! This will get information about a GitHub user:</p>
+                    <textarea class="code-editor" id="fetch-basic">// Click Run to fetch data about the GitHub mascot!
+fetch('https://api.github.com/users/octocat')
+  .then(response => response.json())
+  .then(data => {
+    console.log('Name:', data.name);
+    console.log('Followers:', data.followers);
+    console.log('Public Repos:', data.public_repos);
+  });</textarea>
+                    <button class="run-button" onclick="runFetchCode('fetch-basic', 'fetch-basic-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="fetch-basic-output">Output will appear here...</div>
+                </div>
+
+                <h3>Fetch with Error Handling</h3>
+                <p>What if something goes wrong? Always add error handling!</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>fetch('https://api.example.com/data')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));</pre>
+                </div>
+
+                <div class="warning-box">
+                    <strong>Important:</strong> Always check if the response is OK before trying to use the data. APIs can fail for many reasons - the server might be down, you might not have permission, or the URL might be wrong.
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Try Error Handling!</h4>
+                    <p>Let's see what happens when we try to fetch from a non-existent API:</p>
+                    <textarea class="code-editor" id="fetch-error">// This URL doesn't exist - let's handle the error gracefully
+fetch('https://api.github.com/users/this-user-definitely-does-not-exist-12345')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => console.log('Success:', data))
+  .catch(error => console.log('Caught error:', error.message));</textarea>
+                    <button class="run-button" onclick="runFetchCode('fetch-error', 'fetch-error-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="fetch-error-output">Output will appear here...</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What does response.json() do?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'b')">
+                        <input type="radio" name="q2" value="a"> Sends JSON data to the server
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'b')">
+                        <input type="radio" name="q2" value="b"> Converts the response to a JavaScript object
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'b')">
+                        <input type="radio" name="q2" value="c"> Creates a new JSON file
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'b')">
+                        <input type="radio" name="q2" value="d"> Validates JSON syntax
+                    </label>
+                    <div class="quiz-result" id="q2-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(0)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(2)">Next: Understanding JSON →</button>
+                </div>
+            </section>
+
+            <!-- Section 3: Understanding JSON -->
+            <section class="lesson-section" id="section-2">
+                <h2>📋 Understanding JSON - The Language of APIs</h2>
+                <p>JSON (JavaScript Object Notation) is how APIs send data. It's like a universal language that all programming languages can understand!</p>
+
+                <h3>JSON Basics</h3>
+                <p>JSON looks almost exactly like JavaScript objects, with a few rules:</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// JSON example
+{
+  "name": "John Doe",          // Strings must use double quotes
+  "age": 25,                   // Numbers don't need quotes
+  "isStudent": true,           // Booleans: true or false
+  "grades": [85, 90, 78],      // Arrays work like in JS
+  "address": {                 // Objects can be nested
+    "street": "123 Main St",
+    "city": "New York"
+  },
+  "phoneNumber": null          // null represents no value
+}</pre>
+                </div>
+
+                <div class="info-box">
+                    <strong>JSON Rules to Remember:</strong>
+                    <ul>
+                        <li>✅ Always use double quotes for strings (not single quotes)</li>
+                        <li>✅ No trailing commas allowed</li>
+                        <li>✅ Keys must be strings (in double quotes)</li>
+                        <li>❌ No comments allowed in JSON</li>
+                        <li>❌ No functions or undefined values</li>
+                    </ul>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Parse JSON Data!</h4>
+                    <p>Let's practice working with JSON data:</p>
+                    <textarea class="code-editor" id="json-parse">// Sample JSON data as a string
+const jsonString = `{
+  "user": {
+    "name": "CoolCoder123",
+    "level": 42,
+    "achievements": ["First App", "Bug Hunter", "API Master"],
+    "stats": {
+      "projects": 15,
+      "stars": 234,
+      "followers": 89
+    }
+  }
+}`;
+
+// Parse the JSON string
+const data = JSON.parse(jsonString);
+
+// Access the data
+console.log("Username:", data.user.name);
+console.log("Level:", data.user.level);
+console.log("Total projects:", data.user.stats.projects);
+console.log("Achievements:", data.user.achievements.join(", "));</textarea>
+                    <button class="run-button" onclick="runCode('json-parse', 'json-parse-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="json-parse-output">Output will appear here...</div>
+                </div>
+
+                <h3>Converting JavaScript to JSON</h3>
+                <p>Sometimes you need to send data to an API. Use JSON.stringify() to convert JavaScript objects to JSON:</p>
+
+                <div class="try-it-box">
+                    <h4>🎮 Create JSON from JavaScript!</h4>
+                    <p>Let's convert a JavaScript object to JSON:</p>
+                    <textarea class="code-editor" id="json-stringify">// JavaScript object
+const myProfile = {
+  username: "WebDevWarrior",
+  skills: ["HTML", "CSS", "JavaScript", "APIs"],
+  experience: {
+    years: 1,
+    projects: ["Portfolio", "Todo App", "Weather Widget"]
+  },
+  isAvailable: true
+};
+
+// Convert to JSON string
+const jsonString = JSON.stringify(myProfile, null, 2);
+console.log("JSON Output:");
+console.log(jsonString);
+
+// You can also stringify with no formatting
+const compactJSON = JSON.stringify(myProfile);
+console.log("\nCompact JSON (for sending to APIs):");
+console.log(compactJSON);</textarea>
+                    <button class="run-button" onclick="runCode('json-stringify', 'json-stringify-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="json-stringify-output">Output will appear here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Pro Tip: JSON.stringify() Parameters
+                    </div>
+                    <div class="spoiler-content">
+                        <p>JSON.stringify() takes three parameters:</p>
+                        <ol>
+                            <li><strong>value</strong> - The object to convert</li>
+                            <li><strong>replacer</strong> - A function to filter properties (use null to include all)</li>
+                            <li><strong>space</strong> - Number of spaces for indentation (makes it readable)</li>
+                        </ol>
+                        <code>JSON.stringify(obj, null, 2)</code> creates nicely formatted JSON!
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Which of these is valid JSON?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'c')">
+                        <input type="radio" name="q3" value="a"> {'name': "John", 'age': 25}
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'c')">
+                        <input type="radio" name="q3" value="b"> {"name": 'John', "age": 25}
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'c')">
+                        <input type="radio" name="q3" value="c"> {"name": "John", "age": 25}
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'c')">
+                        <input type="radio" name="q3" value="d"> {name: "John", age: 25}
+                    </label>
+                    <div class="quiz-result" id="q3-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(1)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(3)">Next: Async/Await →</button>
+                </div>
+            </section>
+
+            <!-- Section 4: Promises & Async/Await -->
+            <section class="lesson-section" id="section-3">
+                <h2>⏳ Promises & Async/Await - Handling Time Like a Pro</h2>
+                <p>When you fetch data from an API, it takes time. Your code can't just stop and wait - it needs to keep running! That's where Promises and async/await come in.</p>
+
+                <h3>Understanding Promises</h3>
+                <p>A Promise is like ordering food delivery. You get a promise that your food will arrive, and you can do other things while waiting!</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Promise states:
+// 1. Pending - Still waiting for the result
+// 2. Fulfilled - Success! Got the result
+// 3. Rejected - Something went wrong
+
+// Promise example
+const myPromise = fetch('https://api.example.com/data');
+
+myPromise
+  .then(result => console.log('Success!', result))
+  .catch(error => console.log('Error!', error));</pre>
+                </div>
+
+                <h3>The Magic of Async/Await</h3>
+                <p>Async/await makes asynchronous code look synchronous. It's much easier to read!</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Old way with .then()
+fetch('https://api.example.com/data')
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+
+// New way with async/await
+async function getData() {
+  try {
+    const response = await fetch('https://api.example.com/data');
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Compare Promises vs Async/Await!</h4>
+                    <p>Let's fetch the same data using both methods:</p>
+                    <textarea class="code-editor" id="async-compare">// Method 1: Using .then()
+console.log("Method 1: Promises with .then()");
+fetch('https://api.github.com/users/github')
+  .then(response => response.json())
+  .then(data => {
+    console.log("Promise result - Followers:", data.followers);
+  });
+
+// Method 2: Using async/await
+async function getGitHubData() {
+  console.log("\nMethod 2: Async/Await");
+  try {
+    const response = await fetch('https://api.github.com/users/github');
+    const data = await response.json();
+    console.log("Async/await result - Followers:", data.followers);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+// Call the async function
+getGitHubData();</textarea>
+                    <button class="run-button" onclick="runAsyncCode('async-compare', 'async-compare-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="async-compare-output">Output will appear here...</div>
+                </div>
+
+                <h3>Multiple API Calls</h3>
+                <p>Sometimes you need data from multiple APIs. Here's how to handle that efficiently:</p>
+
+                <div class="try-it-box">
+                    <h4>🎮 Fetch Multiple APIs!</h4>
+                    <p>Let's get data from multiple sources at once:</p>
+                    <textarea class="code-editor" id="multiple-apis">// Fetch data from multiple users in parallel
+async function getMultipleUsers() {
+  console.log("Fetching multiple users...");
+  
+  try {
+    // Start all requests at the same time
+    const [user1, user2, user3] = await Promise.all([
+      fetch('https://api.github.com/users/octocat').then(r => r.json()),
+      fetch('https://api.github.com/users/github').then(r => r.json()),
+      fetch('https://api.github.com/users/torvalds').then(r => r.json())
+    ]);
+    
+    console.log("User 1:", user1.name, "- Repos:", user1.public_repos);
+    console.log("User 2:", user2.name, "- Repos:", user2.public_repos);
+    console.log("User 3:", user3.name, "- Repos:", user3.public_repos);
+    
+  } catch (error) {
+    console.error("Error fetching users:", error);
+  }
+}
+
+getMultipleUsers();</textarea>
+                    <button class="run-button" onclick="runAsyncCode('multiple-apis', 'multiple-apis-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="multiple-apis-output">Output will appear here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 When to Use Promise.all()
+                    </div>
+                    <div class="spoiler-content">
+                        <p><strong>Promise.all()</strong> is perfect when you need multiple pieces of data and don't want to wait for each one sequentially. It runs all promises in parallel and waits for all of them to complete.</p>
+                        <p>But be careful! If any promise fails, Promise.all() will reject immediately. Use <strong>Promise.allSettled()</strong> if you want results even if some fail.</p>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What keyword must you use before a function that contains 'await'?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'a')">
+                        <input type="radio" name="q4" value="a"> async
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'a')">
+                        <input type="radio" name="q4" value="b"> promise
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'a')">
+                        <input type="radio" name="q4" value="c"> await
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'a')">
+                        <input type="radio" name="q4" value="d"> function
+                    </label>
+                    <div class="quiz-result" id="q4-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(2)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(4)">Next: Error Handling →</button>
+                </div>
+            </section>
+
+            <!-- Section 5: Error Handling -->
+            <section class="lesson-section" id="section-4">
+                <h2>🛡️ Error Handling - When Things Go Wrong</h2>
+                <p>APIs can fail for many reasons: network issues, server problems, wrong URLs, or permission errors. Good developers always plan for failures!</p>
+
+                <h3>Common API Errors</h3>
+                <div class="info-box">
+                    <strong>HTTP Status Codes You'll See:</strong>
+                    <ul>
+                        <li>✅ <strong>200 OK</strong> - Everything worked!</li>
+                        <li>❌ <strong>400 Bad Request</strong> - You sent invalid data</li>
+                        <li>🚫 <strong>401 Unauthorized</strong> - You need to log in</li>
+                        <li>🔍 <strong>404 Not Found</strong> - The resource doesn't exist</li>
+                        <li>⏱️ <strong>429 Too Many Requests</strong> - Slow down!</li>
+                        <li>💥 <strong>500 Server Error</strong> - The server crashed</li>
+                    </ul>
+                </div>
+
+                <h3>Proper Error Handling Pattern</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>async function fetchDataSafely(url) {
+  try {
+    const response = await fetch(url);
+    
+    // Check if response is ok
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
+    
+  } catch (error) {
+    // Handle different types of errors
+    if (error.name === 'NetworkError') {
+      console.error('Network problem:', error);
+    } else if (error.name === 'SyntaxError') {
+      console.error('Invalid JSON:', error);
+    } else {
+      console.error('Something went wrong:', error);
+    }
+    
+    // Return a default value or rethrow
+    return null;
+  }
+}</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Handle Different Error Types!</h4>
+                    <p>Let's practice handling various API errors:</p>
+                    <textarea class="code-editor" id="error-handling">// Function to test different error scenarios
+async function testErrorHandling(scenario) {
+  let url;
+  
+  switch(scenario) {
+    case '404':
+      url = 'https://api.github.com/users/this-user-does-not-exist-999999';
+      break;
+    case 'invalid':
+      url = 'https://not-a-real-api-endpoint.com/data';
+      break;
+    default:
+      url = 'https://api.github.com/users/octocat';
+  }
+  
+  try {
+    console.log(`Testing: ${scenario}`);
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('Success! User:', data.name || data.login);
+    
+  } catch (error) {
+    if (error.message.includes('404')) {
+      console.error('❌ User not found!');
+    } else if (error.message.includes('fetch')) {
+      console.error('❌ Network error - check your connection!');
+    } else {
+      console.error('❌ Error:', error.message);
+    }
+  }
+}
+
+// Test different scenarios
+testErrorHandling('success');
+setTimeout(() => testErrorHandling('404'), 1000);
+setTimeout(() => testErrorHandling('invalid'), 2000);</textarea>
+                    <button class="run-button" onclick="runAsyncCode('error-handling', 'error-handling-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="error-handling-output">Output will appear here...</div>
+                </div>
+
+                <h3>Creating User-Friendly Error Messages</h3>
+                <p>Users don't want to see technical error messages. Always translate errors into friendly language:</p>
+
+                <div class="try-it-box">
+                    <h4>🎮 User-Friendly Errors!</h4>
+                    <p>Let's create better error messages for users:</p>
+                    <textarea class="code-editor" id="friendly-errors">// Function to get user-friendly error message
+function getFriendlyError(error, statusCode) {
+  const errorMessages = {
+    400: "Oops! Something's wrong with your request. Please check and try again.",
+    401: "You need to log in to access this.",
+    403: "Sorry, you don't have permission to view this.",
+    404: "We couldn't find what you're looking for.",
+    429: "Whoa, slow down! You're making too many requests.",
+    500: "Something went wrong on our end. Please try again later.",
+    503: "The service is temporarily unavailable. Back soon!"
+  };
+  
+  // Network errors
+  if (error.message.includes('Failed to fetch')) {
+    return "📡 Can't connect to the server. Check your internet connection!";
+  }
+  
+  // Return specific message or generic one
+  return errorMessages[statusCode] || "Something unexpected happened. Please try again!";
+}
+
+// Test the function
+console.log("Error 404:", getFriendlyError(new Error(), 404));
+console.log("Error 429:", getFriendlyError(new Error(), 429));
+console.log("Network error:", getFriendlyError(new Error('Failed to fetch'), null));
+console.log("Unknown error:", getFriendlyError(new Error(), 999));</textarea>
+                    <button class="run-button" onclick="runCode('friendly-errors', 'friendly-errors-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="friendly-errors-output">Output will appear here...</div>
+                </div>
+
+                <div class="warning-box">
+                    <strong>Security Tip:</strong> Never show detailed error messages that might reveal sensitive information about your system. Keep error details in your logs, but show generic messages to users.
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What HTTP status code means "Not Found"?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'c')">
+                        <input type="radio" name="q5" value="a"> 200
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'c')">
+                        <input type="radio" name="q5" value="b"> 500
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'c')">
+                        <input type="radio" name="q5" value="c"> 404
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'c')">
+                        <input type="radio" name="q5" value="d"> 401
+                    </label>
+                    <div class="quiz-result" id="q5-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(3)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(5)">Next: Loading States →</button>
+                </div>
+            </section>
+
+            <!-- Section 6: Loading States & UX -->
+            <section class="lesson-section" id="section-5">
+                <h2>⏳ Loading States & User Experience</h2>
+                <p>Users hate staring at a blank screen! Always show loading states when fetching data. It makes your app feel faster and more professional.</p>
+
+                <h3>Types of Loading Indicators</h3>
+                <div class="api-demo">
+                    <h4>Loading Indicator Examples:</h4>
+                    <button class="api-button" onclick="showLoadingExample('spinner')">Spinner</button>
+                    <button class="api-button" onclick="showLoadingExample('skeleton')">Skeleton</button>
+                    <button class="api-button" onclick="showLoadingExample('progress')">Progress Bar</button>
+                    <div class="api-result" id="loading-demo">
+                        <p>Click a button to see different loading states!</p>
+                    </div>
+                </div>
+
+                <h3>Implementing Loading States</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Basic loading state pattern
+let isLoading = false;
+let error = null;
+let data = null;
+
+async function fetchWithLoading() {
+  // Start loading
+  isLoading = true;
+  showLoadingSpinner();
+  
+  try {
+    const response = await fetch('/api/data');
+    data = await response.json();
+  } catch (err) {
+    error = err;
+    showError(err);
+  } finally {
+    // Always stop loading
+    isLoading = false;
+    hideLoadingSpinner();
+  }
+}</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Create a Loading Experience!</h4>
+                    <p>Let's build a complete loading experience with states:</p>
+                    <textarea class="code-editor" id="loading-states">// Simulate a data fetching experience
+async function fetchUserData() {
+  const output = document.getElementById('loading-states-output');
+  
+  // Show loading state
+  output.innerHTML = `
+    <div style="text-align: center; padding: 20px;">
+      <div class="loading"></div>
+      <p>Loading user data...</p>
+    </div>
+  `;
+  
+  try {
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Fetch real data
+    const response = await fetch('https://api.github.com/users/github');
+    const data = await response.json();
+    
+    // Show success state
+    output.innerHTML = `
+      <div style="padding: 20px;">
+        <h3>✅ Data Loaded Successfully!</h3>
+        <p><strong>Name:</strong> ${data.name}</p>
+        <p><strong>Company:</strong> ${data.company}</p>
+        <p><strong>Followers:</strong> ${data.followers.toLocaleString()}</p>
+        <p><strong>Public Repos:</strong> ${data.public_repos}</p>
+      </div>
+    `;
+    
+  } catch (error) {
+    // Show error state
+    output.innerHTML = `
+      <div style="padding: 20px; color: var(--danger);">
+        <h3>❌ Error Loading Data</h3>
+        <p>${error.message}</p>
+        <button onclick="fetchUserData()" style="margin-top: 10px;">Try Again</button>
+      </div>
+    `;
+  }
+}
+
+// Add CSS for spinner
+const style = document.createElement('style');
+style.textContent = `
+  .loading {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--border);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 1s ease-in-out infinite;
+  }
+`;
+document.head.appendChild(style);
+
+// Start the fetch
+fetchUserData();</textarea>
+                    <button class="run-button" onclick="runAsyncCode('loading-states', 'loading-states-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="loading-states-output">Output will appear here...</div>
+                </div>
+
+                <h3>Best Practices for Loading States</h3>
+                <div class="info-box">
+                    <strong>Loading State Guidelines:</strong>
+                    <ul>
+                        <li>🚀 <strong>Show immediately</strong> - Don't wait for the request to start</li>
+                        <li>⏱️ <strong>Minimum duration</strong> - Very quick loads can feel glitchy. Consider a minimum 300ms display time</li>
+                        <li>📝 <strong>Be specific</strong> - "Loading your projects..." is better than just "Loading..."</li>
+                        <li>🎯 <strong>Show progress</strong> - If possible, show percentage or steps completed</li>
+                        <li>🔄 <strong>Allow retry</strong> - Always provide a way to retry failed requests</li>
+                    </ul>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Advanced: Optimistic Updates
+                    </div>
+                    <div class="spoiler-content">
+                        <p>For the best user experience, consider "optimistic updates" - update the UI immediately as if the request succeeded, then rollback if it fails. This makes your app feel incredibly fast!</p>
+                        <pre>// Example: Like button
+async function likePost(postId) {
+  // Update UI immediately
+  updateLikeButton(true);
+  likeCount++;
+  
+  try {
+    await fetch(`/api/posts/${postId}/like`, { method: 'POST' });
+  } catch (error) {
+    // Rollback on error
+    updateLikeButton(false);
+    likeCount--;
+    showError("Couldn't like post");
+  }
+}</pre>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(4)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(6)">Next: GitHub API Project →</button>
+                </div>
+            </section>
+
+            <!-- Section 7: GitHub API Project -->
+            <section class="lesson-section" id="section-6">
+                <h2>🐙 Project: GitHub Repository Display</h2>
+                <p>Let's build something real! We'll create a component that automatically displays your GitHub repositories on your portfolio.</p>
+
+                <h3>Project Overview</h3>
+                <div class="info-box">
+                    <strong>What we'll build:</strong>
+                    <ul>
+                        <li>Fetch repositories from GitHub API</li>
+                        <li>Display them as cards with info</li>
+                        <li>Add loading and error states</li>
+                        <li>Sort by stars or recent updates</li>
+                        <li>Make it look professional!</li>
+                    </ul>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Build the GitHub Repo Display!</h4>
+                    <p>Enter a GitHub username and watch the magic happen:</p>
+                    <input type="text" id="github-username" placeholder="Enter GitHub username" value="facebook" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 5px;">
+                    <textarea class="code-editor" id="github-project">async function displayGitHubRepos() {
+  const username = document.getElementById('github-username').value || 'facebook';
+  const output = document.getElementById('github-project-output');
+  
+  // Show loading state
+  output.innerHTML = '<div class="loading"></div> Loading repositories...';
+  
+  try {
+    // Fetch user's repositories
+    const response = await fetch(`https://api.github.com/users/${username}/repos?sort=stars&per_page=6`);
+    
+    if (!response.ok) {
+      throw new Error(`User "${username}" not found`);
+    }
+    
+    const repos = await response.json();
+    
+    // Create repository cards
+    const repoCards = repos.map(repo => `
+      <div style="border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+        <h3 style="margin: 0 0 8px 0; color: var(--primary);">
+          ${repo.name}
+        </h3>
+        <p style="margin: 0 0 12px 0; color: var(--dark); opacity: 0.8;">
+          ${repo.description || 'No description available'}
+        </p>
+        <div style="display: flex; gap: 16px; font-size: 14px;">
+          <span>⭐ ${repo.stargazers_count}</span>
+          <span>🍴 ${repo.forks_count}</span>
+          <span>📝 ${repo.language || 'Unknown'}</span>
+        </div>
+        <a href="${repo.html_url}" target="_blank" style="display: inline-block; margin-top: 12px; color: var(--primary); text-decoration: none;">
+          View on GitHub →
+        </a>
+      </div>
+    `).join('');
+    
+    output.innerHTML = `
+      <h3>📦 ${username}'s Repositories</h3>
+      ${repos.length > 0 ? repoCards : '<p>No public repositories found.</p>'}
+    `;
+    
+  } catch (error) {
+    output.innerHTML = `
+      <div style="color: var(--danger); padding: 20px; text-align: center;">
+        <h3>❌ Error</h3>
+        <p>${error.message}</p>
+        <button onclick="displayGitHubRepos()" style="margin-top: 10px;">Try Again</button>
+      </div>
+    `;
+  }
+}
+
+// Run on load
+displayGitHubRepos();</textarea>
+                    <button class="run-button" onclick="runAsyncCode('github-project', 'github-project-output')">
+                        ▶️ Fetch Repositories
+                    </button>
+                    <div class="output-box" id="github-project-output" style="max-height: 500px;">Output will appear here...</div>
+                </div>
+
+                <h3>Enhancing the Project</h3>
+                <p>Now let's add more features to make it even better!</p>
+
+                <div class="try-it-box">
+                    <h4>🎮 Add Filtering and Stats!</h4>
+                    <p>Let's create a more advanced version with filtering:</p>
+                    <textarea class="code-editor" id="github-advanced">async function createAdvancedRepoDisplay() {
+  const username = 'microsoft'; // Big account with many repos!
+  const output = document.getElementById('github-advanced-output');
+  
+  output.innerHTML = '<div class="loading"></div> Loading Microsoft repositories...';
+  
+  try {
+    // Fetch repositories and user info in parallel
+    const [reposResponse, userResponse] = await Promise.all([
+      fetch(`https://api.github.com/users/${username}/repos?sort=stars&per_page=20`),
+      fetch(`https://api.github.com/users/${username}`)
+    ]);
+    
+    const repos = await reposResponse.json();
+    const user = await userResponse.json();
+    
+    // Calculate stats
+    const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+    const languages = [...new Set(repos.map(r => r.language).filter(Boolean))];
+    
+    // Create the display
+    output.innerHTML = `
+      <div style="background: var(--light); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h3>📊 ${user.name} GitHub Stats</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-top: 16px;">
+          <div>
+            <div style="font-size: 24px; font-weight: bold; color: var(--primary);">${user.public_repos}</div>
+            <div style="opacity: 0.8;">Public Repos</div>
+          </div>
+          <div>
+            <div style="font-size: 24px; font-weight: bold; color: var(--warning);">${totalStars.toLocaleString()}</div>
+            <div style="opacity: 0.8;">Total Stars</div>
+          </div>
+          <div>
+            <div style="font-size: 24px; font-weight: bold; color: var(--success);">${user.followers.toLocaleString()}</div>
+            <div style="opacity: 0.8;">Followers</div>
+          </div>
+        </div>
+      </div>
+      
+      <h4>🔥 Top Repositories</h4>
+      <div id="repo-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+        ${repos.slice(0, 6).map(repo => `
+          <div style="border: 1px solid var(--border); border-radius: 8px; padding: 16px; transition: transform 0.2s;">
+            <h4 style="margin: 0 0 8px 0; color: var(--primary);">${repo.name}</h4>
+            <p style="font-size: 14px; opacity: 0.8; margin-bottom: 12px;">
+              ${(repo.description || 'No description').substring(0, 100)}...
+            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="display: flex; gap: 12px; font-size: 14px;">
+                <span>⭐ ${repo.stargazers_count.toLocaleString()}</span>
+                <span>📝 ${repo.language || 'N/A'}</span>
+              </div>
+              <a href="${repo.html_url}" target="_blank" style="color: var(--primary); text-decoration: none;">
+                View →
+              </a>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      
+      <div style="margin-top: 20px; padding: 16px; background: var(--light); border-radius: 8px;">
+        <strong>Languages used:</strong> ${languages.slice(0, 5).join(', ')}
+      </div>
+    `;
+    
+  } catch (error) {
+    output.innerHTML = `<div style="color: var(--danger);">Error: ${error.message}</div>`;
+  }
+}
+
+createAdvancedRepoDisplay();</textarea>
+                    <button class="run-button" onclick="runAsyncCode('github-advanced', 'github-advanced-output')">
+                        ▶️ Run Advanced Version
+                    </button>
+                    <div class="output-box" id="github-advanced-output" style="max-height: 600px;">Output will appear here...</div>
+                </div>
+
+                <div class="success-box">
+                    <strong>🎉 Congratulations!</strong> You've just built a real GitHub repository display that you can use in your portfolio! This same pattern works for any API.
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(5)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(7)">Next: Weather Widget →</button>
+                </div>
+            </section>
+
+            <!-- Section 8: Weather Widget -->
+            <section class="lesson-section" id="section-7">
+                <h2>🌤️ Project: Weather Widget</h2>
+                <p>Let's create a weather widget that shows current conditions for any city! We'll use the OpenWeatherMap API for this.</p>
+
+                <div class="warning-box">
+                    <strong>Note:</strong> Real weather APIs require API keys. For this demo, we'll simulate the API response, but the code structure is exactly what you'd use with a real API!
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Build a Weather Widget!</h4>
+                    <p>Enter a city name to get the weather:</p>
+                    <input type="text" id="city-input" placeholder="Enter city name" value="New York" style="width: 70%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 5px;">
+                    <button onclick="getWeatherData()" style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer;">Get Weather</button>
+                    <textarea class="code-editor" id="weather-widget">// Simulated weather API response (in real app, you'd fetch from API)
+function simulateWeatherAPI(city) {
+  const weatherData = {
+    "New York": { temp: 72, condition: "Partly Cloudy", icon: "⛅", humidity: 65, wind: 10 },
+    "London": { temp: 59, condition: "Rainy", icon: "🌧️", humidity: 85, wind: 15 },
+    "Tokyo": { temp: 68, condition: "Clear", icon: "☀️", humidity: 55, wind: 5 },
+    "Paris": { temp: 64, condition: "Cloudy", icon: "☁️", humidity: 70, wind: 12 },
+    "Sydney": { temp: 77, condition: "Sunny", icon: "☀️", humidity: 50, wind: 8 }
+  };
+  
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const data = weatherData[city] || weatherData["New York"];
+      resolve({
+        name: city,
+        main: { temp: data.temp, humidity: data.humidity },
+        weather: [{ main: data.condition, icon: data.icon }],
+        wind: { speed: data.wind }
+      });
+    }, 1000);
+  });
+}
+
+async function getWeatherData() {
+  const city = document.getElementById('city-input').value || 'New York';
+  const output = document.getElementById('weather-widget-output');
+  
+  // Show loading state
+  output.innerHTML = `
+    <div style="text-align: center; padding: 20px;">
+      <div class="loading"></div>
+      <p>Fetching weather data...</p>
+    </div>
+  `;
+  
+  try {
+    // In real app: const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=YOUR_API_KEY&units=imperial`);
+    // const data = await response.json();
+    
+    // Simulated API call
+    const data = await simulateWeatherAPI(city);
+    
+    // Create weather display
+    output.innerHTML = `
+      <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 30px; border-radius: 16px; text-align: center;">
+        <h2 style="margin: 0;">${data.name}</h2>
+        <div style="font-size: 64px; margin: 20px 0;">
+          ${data.weather[0].icon}
+        </div>
+        <div style="font-size: 48px; font-weight: bold;">
+          ${Math.round(data.main.temp)}°F
+        </div>
+        <div style="font-size: 20px; margin: 10px 0;">
+          ${data.weather[0].main}
+        </div>
+        <div style="display: flex; justify-content: center; gap: 30px; margin-top: 20px; font-size: 16px;">
+          <div>
+            <div style="opacity: 0.8;">Humidity</div>
+            <div style="font-weight: bold;">${data.main.humidity}%</div>
+          </div>
+          <div>
+            <div style="opacity: 0.8;">Wind</div>
+            <div style="font-weight: bold;">${data.wind.speed} mph</div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 20px; padding: 16px; background: var(--light); border-radius: 8px;">
+        <strong>💡 In a real app:</strong> You would need to:
+        <ol style="margin: 10px 0 0 20px;">
+          <li>Sign up for a free API key at OpenWeatherMap</li>
+          <li>Replace the simulated function with a real fetch() call</li>
+          <li>Handle errors for invalid city names</li>
+          <li>Add more weather details like forecast</li>
+        </ol>
+      </div>
+    `;
+    
+  } catch (error) {
+    output.innerHTML = `
+      <div style="color: var(--danger); text-align: center; padding: 20px;">
+        <h3>❌ Error</h3>
+        <p>Couldn't fetch weather data: ${error.message}</p>
+      </div>
+    `;
+  }
+}
+
+// Load weather on start
+getWeatherData();</textarea>
+                    <button class="run-button" onclick="runAsyncCode('weather-widget', 'weather-widget-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="weather-widget-output">Output will appear here...</div>
+                </div>
+
+                <h3>Real Weather API Implementation</h3>
+                <p>Here's how you'd implement this with a real weather API:</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Real implementation with OpenWeatherMap API
+const API_KEY = 'your_api_key_here'; // Get from openweathermap.org
+
+async function getRealWeather(city) {
+  try {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=imperial`
+    );
+    
+    if (!response.ok) {
+      throw new Error('City not found');
+    }
+    
+    const data = await response.json();
+    
+    return {
+      temperature: Math.round(data.main.temp),
+      condition: data.weather[0].main,
+      description: data.weather[0].description,
+      humidity: data.main.humidity,
+      windSpeed: data.wind.speed,
+      icon: `https://openweathermap.org/img/w/${data.weather[0].icon}.png`
+    };
+    
+  } catch (error) {
+    console.error('Weather API Error:', error);
+    throw error;
+  }
+}</pre>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(6)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(8)">Next: Quote Generator →</button>
+                </div>
+            </section>
+
+            <!-- Section 9: Quote Generator -->
+            <section class="lesson-section" id="section-8">
+                <h2>💭 Project: Random Quote Generator</h2>
+                <p>Let's build an inspiring quote generator that fetches random quotes and displays them beautifully!</p>
+
+                <div class="try-it-box">
+                    <h4>🎮 Create a Quote Generator!</h4>
+                    <p>Click the button to get inspired:</p>
+                    <textarea class="code-editor" id="quote-generator">// Quote API simulator (real API: https://api.quotable.io/random)
+function getRandomQuote() {
+  const quotes = [
+    { content: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+    { content: "Code is like humor. When you have to explain it, it's bad.", author: "Cory House" },
+    { content: "First, solve the problem. Then, write the code.", author: "John Johnson" },
+    { content: "Programming isn't about what you know; it's about what you can figure out.", author: "Chris Pine" },
+    { content: "The best error message is the one that never shows up.", author: "Thomas Fuchs" },
+    { content: "Simplicity is the soul of efficiency.", author: "Austin Freeman" }
+  ];
+  
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const quote = quotes[Math.floor(Math.random() * quotes.length)];
+      resolve(quote);
+    }, 500);
+  });
+}
+
+let currentQuote = null;
+
+async function displayQuote() {
+  const output = document.getElementById('quote-generator-output');
+  const quoteElement = output.querySelector('.quote-text') || output;
+  
+  // Fade out animation
+  quoteElement.style.opacity = '0';
+  
+  try {
+    // In real app: const response = await fetch('https://api.quotable.io/random');
+    // const quote = await response.json();
+    
+    const quote = await getRandomQuote();
+    currentQuote = quote;
+    
+    setTimeout(() => {
+      output.innerHTML = `
+        <div class="quote-container" style="
+          background: var(--white);
+          border-radius: 16px;
+          padding: 40px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+          text-align: center;
+          max-width: 600px;
+          margin: 0 auto;
+          transition: all 0.3s ease;
+        ">
+          <div style="font-size: 48px; margin-bottom: 20px;">💭</div>
+          <blockquote class="quote-text" style="
+            font-size: 24px;
+            line-height: 1.6;
+            margin: 0 0 20px 0;
+            color: var(--dark);
+            font-style: italic;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+          ">
+            "${quote.content}"
+          </blockquote>
+          <cite style="
+            font-size: 18px;
+            color: var(--primary);
+            font-style: normal;
+            font-weight: 600;
+          ">
+            — ${quote.author}
+          </cite>
+          <div style="margin-top: 30px; display: flex; gap: 10px; justify-content: center;">
+            <button onclick="displayQuote()" style="
+              background: var(--primary);
+              color: white;
+              border: none;
+              padding: 12px 24px;
+              border-radius: 8px;
+              cursor: pointer;
+              font-size: 16px;
+              transition: all 0.3s ease;
+            ">
+              New Quote
+            </button>
+            <button onclick="shareQuote()" style="
+              background: var(--success);
+              color: white;
+              border: none;
+              padding: 12px 24px;
+              border-radius: 8px;
+              cursor: pointer;
+              font-size: 16px;
+              transition: all 0.3s ease;
+            ">
+              Share 📤
+            </button>
+            <button onclick="saveQuote()" style="
+              background: var(--secondary);
+              color: white;
+              border: none;
+              padding: 12px 24px;
+              border-radius: 8px;
+              cursor: pointer;
+              font-size: 16px;
+              transition: all 0.3s ease;
+            ">
+              Save ❤️
+            </button>
+          </div>
+        </div>
+        
+        <div id="saved-quotes" style="margin-top: 30px;"></div>
+      `;
+    }, 100);
+    
+  } catch (error) {
+    output.innerHTML = `<div style="color: var(--danger);">Error loading quote: ${error.message}</div>`;
+  }
+}
+
+// Share functionality
+function shareQuote() {
+  if (!currentQuote) return;
+  
+  const text = `"${currentQuote.content}" - ${currentQuote.author}`;
+  
+  if (navigator.share) {
+    navigator.share({
+      title: 'Inspiring Quote',
+      text: text
+    });
+  } else {
+    // Fallback: copy to clipboard
+    navigator.clipboard.writeText(text);
+    alert('Quote copied to clipboard!');
+  }
+}
+
+// Save functionality
+const savedQuotes = [];
+function saveQuote() {
+  if (!currentQuote || savedQuotes.find(q => q.content === currentQuote.content)) {
+    alert('Quote already saved!');
+    return;
+  }
+  
+  savedQuotes.push(currentQuote);
+  
+  const savedDiv = document.getElementById('saved-quotes');
+  savedDiv.innerHTML = `
+    <h3>❤️ Saved Quotes (${savedQuotes.length})</h3>
+    <div style="display: grid; gap: 10px;">
+      ${savedQuotes.map((quote, index) => `
+        <div style="
+          background: var(--light);
+          padding: 15px;
+          border-radius: 8px;
+          font-size: 14px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        ">
+          <div>
+            <div style="font-style: italic; margin-bottom: 5px;">"${quote.content}"</div>
+            <div style="color: var(--primary); font-size: 12px;">— ${quote.author}</div>
+          </div>
+          <button onclick="savedQuotes.splice(${index}, 1); saveQuote();" style="
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+          ">✕</button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// Load first quote
+displayQuote();</textarea>
+                    <button class="run-button" onclick="runAsyncCode('quote-generator', 'quote-generator-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="quote-generator-output" style="min-height: 300px;">Output will appear here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Enhancement Ideas
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Take your quote generator to the next level:</p>
+                        <ul>
+                            <li>Add categories (motivational, programming, funny)</li>
+                            <li>Create beautiful backgrounds for each quote</li>
+                            <li>Add text-to-speech to read quotes aloud</li>
+                            <li>Save favorites to localStorage</li>
+                            <li>Create shareable quote images</li>
+                            <li>Add daily quote notifications</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(7)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(9)">Next: Final Challenge →</button>
+                </div>
+            </section>
+
+            <!-- Section 10: Final Challenge -->
+            <section class="lesson-section" id="section-9">
+                <h2>🏆 Final Challenge: Build Your Own API Project!</h2>
+                <p>You've learned everything you need to work with APIs. Now it's time to build something amazing on your own!</p>
+
+                <h3>Challenge Options</h3>
+                <div class="info-box">
+                    <strong>Choose one of these projects to build:</strong>
+                    <ol>
+                        <li><strong>🎬 Movie Database</strong> - Search for movies, show details, ratings</li>
+                        <li><strong>🎵 Music Player</strong> - Display song info, album art, lyrics</li>
+                        <li><strong>📰 News Aggregator</strong> - Show latest news from multiple sources</li>
+                        <li><strong>🎮 Game Stats Tracker</strong> - Display player stats from favorite games</li>
+                        <li><strong>🍕 Recipe Finder</strong> - Search recipes, show ingredients, nutrition</li>
+                    </ol>
+                </div>
+
+                <h3>Project Requirements</h3>
+                <div class="api-demo">
+                    <h4>Your project must include:</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>✅ Fetch data from at least one API</li>
+                        <li>✅ Display loading states while fetching</li>
+                        <li>✅ Handle errors gracefully</li>
+                        <li>✅ Make it interactive (search, filter, or sort)</li>
+                        <li>✅ Style it to look professional</li>
+                        <li>✅ Make it responsive for mobile</li>
+                    </ul>
+                </div>
+
+                <h3>Free APIs to Use</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Free APIs (no key required)
+- https://api.github.com (GitHub data)
+- https://pokeapi.co/api/v2/ (Pokemon data)
+- https://jsonplaceholder.typicode.com (Fake data for testing)
+- https://api.spacexdata.com/v4/ (SpaceX launches)
+
+// Free APIs (requires free key)
+- https://openweathermap.org/api (Weather)
+- https://newsapi.org (News)
+- https://developers.themoviedb.org/3 (Movies)
+- https://spoonacular.com/food-api (Recipes)
+- https://rawg.io/apidocs (Video games)</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Project Starter Template!</h4>
+                    <p>Use this template to start your project:</p>
+                    <textarea class="code-editor" id="final-project">// Your API Project Starter Template
+class APIProject {
+  constructor() {
+    this.apiUrl = 'YOUR_API_URL_HERE';
+    this.data = [];
+    this.loading = false;
+    this.error = null;
+  }
+  
+  // Initialize your app
+  async init() {
+    this.setupEventListeners();
+    await this.fetchData();
+    this.render();
+  }
+  
+  // Set up any event listeners
+  setupEventListeners() {
+    // Example: search button, filters, etc.
+    console.log('Setting up event listeners...');
+  }
+  
+  // Fetch data from your API
+  async fetchData(query = '') {
+    this.loading = true;
+    this.error = null;
+    this.render();
+    
+    try {
+      const response = await fetch(this.apiUrl + query);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      this.data = await response.json();
+      console.log('Data fetched:', this.data);
+      
+    } catch (error) {
+      this.error = error.message;
+      console.error('Fetch error:', error);
+    } finally {
+      this.loading = false;
+      this.render();
+    }
+  }
+  
+  // Render your UI
+  render() {
+    const output = document.getElementById('final-project-output');
+    
+    if (this.loading) {
+      output.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+          <div class="loading"></div>
+          <p>Loading awesome data...</p>
+        </div>
+      `;
+      return;
+    }
+    
+    if (this.error) {
+      output.innerHTML = `
+        <div style="color: var(--danger); text-align: center; padding: 40px;">
+          <h3>❌ Oops!</h3>
+          <p>${this.error}</p>
+          <button onclick="myProject.fetchData()">Try Again</button>
+        </div>
+      `;
+      return;
+    }
+    
+    // Render your data here!
+    output.innerHTML = `
+      <div style="padding: 20px;">
+        <h3>🎉 Your API Project</h3>
+        <p>Replace this with your awesome content!</p>
+        <p>Data loaded: ${JSON.stringify(this.data).substring(0, 100)}...</p>
+        
+        <div style="margin-top: 20px; padding: 20px; background: var(--light); border-radius: 8px;">
+          <h4>Next Steps:</h4>
+          <ol>
+            <li>Choose your API and update the URL</li>
+            <li>Design how you want to display the data</li>
+            <li>Add search or filter functionality</li>
+            <li>Style it to look amazing</li>
+            <li>Test error cases</li>
+            <li>Share with friends!</li>
+          </ol>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Create and start your project
+const myProject = new APIProject();
+myProject.init();</textarea>
+                    <button class="run-button" onclick="runAsyncCode('final-project', 'final-project-output')">
+                        ▶️ Run Template
+                    </button>
+                    <div class="output-box" id="final-project-output">Output will appear here...</div>
+                </div>
+
+                <div class="success-box">
+                    <h3>🎊 Congratulations!</h3>
+                    <p>You've completed Module 6! You now know how to:</p>
+                    <ul>
+                        <li>✅ Fetch data from any API</li>
+                        <li>✅ Handle asynchronous operations with async/await</li>
+                        <li>✅ Parse and work with JSON data</li>
+                        <li>✅ Handle errors gracefully</li>
+                        <li>✅ Create loading states for better UX</li>
+                        <li>✅ Build real projects with live data</li>
+                    </ul>
+                    <p><strong>You're now ready to connect your websites to the entire internet! 🌐</strong></p>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(8)">← Previous</button>
+                    <button class="nav-button" onclick="completeModule()">Complete Module! 🎉</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="achievement" id="achievement">
+        <h3>🏆 Achievement Unlocked!</h3>
+        <p id="achievementText">API Master!</p>
+    </div>
+
+    <script>
+        // State management
+        let currentSection = 0;
+        const totalSections = 10;
+        let completedSections = new Set();
+
+        // Initialize from localStorage
+        function initializeProgress() {
+            const saved = localStorage.getItem('module6-progress');
+            if (saved) {
+                completedSections = new Set(JSON.parse(saved));
+                updateNavigation();
+            }
+            
+            // Check dark mode preference
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.toggle-icon').textContent = '☀️';
+            }
+        }
+
+        // Navigation functions
+        function showSection(index) {
+            if (index < 0 || index >= totalSections) return;
+            
+            // Hide all sections
+            document.querySelectorAll('.lesson-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(`section-${index}`).classList.add('active');
+            
+            // Update navigation
+            currentSection = index;
+            updateNavigation();
+            
+            // Mark as completed
+            completedSections.add(currentSection);
+            localStorage.setItem('module6-progress', JSON.stringify([...completedSections]));
+            
+            // Update progress bar
+            updateProgressBar();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach((item, index) => {
+                item.classList.remove('active');
+                if (index === currentSection) {
+                    item.classList.add('active');
+                }
+                if (completedSections.has(index)) {
+                    item.classList.add('completed');
+                }
+            });
+        }
+
+        function updateProgressBar() {
+            const progress = (completedSections.size / totalSections) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            
+            // Check for achievements
+            if (completedSections.size === 5 && !localStorage.getItem('module6-halfway')) {
+                showAchievement('Halfway There! Keep going!');
+                localStorage.setItem('module6-halfway', 'true');
+            }
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-icon');
+            
+            icon.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        // Code execution functions
+        function runCode(editorId, outputId) {
+            const code = document.getElementById(editorId).value;
+            const output = document.getElementById(outputId);
+            
+            // Clear previous output
+            output.textContent = '';
+            
+            // Capture console.log
+            const originalLog = console.log;
+            const logs = [];
+            
+            console.log = function(...args) {
+                logs.push(args.join(' '));
+                originalLog.apply(console, args);
+            };
+            
+            try {
+                // Execute the code
+                eval(code);
+                
+                // Display output
+                output.textContent = logs.join('\n') || 'Code executed successfully (no output)';
+                output.style.color = 'var(--dark)';
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+                output.style.color = 'var(--danger)';
+            } finally {
+                // Restore console.log
+                console.log = originalLog;
+            }
+        }
+
+        // Special function for fetch code
+        function runFetchCode(editorId, outputId) {
+            const code = document.getElementById(editorId).value;
+            const output = document.getElementById(outputId);
+            
+            output.textContent = 'Fetching data...';
+            
+            // Capture console.log
+            const originalLog = console.log;
+            const logs = [];
+            
+            console.log = function(...args) {
+                logs.push(args.join(' '));
+                originalLog.apply(console, args);
+            };
+            
+            try {
+                eval(code);
+                
+                // Wait a bit for async operations
+                setTimeout(() => {
+                    output.textContent = logs.join('\n') || 'Waiting for response...';
+                    output.style.color = 'var(--dark)';
+                    console.log = originalLog;
+                }, 2000);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+                output.style.color = 'var(--danger)';
+                console.log = originalLog;
+            }
+        }
+
+        // Async code runner
+        async function runAsyncCode(editorId, outputId) {
+            const code = document.getElementById(editorId).value;
+            const output = document.getElementById(outputId);
+            
+            output.textContent = 'Running async code...';
+            
+            // Capture console.log
+            const originalLog = console.log;
+            const logs = [];
+            
+            console.log = function(...args) {
+                logs.push(args.join(' '));
+                originalLog.apply(console, args);
+            };
+            
+            try {
+                // Create an async function and execute it
+                const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+                const asyncFunc = new AsyncFunction(code);
+                await asyncFunc();
+                
+                // Wait a bit for any remaining async operations
+                setTimeout(() => {
+                    output.textContent = logs.join('\n') || 'Code executed successfully';
+                    output.style.color = 'var(--dark)';
+                    console.log = originalLog;
+                }, 1000);
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+                output.style.color = 'var(--danger)';
+                console.log = originalLog;
+            }
+        }
+
+        // Copy code function
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling;
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Spoiler toggle
+        function toggleSpoiler(header) {
+            const spoiler = header.parentElement;
+            spoiler.classList.toggle('open');
+        }
+
+        // Quiz function
+        function checkQuiz(option, correctAnswer) {
+            const value = option.querySelector('input').value;
+            const resultId = option.querySelector('input').name + '-result';
+            const result = document.getElementById(resultId);
+            
+            // Remove previous states
+            option.parentElement.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+            
+            if (value === correctAnswer) {
+                option.classList.add('correct');
+                result.textContent = '✅ Correct! Great job!';
+                result.className = 'quiz-result show correct';
+                
+                // Achievement for first correct answer
+                if (!localStorage.getItem('module6-first-quiz')) {
+                    showAchievement('Quiz Master! First correct answer!');
+                    localStorage.setItem('module6-first-quiz', 'true');
+                }
+            } else {
+                option.classList.add('incorrect');
+                result.textContent = '❌ Not quite. Try again!';
+                result.className = 'quiz-result show incorrect';
+            }
+        }
+
+        // Achievement system
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            const achievementText = document.getElementById('achievementText');
+            
+            achievementText.textContent = text;
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        // Loading examples
+        function showLoadingExample(type) {
+            const demo = document.getElementById('loading-demo');
+            
+            switch(type) {
+                case 'spinner':
+                    demo.innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <div class="loading"></div>
+                            <p>Loading your data...</p>
+                        </div>
+                    `;
+                    break;
+                case 'skeleton':
+                    demo.innerHTML = `
+                        <div style="padding: 20px;">
+                            <div style="height: 20px; background: var(--border); border-radius: 4px; margin-bottom: 10px; animation: pulse 1.5s infinite;"></div>
+                            <div style="height: 20px; background: var(--border); border-radius: 4px; width: 80%; margin-bottom: 10px; animation: pulse 1.5s infinite;"></div>
+                            <div style="height: 20px; background: var(--border); border-radius: 4px; width: 60%; animation: pulse 1.5s infinite;"></div>
+                        </div>
+                        <style>
+                            @keyframes pulse {
+                                0%, 100% { opacity: 1; }
+                                50% { opacity: 0.5; }
+                            }
+                        </style>
+                    `;
+                    break;
+                case 'progress':
+                    demo.innerHTML = `
+                        <div style="padding: 20px;">
+                            <div style="background: var(--border); border-radius: 4px; overflow: hidden; height: 8px;">
+                                <div style="background: var(--primary); height: 100%; width: 0%; animation: progress 3s ease-in-out infinite;"></div>
+                            </div>
+                            <p style="text-align: center; margin-top: 10px;">Loading: <span id="percent">0</span>%</p>
+                        </div>
+                        <style>
+                            @keyframes progress {
+                                0% { width: 0%; }
+                                100% { width: 100%; }
+                            }
+                        </style>
+                    `;
+                    
+                    // Animate percentage
+                    let percent = 0;
+                    const interval = setInterval(() => {
+                        percent += 1;
+                        const span = document.getElementById('percent');
+                        if (span) span.textContent = percent;
+                        if (percent >= 100) clearInterval(interval);
+                    }, 30);
+                    break;
+            }
+        }
+
+        // Complete module
+        function completeModule() {
+            completedSections.add(currentSection);
+            localStorage.setItem('module6-progress', JSON.stringify([...completedSections]));
+            updateProgressBar();
+            
+            showAchievement('🎉 Module 6 Complete! You are an API Master!');
+            
+            // Show completion message
+            const lastSection = document.getElementById('section-9');
+            const completionMessage = document.createElement('div');
+            completionMessage.className = 'success-box';
+            completionMessage.style.marginTop = '2rem';
+            completionMessage.innerHTML = `
+                <h2>🏆 Module Complete!</h2>
+                <p>Incredible work! You've mastered working with APIs and can now build amazing dynamic websites!</p>
+                <p>Don't forget to build your final project and share it with the community!</p>
+            `;
+            lastSection.appendChild(completionMessage);
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeProgress();
+            updateProgressBar();
+        });
+    </script>
+</body>
+</html>

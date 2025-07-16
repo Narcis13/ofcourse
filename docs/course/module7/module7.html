@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 7: Going Backend - Introduction to Node.js</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a78bfa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --code-bg: #1e293b;
+            --border: #e5e7eb;
+        }
+
+        /* Dark mode variables */
+        body.dark-mode {
+            --dark: #f3f4f6;
+            --light: #1f2937;
+            --white: #111827;
+            --border: #374151;
+            --code-bg: #0f172a;
+            background: #0f172a;
+            color: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            background: var(--light);
+            color: var(--dark);
+            transition: all 0.3s ease;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .header-subtitle {
+            color: var(--dark);
+            opacity: 0.8;
+            font-size: 0.95rem;
+        }
+
+        .theme-toggle {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary-dark);
+            transform: rotate(180deg);
+        }
+
+        .progress-container {
+            height: 4px;
+            background: var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Layout Styles */
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: calc(100vh - 100px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--white);
+            border-right: 1px solid var(--border);
+            padding: 2rem 0;
+            position: sticky;
+            top: 100px;
+            height: calc(100vh - 100px);
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar nav {
+            padding: 0 1rem;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--dark);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--light);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-item.completed::after {
+            content: '✓';
+            margin-left: 0.5rem;
+            color: var(--success);
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 800px;
+        }
+
+        /* Section Styles */
+        .lesson-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .lesson-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lesson-section h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .lesson-section p {
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-size: 1.05rem;
+        }
+
+        /* Interactive Components */
+        .try-it-box {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .try-it-box:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+
+        .try-it-box h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            background: var(--code-bg);
+            color: #e2e8f0;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            margin: 1rem 0;
+        }
+
+        .run-button {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .run-button:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .output-box {
+            background: var(--dark);
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            min-height: 60px;
+            white-space: pre-wrap;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .quiz-question {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .quiz-option {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            background: var(--light);
+            border: 2px solid transparent;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .quiz-option input {
+            margin-right: 0.75rem;
+        }
+
+        .quiz-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            display: none;
+        }
+
+        .quiz-result.correct {
+            background: var(--success);
+            color: white;
+            display: block;
+        }
+
+        .quiz-result.incorrect {
+            background: var(--danger);
+            color: white;
+            display: block;
+        }
+
+        /* Code Block Styles */
+        .code-block {
+            position: relative;
+            background: var(--code-bg);
+            border-radius: 0.75rem;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+
+        .code-block pre {
+            padding: 1.5rem;
+            color: #e2e8f0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Spoiler Component */
+        .spoiler {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .spoiler-header {
+            padding: 1rem;
+            background: var(--light);
+            cursor: pointer;
+            user-select: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .spoiler-header:hover {
+            background: var(--border);
+        }
+
+        .spoiler-content {
+            padding: 1rem;
+            display: none;
+        }
+
+        .spoiler.open .spoiler-content {
+            display: block;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .nav-button:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Achievement Popup */
+        .achievement {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: top 0.5s ease;
+            text-align: center;
+        }
+
+        .achievement.show {
+            top: 20px;
+        }
+
+        .achievement h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: var(--secondary);
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.1), rgba(99, 102, 241, 0.1));
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0.5rem;
+        }
+
+        .info-box h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Terminal Style */
+        .terminal {
+            background: #000;
+            color: #0f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            margin: 1rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .terminal::before {
+            content: '$ ';
+            color: #0f0;
+        }
+
+        .terminal-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #333;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            color: #999;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 1rem 0;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .header-content {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1>Module 7: Going Backend 🚀</h1>
+                <div class="header-subtitle">Break free from the browser and build real applications!</div>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="toggle-icon">🌙</span>
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav id="lessonNav">
+                <a class="nav-item active" onclick="showSection(0)">🌟 Welcome to Backend</a>
+                <a class="nav-item" onclick="showSection(1)">🖥️ Client vs Server</a>
+                <a class="nav-item" onclick="showSection(2)">📦 Installing Node.js</a>
+                <a class="nav-item" onclick="showSection(3)">🚂 Hello Express!</a>
+                <a class="nav-item" onclick="showSection(4)">🛤️ Routes & Endpoints</a>
+                <a class="nav-item" onclick="showSection(5)">🔐 Environment Variables</a>
+                <a class="nav-item" onclick="showSection(6)">📧 Contact Form Backend</a>
+                <a class="nav-item" onclick="showSection(7)">🏗️ Building Your API</a>
+                <a class="nav-item" onclick="showSection(8)">🚀 Deploy Your Backend</a>
+                <a class="nav-item" onclick="showSection(9)">🎯 Final Challenge</a>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Section 0: Welcome -->
+            <section class="lesson-section active" id="section-0">
+                <h2>🌟 Welcome to the Backend!</h2>
+                <p>So far, you've been building websites that run entirely in the browser. But what happens when you need to save data, send emails, or connect to a database? That's where backend development comes in!</p>
+                
+                <div class="info-box">
+                    <h4>🎮 What You'll Build</h4>
+                    <p>By the end of this module, you'll have created:</p>
+                    <ul>
+                        <li>A working web server that responds to requests</li>
+                        <li>A contact form that actually sends emails</li>
+                        <li>An API for your portfolio projects</li>
+                        <li>A visitor counter that remembers the count</li>
+                    </ul>
+                </div>
+
+                <p>Think of it this way: if frontend development is like decorating and furnishing a house, backend development is like installing the plumbing, electricity, and all the systems that make the house actually work!</p>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What's the main difference between frontend and backend?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'runs-browser')">
+                        <input type="radio" name="q0" value="runs-browser"> Frontend runs in the browser, backend runs on a server
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'harder')">
+                        <input type="radio" name="q0" value="harder"> Backend is harder than frontend
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'languages')">
+                        <input type="radio" name="q0" value="languages"> They use completely different programming languages
+                    </label>
+                    <div class="quiz-result" id="q0-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" disabled>← Previous</button>
+                    <button class="nav-button" onclick="showSection(1)">Next: Client vs Server →</button>
+                </div>
+            </section>
+
+            <!-- Section 1: Client vs Server -->
+            <section class="lesson-section" id="section-1">
+                <h2>🖥️ Understanding Client vs Server</h2>
+                <p>Before we dive into Node.js, let's make sure we understand how the internet really works. It's all about the conversation between clients and servers!</p>
+
+                <div class="info-box">
+                    <h4>🍕 The Pizza Delivery Analogy</h4>
+                    <p><strong>Client (Browser):</strong> You calling to order pizza<br>
+                    <strong>Server:</strong> The pizza restaurant<br>
+                    <strong>Request:</strong> "I'd like a large pepperoni pizza"<br>
+                    <strong>Response:</strong> "Here's your pizza! That'll be $15"</p>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Try It Yourself!</h4>
+                    <p>Let's simulate a client-server interaction using JavaScript. This code shows what happens behind the scenes:</p>
+                    <textarea class="code-editor" id="client-server-demo">// CLIENT SIDE (What happens in your browser)
+function orderPizza() {
+    console.log("CLIENT: Sending request to server...");
+    
+    // Simulate sending a request
+    const request = {
+        method: "GET",
+        url: "/api/menu",
+        headers: { "Accept": "application/json" }
+    };
+    
+    console.log("REQUEST:", request);
+    
+    // In real life, this would go over the internet
+    // For now, we'll simulate the server response
+    setTimeout(() => {
+        const response = {
+            status: 200,
+            data: {
+                pizzas: ["Margherita", "Pepperoni", "Hawaiian"],
+                prices: [12, 15, 14]
+            }
+        };
+        console.log("SERVER RESPONSE:", response);
+    }, 1000);
+}
+
+// Try ordering pizza!
+orderPizza();</textarea>
+                    <button class="run-button" onclick="runCode('client-server-demo', 'client-server-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="client-server-output">Output will appear here...</div>
+                </div>
+
+                <h3>Key Differences to Remember:</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>CLIENT-SIDE (Frontend)          SERVER-SIDE (Backend)
+========================        ========================
+Runs in the browser            Runs on a computer/server
+Can't access files directly    Can read/write files
+Can't connect to databases     Can connect to databases
+Visible to users               Hidden from users
+Limited by browser security    Full system access</pre>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Why can't browsers access files directly?
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Imagine if any website could read your files or access your webcam without permission! Browsers have strict security rules to protect you. That's why we need a server to handle sensitive operations like:</p>
+                        <ul>
+                            <li>Reading/writing files</li>
+                            <li>Accessing databases</li>
+                            <li>Sending emails</li>
+                            <li>Processing payments</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(0)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(2)">Next: Installing Node.js →</button>
+                </div>
+            </section>
+
+            <!-- Section 2: Installing Node.js -->
+            <section class="lesson-section" id="section-2">
+                <h2>📦 Installing Node.js</h2>
+                <p>Node.js lets you run JavaScript outside the browser. It's like giving JavaScript superpowers! Let's get it installed on your computer.</p>
+
+                <div class="info-box">
+                    <h4>🤔 What is Node.js exactly?</h4>
+                    <p>Node.js is a runtime environment that lets you run JavaScript on your computer, just like Python or Java. Before Node.js, JavaScript could only run in browsers!</p>
+                </div>
+
+                <h3>Installation Steps:</h3>
+                <ol>
+                    <li><strong>Visit nodejs.org:</strong> Download the LTS (Long Term Support) version</li>
+                    <li><strong>Run the installer:</strong> Just keep clicking "Next" (the defaults are fine)</li>
+                    <li><strong>Verify installation:</strong> Open your terminal and check the version</li>
+                </ol>
+
+                <div class="terminal">
+                    <div class="terminal-header">Terminal</div>
+                    <br>
+node --version
+v18.17.0
+
+npm --version
+9.6.7
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Your First Node.js Script!</h4>
+                    <p>Once Node is installed, you can run JavaScript files directly. Create a file called <code>hello.js</code>:</p>
+                    <textarea class="code-editor" id="first-node">// hello.js
+console.log("Hello from Node.js! 👋");
+console.log("I'm running outside the browser!");
+
+// Node.js can do things browsers can't
+const os = require('os');
+console.log(`Your computer has ${os.cpus().length} CPU cores`);
+console.log(`You have ${Math.round(os.freemem() / 1024 / 1024 / 1024)}GB of free memory`);
+
+// You can work with files
+const fs = require('fs');
+fs.writeFileSync('message.txt', 'Node.js was here!');
+console.log('Created a file called message.txt!');</textarea>
+                    <button class="run-button" onclick="runCode('first-node', 'first-node-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="first-node-output">Output will appear here...</div>
+                </div>
+
+                <p>To run this file, you'd open your terminal, navigate to the folder, and type:</p>
+                <div class="terminal">node hello.js</div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What's the main advantage of Node.js?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'javascript-everywhere')">
+                        <input type="radio" name="q1" value="javascript-everywhere"> You can use JavaScript for both frontend and backend
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'faster')">
+                        <input type="radio" name="q1" value="faster"> It's faster than all other languages
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'easier')">
+                        <input type="radio" name="q1" value="easier"> It's easier than other backend languages
+                    </label>
+                    <div class="quiz-result" id="q1-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(1)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(3)">Next: Hello Express! →</button>
+                </div>
+            </section>
+
+            <!-- Section 3: Hello Express -->
+            <section class="lesson-section" id="section-3">
+                <h2>🚂 Hello Express!</h2>
+                <p>Express is a framework that makes building web servers with Node.js super easy. Think of it as a toolkit that gives you everything you need to handle web requests.</p>
+
+                <div class="info-box">
+                    <h4>📦 What's a Framework?</h4>
+                    <p>A framework is like a Lego set with pre-built pieces. Instead of building everything from scratch, you use these pieces to build faster!</p>
+                </div>
+
+                <h3>Setting Up Your First Express Server:</h3>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre># First, create a new folder and initialize npm
+mkdir my-first-server
+cd my-first-server
+npm init -y
+
+# Install Express
+npm install express</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Create Your First Server!</h4>
+                    <p>Create a file called <code>server.js</code> and add this code:</p>
+                    <textarea class="code-editor" id="express-server">// Import Express
+const express = require('express');
+const app = express();
+
+// Define a route for the homepage
+app.get('/', (req, res) => {
+    res.send('Hello World! My server is running! 🎉');
+});
+
+// Define another route
+app.get('/about', (req, res) => {
+    res.send('This is the about page!');
+});
+
+// API route that returns JSON
+app.get('/api/info', (req, res) => {
+    res.json({
+        message: 'Welcome to my API!',
+        timestamp: new Date(),
+        version: '1.0.0'
+    });
+});
+
+// Start the server
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log('Press Ctrl+C to stop the server');
+});</textarea>
+                    <button class="run-button" onclick="runCode('express-server', 'express-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="express-output">Output will appear here...</div>
+                </div>
+
+                <p>To run your server:</p>
+                <div class="terminal">node server.js</div>
+
+                <p>Then open your browser and visit:</p>
+                <ul>
+                    <li><code>http://localhost:3000</code> - See your homepage</li>
+                    <li><code>http://localhost:3000/about</code> - See the about page</li>
+                    <li><code>http://localhost:3000/api/info</code> - Get JSON data</li>
+                </ul>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 What's localhost?
+                    </div>
+                    <div class="spoiler-content">
+                        <p><strong>localhost</strong> is a special address that always points to your own computer. When you run a server on localhost:3000, it means:</p>
+                        <ul>
+                            <li>The server is running on YOUR computer</li>
+                            <li>Only YOU can access it (unless you share your IP)</li>
+                            <li>Port 3000 is like a specific door the server is listening on</li>
+                        </ul>
+                        <p>Think of it like having a private party in your house - only people in your house (your computer) can attend!</p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(2)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(4)">Next: Routes & Endpoints →</button>
+                </div>
+            </section>
+
+            <!-- Section 4: Routes & Endpoints -->
+            <section class="lesson-section" id="section-4">
+                <h2>🛤️ Routes & Endpoints</h2>
+                <p>Routes are like different pages or sections of your server. Each route responds to a specific URL pattern. Let's learn how to design a proper API!</p>
+
+                <div class="info-box">
+                    <h4>🗺️ RESTful Routes</h4>
+                    <p>REST is a popular way to organize your routes. Think of it like organizing files in folders - everything has its place!</p>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Build a Complete API!</h4>
+                    <p>Let's create an API for managing a list of projects:</p>
+                    <textarea class="code-editor" id="routes-demo">const express = require('express');
+const app = express();
+
+// Middleware to parse JSON
+app.use(express.json());
+
+// Fake database (in real apps, use a real database!)
+let projects = [
+    { id: 1, title: 'Portfolio Website', tech: 'HTML/CSS' },
+    { id: 2, title: 'Todo App', tech: 'JavaScript' }
+];
+
+// GET all projects
+app.get('/api/projects', (req, res) => {
+    res.json(projects);
+});
+
+// GET single project by ID
+app.get('/api/projects/:id', (req, res) => {
+    const project = projects.find(p => p.id == req.params.id);
+    if (!project) {
+        return res.status(404).json({ error: 'Project not found' });
+    }
+    res.json(project);
+});
+
+// POST new project
+app.post('/api/projects', (req, res) => {
+    const newProject = {
+        id: projects.length + 1,
+        title: req.body.title,
+        tech: req.body.tech
+    };
+    projects.push(newProject);
+    res.status(201).json(newProject);
+});
+
+// DELETE project
+app.delete('/api/projects/:id', (req, res) => {
+    projects = projects.filter(p => p.id != req.params.id);
+    res.json({ message: 'Project deleted' });
+});
+
+// Test the routes
+console.log('API Routes:');
+console.log('GET    /api/projects     - Get all projects');
+console.log('GET    /api/projects/:id - Get one project');
+console.log('POST   /api/projects     - Create project');
+console.log('DELETE /api/projects/:id - Delete project');</textarea>
+                    <button class="run-button" onclick="runCode('routes-demo', 'routes-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="routes-output">Output will appear here...</div>
+                </div>
+
+                <h3>HTTP Methods Explained:</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>GET    - Retrieve data      (like opening a webpage)
+POST   - Create new data    (like submitting a form)
+PUT    - Update all data    (like saving a file)
+PATCH  - Update some data   (like editing one field)
+DELETE - Remove data        (like deleting a file)</pre>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Which HTTP method would you use to submit a contact form?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'post')">
+                        <input type="radio" name="q2" value="post"> POST - because we're creating new data
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'get')">
+                        <input type="radio" name="q2" value="get"> GET - because we're getting a response
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'delete')">
+                        <input type="radio" name="q2" value="delete"> DELETE - to clear the form
+                    </label>
+                    <div class="quiz-result" id="q2-result"></div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 URL Parameters vs Query Strings
+                    </div>
+                    <div class="spoiler-content">
+                        <p><strong>URL Parameters:</strong> <code>/api/projects/:id</code></p>
+                        <ul>
+                            <li>Part of the URL path</li>
+                            <li>Used for required values</li>
+                            <li>Example: <code>/api/projects/123</code></li>
+                        </ul>
+                        <p><strong>Query Strings:</strong> <code>/api/projects?tech=react</code></p>
+                        <ul>
+                            <li>Added after a ?</li>
+                            <li>Used for optional filters</li>
+                            <li>Example: <code>/api/projects?tech=react&sort=date</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(3)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(5)">Next: Environment Variables →</button>
+                </div>
+            </section>
+
+            <!-- Section 5: Environment Variables -->
+            <section class="lesson-section" id="section-5">
+                <h2>🔐 Environment Variables</h2>
+                <p>Environment variables are like secret compartments for your app. They store sensitive information like passwords, API keys, and configuration that changes between development and production.</p>
+
+                <div class="info-box">
+                    <h4>🤫 Why Keep Secrets Secret?</h4>
+                    <p>Never put passwords or API keys directly in your code! If you upload to GitHub, everyone can see them. That's like writing your house key code on your front door!</p>
+                </div>
+
+                <h3>Setting Up Environment Variables:</h3>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre># Install dotenv package
+npm install dotenv</pre>
+                </div>
+
+                <p>Create a file called <code>.env</code> (yes, it starts with a dot!):</p>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre># .env file
+PORT=3000
+DATABASE_URL=mongodb://localhost/myapp
+API_KEY=your-secret-api-key-here
+EMAIL_PASSWORD=super-secret-password</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Using Environment Variables</h4>
+                    <p>Here's how to use environment variables in your Express app:</p>
+                    <textarea class="code-editor" id="env-demo">// Load environment variables
+require('dotenv').config();
+
+const express = require('express');
+const app = express();
+
+// Use environment variables
+const PORT = process.env.PORT || 3000;
+const API_KEY = process.env.API_KEY;
+
+// Example: Protect a route with API key
+app.get('/api/secret', (req, res) => {
+    const userKey = req.headers['x-api-key'];
+    
+    if (!userKey || userKey !== API_KEY) {
+        return res.status(401).json({ 
+            error: 'Unauthorized - Invalid API Key' 
+        });
+    }
+    
+    res.json({ 
+        message: 'Welcome to the secret area!',
+        data: 'This is protected information'
+    });
+});
+
+// Show configuration (but never show secrets!)
+app.get('/api/config', (req, res) => {
+    res.json({
+        port: PORT,
+        environment: process.env.NODE_ENV || 'development',
+        // NEVER expose sensitive data like this:
+        // apiKey: API_KEY  ❌ DON'T DO THIS!
+    });
+});
+
+console.log(`Server configured on port ${PORT}`);
+console.log('Environment variables loaded successfully');</textarea>
+                    <button class="run-button" onclick="runCode('env-demo', 'env-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="env-output">Output will appear here...</div>
+                </div>
+
+                <h3>🚨 IMPORTANT: Add .env to .gitignore!</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre># .gitignore
+node_modules/
+.env
+.env.local
+.DS_Store</pre>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Why should you NEVER commit .env files to GitHub?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'security')">
+                        <input type="radio" name="q3" value="security"> They contain sensitive information like passwords
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'size')">
+                        <input type="radio" name="q3" value="size"> They make the repository too large
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'errors')">
+                        <input type="radio" name="q3" value="errors"> They cause merge conflicts
+                    </label>
+                    <div class="quiz-result" id="q3-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(4)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(6)">Next: Contact Form Backend →</button>
+                </div>
+            </section>
+
+            <!-- Section 6: Contact Form Backend -->
+            <section class="lesson-section" id="section-6">
+                <h2>📧 Building a Contact Form Backend</h2>
+                <p>Let's build something real! We'll create a backend that receives contact form submissions and sends actual emails. This is super useful for portfolio websites!</p>
+
+                <div class="try-it-box">
+                    <h4>🎮 Complete Contact Form API</h4>
+                    <p>First, install the required packages, then add this code:</p>
+                    <textarea class="code-editor" id="contact-form">// Install: npm install express nodemailer cors
+
+const express = require('express');
+const nodemailer = require('nodemailer');
+const cors = require('cors');
+
+const app = express();
+
+// Middleware
+app.use(cors()); // Allow requests from frontend
+app.use(express.json()); // Parse JSON bodies
+
+// Email configuration (use your email service)
+const transporter = nodemailer.createTransporter({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+// Contact form endpoint
+app.post('/api/contact', async (req, res) => {
+    const { name, email, message } = req.body;
+    
+    // Validation
+    if (!name || !email || !message) {
+        return res.status(400).json({ 
+            error: 'Please fill in all fields' 
+        });
+    }
+    
+    // Email options
+    const mailOptions = {
+        from: email,
+        to: process.env.EMAIL_USER,
+        subject: `Portfolio Contact: ${name}`,
+        html: `
+            <h3>New Contact Form Submission</h3>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Message:</strong></p>
+            <p>${message}</p>
+        `
+    };
+    
+    try {
+        // Send email
+        await transporter.sendMail(mailOptions);
+        
+        res.json({ 
+            success: true,
+            message: 'Email sent successfully!' 
+        });
+    } catch (error) {
+        console.error('Email error:', error);
+        res.status(500).json({ 
+            error: 'Failed to send email' 
+        });
+    }
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'OK', timestamp: new Date() });
+});
+
+console.log('Contact form API ready!');</textarea>
+                    <button class="run-button" onclick="runCode('contact-form', 'contact-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="contact-output">Output will appear here...</div>
+                </div>
+
+                <h3>Frontend Code to Connect:</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// In your frontend JavaScript
+async function sendContactForm(formData) {
+    try {
+        const response = await fetch('http://localhost:3000/api/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('Message sent successfully!');
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        alert('Failed to send message');
+    }
+}</pre>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Setting up Gmail for Nodemailer
+                    </div>
+                    <div class="spoiler-content">
+                        <p>To use Gmail with Nodemailer:</p>
+                        <ol>
+                            <li>Go to your Google Account settings</li>
+                            <li>Enable 2-factor authentication</li>
+                            <li>Generate an "App Password"</li>
+                            <li>Use that app password in your .env file</li>
+                        </ol>
+                        <p>Never use your regular Gmail password!</p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(5)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(7)">Next: Building Your API →</button>
+                </div>
+            </section>
+
+            <!-- Section 7: Building Your API -->
+            <section class="lesson-section" id="section-7">
+                <h2>🏗️ Building Your Portfolio API</h2>
+                <p>Let's create a complete API for your portfolio website! This will handle projects, visitor counting, and more.</p>
+
+                <div class="try-it-box">
+                    <h4>🎮 Complete Portfolio Backend</h4>
+                    <p>This is a full-featured API for a portfolio website:</p>
+                    <textarea class="code-editor" id="portfolio-api">const express = require('express');
+const cors = require('cors');
+const fs = require('fs').promises;
+const path = require('path');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Simple file-based storage (use a real database in production!)
+const DATA_FILE = './portfolio-data.json';
+
+// Initialize data file
+async function initData() {
+    try {
+        await fs.access(DATA_FILE);
+    } catch {
+        const initialData = {
+            projects: [],
+            visitors: 0,
+            messages: []
+        };
+        await fs.writeFile(DATA_FILE, JSON.stringify(initialData, null, 2));
+    }
+}
+
+// Read data
+async function readData() {
+    const data = await fs.readFile(DATA_FILE, 'utf8');
+    return JSON.parse(data);
+}
+
+// Write data
+async function writeData(data) {
+    await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2));
+}
+
+// ROUTES
+
+// Get all projects
+app.get('/api/projects', async (req, res) => {
+    const data = await readData();
+    res.json(data.projects);
+});
+
+// Add new project
+app.post('/api/projects', async (req, res) => {
+    const { title, description, tech, link, image } = req.body;
+    
+    if (!title || !description) {
+        return res.status(400).json({ error: 'Title and description required' });
+    }
+    
+    const data = await readData();
+    const newProject = {
+        id: Date.now(),
+        title,
+        description,
+        tech: tech || [],
+        link: link || '',
+        image: image || '',
+        createdAt: new Date()
+    };
+    
+    data.projects.push(newProject);
+    await writeData(data);
+    
+    res.status(201).json(newProject);
+});
+
+// Visitor counter
+app.get('/api/visitors', async (req, res) => {
+    const data = await readData();
+    data.visitors++;
+    await writeData(data);
+    res.json({ count: data.visitors });
+});
+
+// Contact messages
+app.post('/api/messages', async (req, res) => {
+    const { name, email, message } = req.body;
+    
+    if (!name || !email || !message) {
+        return res.status(400).json({ error: 'All fields required' });
+    }
+    
+    const data = await readData();
+    const newMessage = {
+        id: Date.now(),
+        name,
+        email,
+        message,
+        timestamp: new Date()
+    };
+    
+    data.messages.push(newMessage);
+    await writeData(data);
+    
+    res.json({ success: true, message: 'Message saved!' });
+});
+
+// Get stats
+app.get('/api/stats', async (req, res) => {
+    const data = await readData();
+    res.json({
+        totalProjects: data.projects.length,
+        totalVisitors: data.visitors,
+        totalMessages: data.messages.length,
+        latestProject: data.projects[data.projects.length - 1]
+    });
+});
+
+// Initialize and provide feedback
+initData().then(() => {
+    console.log('Portfolio API Ready!');
+    console.log('Available endpoints:');
+    console.log('GET  /api/projects - Get all projects');
+    console.log('POST /api/projects - Add new project');
+    console.log('GET  /api/visitors - Increment & get visitor count');
+    console.log('POST /api/messages - Save contact message');
+    console.log('GET  /api/stats    - Get portfolio statistics');
+});</textarea>
+                    <button class="run-button" onclick="runCode('portfolio-api', 'portfolio-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="portfolio-output">Output will appear here...</div>
+                </div>
+
+                <div class="info-box">
+                    <h4>💾 About Data Storage</h4>
+                    <p>This example uses a JSON file for simplicity. In real applications, you'd use a database like:</p>
+                    <ul>
+                        <li><strong>MongoDB:</strong> Great for flexible data</li>
+                        <li><strong>PostgreSQL:</strong> Perfect for structured data</li>
+                        <li><strong>SQLite:</strong> Simple file-based database</li>
+                    </ul>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(6)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(8)">Next: Deploy Your Backend →</button>
+                </div>
+            </section>
+
+            <!-- Section 8: Deploy Your Backend -->
+            <section class="lesson-section" id="section-8">
+                <h2>🚀 Deploy Your Backend</h2>
+                <p>Your server works on localhost, but how do you make it available to the world? Let's deploy it for FREE!</p>
+
+                <div class="info-box">
+                    <h4>🌐 Free Hosting Options</h4>
+                    <ul>
+                        <li><strong>Render:</strong> Super easy, great free tier</li>
+                        <li><strong>Railway:</strong> Simple deployment with database</li>
+                        <li><strong>Vercel:</strong> Great for serverless functions</li>
+                        <li><strong>Glitch:</strong> Instant deploy, great for learning</li>
+                    </ul>
+                </div>
+
+                <h3>Deploying to Render (Recommended):</h3>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre># 1. Create a package.json start script
+"scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+}
+
+# 2. Push your code to GitHub
+
+# 3. Connect Render to your GitHub repo
+
+# 4. Set environment variables in Render dashboard
+
+# 5. Your app is live! 🎉</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Production-Ready Server</h4>
+                    <p>Here's a server configured for production deployment:</p>
+                    <textarea class="code-editor" id="production-server">const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+
+const app = express();
+
+// Production middleware
+app.use(cors({
+    origin: process.env.FRONTEND_URL || '*',
+    credentials: true
+}));
+app.use(express.json());
+app.use(express.static('public')); // Serve static files
+
+// Health check for monitoring
+app.get('/', (req, res) => {
+    res.json({
+        status: 'OK',
+        message: 'Server is running!',
+        environment: process.env.NODE_ENV || 'development',
+        timestamp: new Date()
+    });
+});
+
+// Your API routes here
+app.get('/api/info', (req, res) => {
+    res.json({
+        name: 'My Portfolio API',
+        version: '1.0.0',
+        endpoints: [
+            'GET /',
+            'GET /api/info',
+            'GET /api/projects',
+            'POST /api/contact'
+        ]
+    });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        error: 'Something went wrong!',
+        message: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+});
+
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({
+        error: 'Not Found',
+        message: `Cannot ${req.method} ${req.url}`
+    });
+});
+
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`
+    🚀 Server is running!
+    🌍 Environment: ${process.env.NODE_ENV || 'development'}
+    🔗 Local: http://localhost:${PORT}
+    `);
+});</textarea>
+                    <button class="run-button" onclick="runCode('production-server', 'production-output')">
+                        ▶️ Run Code
+                    </button>
+                    <div class="output-box" id="production-output">Output will appear here...</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What's the most important thing to remember when deploying?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'env-vars')">
+                        <input type="radio" name="q4" value="env-vars"> Set environment variables for sensitive data
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'speed')">
+                        <input type="radio" name="q4" value="speed"> Make sure it's fast
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'domain')">
+                        <input type="radio" name="q4" value="domain"> Buy a custom domain
+                    </label>
+                    <div class="quiz-result" id="q4-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(7)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(9)">Next: Final Challenge →</button>
+                </div>
+            </section>
+
+            <!-- Section 9: Final Challenge -->
+            <section class="lesson-section" id="section-9">
+                <h2>🎯 Final Challenge: Build a Full-Stack App!</h2>
+                <p>Time to put everything together! Your challenge is to build a complete full-stack application with both frontend and backend.</p>
+
+                <div class="info-box">
+                    <h4>🏆 Your Mission</h4>
+                    <p>Create a "Guestbook" application where visitors can:</p>
+                    <ul>
+                        <li>View all previous messages</li>
+                        <li>Add their own message</li>
+                        <li>See a visitor counter</li>
+                        <li>Filter messages by date</li>
+                    </ul>
+                </div>
+
+                <h3>Backend Requirements:</h3>
+                <ul>
+                    <li>✅ Express server with proper routing</li>
+                    <li>✅ GET endpoint to retrieve all messages</li>
+                    <li>✅ POST endpoint to add new message</li>
+                    <li>✅ Visitor counter that increments</li>
+                    <li>✅ Input validation (no empty messages)</li>
+                    <li>✅ CORS enabled for frontend access</li>
+                </ul>
+
+                <h3>Frontend Requirements:</h3>
+                <ul>
+                    <li>✅ Form to submit new messages</li>
+                    <li>✅ Display all messages nicely</li>
+                    <li>✅ Show visitor count</li>
+                    <li>✅ Handle loading and error states</li>
+                    <li>✅ Responsive design</li>
+                </ul>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Starter structure for your challenge
+const express = require('express');
+const cors = require('cors');
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+// Your code here!
+// Hint: You'll need arrays or files to store data
+
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Guestbook API running on port ${PORT}`);
+});</pre>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Hints for Success
+                    </div>
+                    <div class="spoiler-content">
+                        <ul>
+                            <li>Start with the backend API first</li>
+                            <li>Test each endpoint with Postman or curl</li>
+                            <li>Add the frontend once API works</li>
+                            <li>Use try-catch for error handling</li>
+                            <li>Remember to validate input data</li>
+                            <li>Add timestamps to messages</li>
+                            <li>Consider rate limiting to prevent spam</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>🎉 Congratulations!</h4>
+                    <p>You've learned how to build backend applications with Node.js and Express! You can now:</p>
+                    <ul>
+                        <li>Create web servers that handle requests</li>
+                        <li>Build APIs that frontend apps can use</li>
+                        <li>Handle data storage and retrieval</li>
+                        <li>Deploy your applications online</li>
+                        <li>Keep sensitive data secure</li>
+                    </ul>
+                    <p><strong>You're no longer limited to just frontend - you can build COMPLETE applications! 🚀</strong></p>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(8)">← Previous</button>
+                    <button class="nav-button" onclick="completeModule()">Complete Module! 🎉</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement" id="achievement">
+        <h3>🏆 Achievement Unlocked!</h3>
+        <p id="achievementText">Backend Developer!</p>
+    </div>
+
+    <script>
+        // Global variables
+        let currentSection = 0;
+        const totalSections = 10;
+        let completedSections = new Set();
+
+        // Load saved progress
+        function loadProgress() {
+            const saved = localStorage.getItem('module7-progress');
+            if (saved) {
+                const data = JSON.parse(saved);
+                currentSection = data.currentSection || 0;
+                completedSections = new Set(data.completedSections || []);
+                updateProgressBar();
+                updateNavigation();
+            }
+        }
+
+        // Save progress
+        function saveProgress() {
+            const data = {
+                currentSection,
+                completedSections: Array.from(completedSections)
+            };
+            localStorage.setItem('module7-progress', JSON.stringify(data));
+        }
+
+        // Show section
+        function showSection(index) {
+            // Hide all sections
+            document.querySelectorAll('.lesson-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(`section-${index}`).classList.add('active');
+            
+            // Update navigation
+            currentSection = index;
+            completedSections.add(index);
+            updateProgressBar();
+            updateNavigation();
+            saveProgress();
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+
+            // Check for achievements
+            checkAchievements();
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const progress = (completedSections.size / totalSections) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Update navigation
+        function updateNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach((item, index) => {
+                item.classList.remove('active', 'completed');
+                if (index === currentSection) {
+                    item.classList.add('active');
+                } else if (completedSections.has(index)) {
+                    item.classList.add('completed');
+                }
+            });
+        }
+
+        // Theme management
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-icon');
+            icon.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        // Load saved theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.toggle-icon').textContent = '☀️';
+            }
+        }
+
+        // Run code
+        function runCode(editorId, outputId) {
+            const code = document.getElementById(editorId).value;
+            const output = document.getElementById(outputId);
+            
+            try {
+                // Create a safe evaluation context
+                const logs = [];
+                const customConsole = {
+                    log: (...args) => logs.push(args.join(' '))
+                };
+                
+                // Simple code simulation (in real app, this would run on server)
+                if (code.includes('console.log')) {
+                    // Extract console.log statements
+                    const matches = code.match(/console\.log\([^)]+\)/g);
+                    if (matches) {
+                        output.textContent = '// Output:\n';
+                        matches.forEach(match => {
+                            const content = match.replace(/console\.log\(['"`](.*)['"`]\)/, '$1');
+                            output.textContent += content + '\n';
+                        });
+                    }
+                } else {
+                    output.textContent = '// Code saved! In a real environment, this would execute on the server.\n// Try adding console.log() statements to see output.';
+                }
+                
+                // Show success
+                output.style.color = '#10b981';
+                setTimeout(() => {
+                    output.style.color = '';
+                }, 2000);
+            } catch (error) {
+                output.textContent = '❌ Error: ' + error.message;
+                output.style.color = '#ef4444';
+            }
+        }
+
+        // Copy code
+        function copyCode(button) {
+            const pre = button.nextElementSibling;
+            const text = pre.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = 'var(--success)';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            });
+        }
+
+        // Toggle spoiler
+        function toggleSpoiler(header) {
+            const spoiler = header.parentElement;
+            spoiler.classList.toggle('open');
+        }
+
+        // Check quiz
+        function checkQuiz(option, correctAnswer) {
+            const value = option.querySelector('input').value;
+            const resultDiv = option.parentElement.querySelector('.quiz-result');
+            
+            if (value === correctAnswer) {
+                resultDiv.textContent = '✅ Correct! Great job!';
+                resultDiv.className = 'quiz-result correct';
+                
+                // Achievement for first quiz
+                if (!localStorage.getItem('module7-first-quiz')) {
+                    localStorage.setItem('module7-first-quiz', 'true');
+                    showAchievement('Quiz Master!');
+                }
+            } else {
+                resultDiv.textContent = '❌ Not quite. Try again!';
+                resultDiv.className = 'quiz-result incorrect';
+            }
+        }
+
+        // Show achievement
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            const achievementText = document.getElementById('achievementText');
+            
+            achievementText.textContent = text;
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        // Check for achievements
+        function checkAchievements() {
+            // First server achievement
+            if (currentSection === 3 && !localStorage.getItem('module7-first-server')) {
+                localStorage.setItem('module7-first-server', 'true');
+                showAchievement('Server Builder!');
+            }
+            
+            // API master achievement
+            if (currentSection === 7 && !localStorage.getItem('module7-api-master')) {
+                localStorage.setItem('module7-api-master', 'true');
+                showAchievement('API Master!');
+            }
+            
+            // Halfway achievement
+            if (completedSections.size >= 5 && !localStorage.getItem('module7-halfway')) {
+                localStorage.setItem('module7-halfway', 'true');
+                showAchievement('Halfway There!');
+            }
+        }
+
+        // Complete module
+        function completeModule() {
+            completedSections.add(9);
+            updateProgressBar();
+            saveProgress();
+            
+            showAchievement('Backend Developer! 🎉');
+            
+            // Save completion
+            localStorage.setItem('module7-completed', 'true');
+            
+            // Show completion message
+            setTimeout(() => {
+                alert('🎉 Congratulations! You\'ve completed Module 7!\n\nYou can now build full-stack applications with Node.js and Express!');
+            }, 1000);
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            loadProgress();
+            updateNavigation();
+        });
+    </script>
+</body>
+</html>

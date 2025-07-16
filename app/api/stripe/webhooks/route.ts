@@ -1,6 +1,7 @@
 import {
   manageSubscriptionStatusChange,
-  updateStripeCustomer
+  updateStripeCustomer,
+  handleCoursePaymentSuccess
 } from "@/actions/stripe"
 import { stripe } from "@/lib/stripe"
 import { headers } from "next/headers"
@@ -9,7 +10,9 @@ import Stripe from "stripe"
 const relevantEvents = new Set([
   "checkout.session.completed",
   "customer.subscription.updated",
-  "customer.subscription.deleted"
+  "customer.subscription.deleted",
+  "payment_intent.succeeded",
+  "payment_intent.payment_failed"
 ])
 
 export async function POST(req: Request) {
@@ -50,6 +53,14 @@ export async function POST(req: Request) {
         case "checkout.session.completed":
           await handleCheckoutSession(event)
           break
+          
+        case "payment_intent.succeeded":
+          await handlePaymentIntentSucceeded(event)
+          break
+          
+        case "payment_intent.payment_failed":
+          await handlePaymentIntentFailed(event)
+          break
 
         default:
           throw new Error("Unhandled relevant event!")
@@ -83,7 +94,9 @@ async function handleSubscriptionChange(event: Stripe.Event) {
 
 async function handleCheckoutSession(event: Stripe.Event) {
   const checkoutSession = event.data.object as Stripe.Checkout.Session
+  
   if (checkoutSession.mode === "subscription") {
+    // Handle subscription checkout
     const subscriptionId = checkoutSession.subscription as string
     const clientReferenceId = checkoutSession.client_reference_id
     const customerId = checkoutSession.customer as string
@@ -106,5 +119,58 @@ async function handleCheckoutSession(event: Stripe.Event) {
       subscription.customer as string,
       productId
     )
+  } else if (checkoutSession.mode === "payment") {
+    // Handle one-time payment for courses/bundles
+    const sessionId = checkoutSession.id
+    const metadata = checkoutSession.metadata
+    
+    console.log("Processing payment checkout session:", {
+      sessionId,
+      metadata,
+      paymentStatus: checkoutSession.payment_status,
+      amountTotal: checkoutSession.amount_total
+    })
+
+    // Check if this is a course or bundle purchase
+    if (metadata && (metadata.type === "course" || metadata.type === "bundle")) {
+      try {
+        await handleCoursePaymentSuccess(sessionId)
+        console.log(`Successfully processed ${metadata.type} purchase for user ${metadata.userId}`)
+      } catch (error) {
+        console.error(`Failed to process ${metadata.type} purchase:`, error)
+        throw error
+      }
+    } else {
+      console.warn("Payment checkout session without proper metadata:", metadata)
+    }
   }
+}
+
+async function handlePaymentIntentSucceeded(event: Stripe.Event) {
+  const paymentIntent = event.data.object as Stripe.PaymentIntent
+  
+  console.log("Payment intent succeeded:", {
+    id: paymentIntent.id,
+    amount: paymentIntent.amount,
+    currency: paymentIntent.currency,
+    metadata: paymentIntent.metadata
+  })
+  
+  // Payment intents are already handled via checkout.session.completed
+  // This is just for logging and monitoring purposes
+}
+
+async function handlePaymentIntentFailed(event: Stripe.Event) {
+  const paymentIntent = event.data.object as Stripe.PaymentIntent
+  
+  console.error("Payment intent failed:", {
+    id: paymentIntent.id,
+    amount: paymentIntent.amount,
+    currency: paymentIntent.currency,
+    metadata: paymentIntent.metadata,
+    lastPaymentError: paymentIntent.last_payment_error
+  })
+  
+  // You could implement additional error handling here
+  // such as sending failure notifications to the user
 }

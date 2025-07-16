@@ -106,10 +106,10 @@ This implementation plan outlines the development of OfCourse, a premium multi-c
 ### Week 3: Purchase Flow & Access Control
 
 #### Stripe Integration
-- [ ] Update Stripe products via API for courses
-- [ ] Implement `/api/stripe/create-checkout` endpoint
-- [ ] Update webhook handler for course purchases
-- [ ] Add purchase success/cancel pages
+- [x] Update Stripe products via API for courses
+- [x] Implement `/api/stripe/create-checkout` endpoint
+- [x] Update webhook handler for course purchases
+- [x] Add purchase success/cancel pages
 - [ ] Test payment flow with test cards
 
 #### Access Control

@@ -27,6 +27,8 @@ export const courses = pgTable("courses", {
   thumbnailUrl: text("thumbnail_url"),
   previewVideoUrl: text("preview_video_url"),
   averageRating: decimal("average_rating", { precision: 2, scale: 1 }),
+  stripeProductId: text("stripe_product_id"),
+  stripePriceId: text("stripe_price_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull()
 })

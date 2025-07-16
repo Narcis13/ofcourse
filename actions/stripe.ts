@@ -218,9 +218,19 @@ export const createCourseCheckout = async (
     }
 
     // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
+    let lineItems
+    
+    if (course.stripePriceId) {
+      // Use existing Stripe price
+      lineItems = [
+        {
+          price: course.stripePriceId,
+          quantity: 1
+        }
+      ]
+    } else {
+      // Fallback to creating price data on the fly
+      lineItems = [
         {
           price_data: {
             currency: "usd",
@@ -237,10 +247,15 @@ export const createCourseCheckout = async (
           },
           quantity: 1
         }
-      ],
+      ]
+    }
+    
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: lineItems,
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_URL}/dashboard/courses/${courseId}?success=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL}/courses?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_URL}/purchase/course-success?courseId=${courseId}&sessionId={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_URL}/purchase/cancel?type=course&id=${courseId}`,
       customer: customer.stripeCustomerId || undefined,
       client_reference_id: userId,
       metadata: {
@@ -305,18 +320,27 @@ export const createBundleCheckout = async (
           .where(inArray(courses.id, bundle.courseIds))
       : []
 
-    // Calculate pricing
-    const totalValue = bundleCourses.reduce(
-      (sum, course) => sum + parseFloat(course.price),
-      0
-    )
-    const discountAmount = (totalValue * bundle.discountPercentage) / 100
-    const finalPrice = totalValue - discountAmount
-
     // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
+    let lineItems
+    
+    if (bundle.stripePriceId) {
+      // Use existing Stripe price
+      lineItems = [
+        {
+          price: bundle.stripePriceId,
+          quantity: 1
+        }
+      ]
+    } else {
+      // Fallback to calculating price on the fly
+      const totalValue = bundleCourses.reduce(
+        (sum, course) => sum + parseFloat(course.price),
+        0
+      )
+      const discountAmount = (totalValue * bundle.discountPercentage) / 100
+      const finalPrice = totalValue - discountAmount
+      
+      lineItems = [
         {
           price_data: {
             currency: "usd",
@@ -333,10 +357,15 @@ export const createBundleCheckout = async (
           },
           quantity: 1
         }
-      ],
+      ]
+    }
+    
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: lineItems,
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_URL}/dashboard/courses?bundle=${bundleId}&success=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL}/bundles?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_URL}/purchase/bundle-success?bundleId=${bundleId}&sessionId={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_URL}/purchase/cancel?type=bundle&id=${bundleId}`,
       customer: customer.stripeCustomerId || undefined,
       client_reference_id: userId,
       metadata: {
