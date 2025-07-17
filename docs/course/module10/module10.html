@@ -1,0 +1,2167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 10: Final Project Sprint</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a78bfa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --code-bg: #1e293b;
+            --border: #e5e7eb;
+        }
+
+        /* Dark mode variables */
+        body.dark-mode {
+            --dark: #f3f4f6;
+            --light: #1f2937;
+            --white: #111827;
+            --border: #374151;
+            --code-bg: #0f172a;
+            background: #0f172a;
+            color: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Header Styles */
+        .header {
+            background-color: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .header-subtitle {
+            color: var(--dark);
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+
+        .theme-toggle {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background-color: var(--border);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Main Layout */
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: calc(100vh - 120px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background-color: var(--white);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 120px;
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: var(--light);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .nav-item.completed {
+            border-left: 4px solid var(--success);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 2rem 3rem;
+            max-width: 900px;
+        }
+
+        .lesson-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .lesson-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .lesson-section h2 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .lesson-section h3 {
+            color: var(--dark);
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem 0;
+        }
+
+        .lesson-section p {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        /* Interactive Components */
+        .project-selector {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .project-option {
+            background-color: var(--light);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .project-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+
+        .project-option.selected {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+
+        .project-option h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-planner {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background-color: var(--light);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .feature-item.completed {
+            background-color: rgba(16, 185, 129, 0.1);
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .priority-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .priority-high {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .priority-medium {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .priority-low {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .timeline-builder {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .timeline-day {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background-color: var(--light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .timeline-day h5 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            min-width: 100px;
+        }
+
+        .timeline-input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: var(--white);
+            color: var(--dark);
+        }
+
+        /* Try It Box */
+        .try-it-box {
+            background-color: var(--white);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .try-it-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        .try-it-box h4 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95rem;
+            background-color: var(--code-bg);
+            color: #f8f8f2;
+            resize: vertical;
+            margin: 1rem 0;
+        }
+
+        .run-button {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .run-button:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+
+        .output-box {
+            background-color: var(--code-bg);
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            min-height: 60px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        /* Quiz Container */
+        .quiz-container {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+
+        .quiz-option {
+            display: block;
+            padding: 1rem 1.5rem;
+            margin: 0.5rem 0;
+            background-color: var(--light);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .quiz-option input[type="radio"] {
+            margin-right: 0.75rem;
+        }
+
+        .quiz-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .quiz-result.correct {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            display: block;
+        }
+
+        .quiz-result.incorrect {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            display: block;
+        }
+
+        /* Spoiler Component */
+        .spoiler {
+            background-color: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .spoiler-header {
+            padding: 1rem 1.5rem;
+            background-color: var(--light);
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .spoiler-header:hover {
+            background-color: var(--border);
+        }
+
+        .spoiler-content {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .spoiler.open .spoiler-content {
+            padding: 1.5rem;
+            max-height: 500px;
+        }
+
+        /* Code Block */
+        .code-block {
+            position: relative;
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .code-block pre {
+            padding: 1.5rem;
+            color: #f8f8f2;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .copy-button.copied {
+            background-color: var(--success);
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .nav-button:disabled {
+            background-color: var(--border);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Achievement Popup */
+        .achievement {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--success);
+            color: white;
+            padding: 1.5rem 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: top 0.5s ease;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .achievement.show {
+            top: 20px;
+        }
+
+        .achievement h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Checklist */
+        .checklist {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background-color: var(--light);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checklist-item.checked {
+            background-color: rgba(16, 185, 129, 0.1);
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        /* Progress Tracker */
+        .progress-tracker {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .progress-item {
+            margin: 1rem 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 24px;
+            background-color: var(--light);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Presentation Tips */
+        .presentation-tips {
+            background-color: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .tip-card {
+            background-color: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+        }
+
+        .tip-card h5 {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 1rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .project-option {
+                padding: 1rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .sidebar,
+            .theme-toggle,
+            .nav-buttons,
+            .run-button,
+            .copy-button {
+                display: none;
+            }
+
+            .content {
+                max-width: 100%;
+            }
+
+            .lesson-section {
+                display: block !important;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1>Module 10: Final Project Sprint 🚀</h1>
+                <div class="header-subtitle">Put it all together in an impressive capstone project!</div>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="toggle-icon">🌙</span>
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <nav id="lessonNav">
+                <div class="nav-item active" onclick="showSection(0)">🎯 Welcome & Overview</div>
+                <div class="nav-item" onclick="showSection(1)">💡 Choose Your Project</div>
+                <div class="nav-item" onclick="showSection(2)">📋 Plan Your Features</div>
+                <div class="nav-item" onclick="showSection(3)">⏰ Create Your Timeline</div>
+                <div class="nav-item" onclick="showSection(4)">🛠️ Development Strategy</div>
+                <div class="nav-item" onclick="showSection(5)">🔄 Integration Tips</div>
+                <div class="nav-item" onclick="showSection(6)">🌐 Deployment Guide</div>
+                <div class="nav-item" onclick="showSection(7)">📝 Documentation</div>
+                <div class="nav-item" onclick="showSection(8)">🎤 Presentation Skills</div>
+                <div class="nav-item" onclick="showSection(9)">🏁 Final Checklist</div>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <!-- Section 0: Welcome & Overview -->
+            <section class="lesson-section active" id="section-0">
+                <h2>🎯 Welcome to Your Final Project!</h2>
+                <p>Congratulations! You've made it to the grand finale! 🎉 Over the past 9 modules, you've learned HTML, CSS, JavaScript, backend development, databases, and even React. Now it's time to put ALL of these skills together to build something amazing!</p>
+
+                <p>This module isn't about learning new technical skills - it's about combining everything you know to create a complete, working application that you'll be proud to show off. Think of it as your coding graduation project!</p>
+
+                <h3>What Makes a Great Final Project?</h3>
+                <div class="tip-card">
+                    <h5>✨ It Solves a Real Problem</h5>
+                    <p>The best projects address an actual need - maybe something that bugs you daily, helps your community, or makes life easier for others.</p>
+                </div>
+
+                <div class="tip-card">
+                    <h5>🎨 It Shows Your Skills</h5>
+                    <p>Your project should demonstrate what you've learned: frontend, backend, database, and good coding practices.</p>
+                </div>
+
+                <div class="tip-card">
+                    <h5>💖 You're Passionate About It</h5>
+                    <p>Choose something you actually care about - you'll be working on it for 2 weeks!</p>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What's the MOST important factor in choosing your final project?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'passion')">
+                        <input type="radio" name="q1" value="complexity"> How complex and impressive it is
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'passion')">
+                        <input type="radio" name="q1" value="passion"> Something you're excited to build
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'passion')">
+                        <input type="radio" name="q1" value="trendy"> Whatever uses the trendiest tech
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'passion')">
+                        <input type="radio" name="q1" value="easy"> The easiest thing you can think of
+                    </label>
+                    <div class="quiz-result" id="q1-result"></div>
+                </div>
+
+                <h3>Your Project Journey</h3>
+                <div class="progress-tracker">
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Module Progress</span>
+                            <span id="moduleProgress">10%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-fill" style="width: 10%">10%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Pro Tip: Start Simple, Then Expand
+                    </div>
+                    <div class="spoiler-content">
+                        <p>The secret to a successful project? Start with a Minimum Viable Product (MVP). Get the core functionality working first, then add features. This approach prevents overwhelm and ensures you have something working to show!</p>
+                        <p>Example: If building a todo app, first make adding/viewing tasks work. Then add editing, deleting, categories, etc.</p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" disabled>← Previous</button>
+                    <button class="nav-button" onclick="showSection(1)">Choose Your Project →</button>
+                </div>
+            </section>
+
+            <!-- Section 1: Choose Your Project -->
+            <section class="lesson-section" id="section-1">
+                <h2>💡 Choose Your Project</h2>
+                <p>Time for the big decision! Let's explore some project ideas that match different interests. Remember, the best project is one YOU want to build!</p>
+
+                <h3>Project Ideas by Category</h3>
+                <div class="project-selector">
+                    <h4>Click to select your project type:</h4>
+                    
+                    <div class="project-option" onclick="selectProject(this, 'social')">
+                        <h4>🌟 Social Connection App</h4>
+                        <p>Build a platform for sharing and connecting with others. Examples: Mini social network, event planner, study group finder, interest-based chat rooms.</p>
+                        <p><strong>Skills shown:</strong> User auth, real-time updates, database relationships, responsive design</p>
+                    </div>
+
+                    <div class="project-option" onclick="selectProject(this, 'game')">
+                        <h4>🎮 Interactive Game</h4>
+                        <p>Create an engaging browser game. Examples: Quiz game with leaderboard, multiplayer card game, puzzle solver, educational game.</p>
+                        <p><strong>Skills shown:</strong> Game logic, state management, animations, score tracking</p>
+                    </div>
+
+                    <div class="project-option" onclick="selectProject(this, 'productivity')">
+                        <h4>📊 Productivity Tool</h4>
+                        <p>Help people get things done better. Examples: Task manager with teams, habit tracker, budget planner, study timer with stats.</p>
+                        <p><strong>Skills shown:</strong> CRUD operations, data visualization, user workflows, notifications</p>
+                    </div>
+
+                    <div class="project-option" onclick="selectProject(this, 'creative')">
+                        <h4>🎨 Creative Application</h4>
+                        <p>Let users create and share content. Examples: Drawing app, music playlist maker, story writing tool, meme generator.</p>
+                        <p><strong>Skills shown:</strong> File handling, creative APIs, sharing features, rich UI</p>
+                    </div>
+
+                    <div class="project-option" onclick="selectProject(this, 'custom')">
+                        <h4>💭 Your Own Idea</h4>
+                        <p>Have something specific in mind? Awesome! Make sure it includes frontend, backend, and database components.</p>
+                        <p><strong>Remember:</strong> Scope it reasonably - you have 2 weeks!</p>
+                    </div>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎯 Define Your Project</h4>
+                    <p>Write a one-paragraph description of your project idea. Be specific!</p>
+                    <textarea class="code-editor" id="projectDescription" placeholder="My project is a [type of app] that helps [target users] to [solve this problem]. It will include features like [main features] and use [technologies].">My project is a </textarea>
+                    <button class="run-button" onclick="saveProjectDescription()">
+                        💾 Save Description
+                    </button>
+                    <div class="output-box" id="descriptionOutput">Your project description will appear here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        🎯 How to Validate Your Idea
+                    </div>
+                    <div class="spoiler-content">
+                        <p><strong>Ask yourself:</strong></p>
+                        <ul>
+                            <li>Can I explain it in one sentence?</li>
+                            <li>Would I actually use this?</li>
+                            <li>Can I build a basic version in 1 week?</li>
+                            <li>Does it use frontend + backend + database?</li>
+                            <li>Am I excited to work on it?</li>
+                        </ul>
+                        <p>If you answered "yes" to all, you've got a winner! 🏆</p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(0)">← Overview</button>
+                    <button class="nav-button" onclick="showSection(2)">Plan Features →</button>
+                </div>
+            </section>
+
+            <!-- Section 2: Plan Your Features -->
+            <section class="lesson-section" id="section-2">
+                <h2>📋 Plan Your Features</h2>
+                <p>Now let's break down your project into features. We'll use the MVP (Minimum Viable Product) approach - start with essentials, then add nice-to-haves!</p>
+
+                <h3>Feature Planning Framework</h3>
+                <div class="feature-planner">
+                    <h4>🎯 Core Features (MVP - Week 1)</h4>
+                    <p>These MUST work for your project to be considered complete:</p>
+                    <div class="feature-item">
+                        <input type="checkbox" onchange="toggleFeature(this)">
+                        <span>User can create account and log in</span>
+                        <span class="priority-badge priority-high">HIGH</span>
+                    </div>
+                    <div class="feature-item">
+                        <input type="checkbox" onchange="toggleFeature(this)">
+                        <span>Basic CRUD operations (Create, Read, Update, Delete)</span>
+                        <span class="priority-badge priority-high">HIGH</span>
+                    </div>
+                    <div class="feature-item">
+                        <input type="checkbox" onchange="toggleFeature(this)">
+                        <span>Responsive design (works on mobile)</span>
+                        <span class="priority-badge priority-high">HIGH</span>
+                    </div>
+                    <div class="feature-item">
+                        <input type="checkbox" onchange="toggleFeature(this)">
+                        <span>Data persists in database</span>
+                        <span class="priority-badge priority-high">HIGH</span>
+                    </div>
+                    
+                    <h4>✨ Nice-to-Have Features (Week 2)</h4>
+                    <p>Add these once your MVP is solid:</p>
+                    <div class="feature-item">
+                        <input type="checkbox" onchange="toggleFeature(this)">
+                        <span>Advanced search/filter functionality</span>
+                        <span class="priority-badge priority-medium">MEDIUM</span>
+                    </div>
+                    <div class="feature-item">
+                        <input type="checkbox" onchange="toggleFeature(this)">
+                        <span>Real-time updates</span>
+                        <span class="priority-badge priority-medium">MEDIUM</span>
+                    </div>
+                    <div class="feature-item">
+                        <input type="checkbox" onchange="toggleFeature(this)">
+                        <span>Email notifications</span>
+                        <span class="priority-badge priority-low">LOW</span>
+                    </div>
+                    <div class="feature-item">
+                        <input type="checkbox" onchange="toggleFeature(this)">
+                        <span>Dark mode toggle</span>
+                        <span class="priority-badge priority-low">LOW</span>
+                    </div>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Create Your Feature List</h4>
+                    <p>List your specific features in order of priority. Use this format: "As a user, I can..."</p>
+                    <textarea class="code-editor" id="featureList" placeholder="MVP Features (Week 1):
+- As a user, I can create an account
+- As a user, I can ...
+
+Nice-to-Have Features (Week 2):
+- As a user, I can ...">MVP Features (Week 1):
+- As a user, I can </textarea>
+                    <button class="run-button" onclick="saveFeatures()">
+                        💾 Save Feature List
+                    </button>
+                    <div class="output-box" id="featureOutput">Your feature list will appear here...</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Which feature should you build FIRST for a task management app?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'create')">
+                        <input type="radio" name="q2" value="theme"> Dark mode toggle
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'create')">
+                        <input type="radio" name="q2" value="create"> Add and view tasks
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'create')">
+                        <input type="radio" name="q2" value="ai"> AI task suggestions
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'create')">
+                        <input type="radio" name="q2" value="social"> Social sharing
+                    </label>
+                    <div class="quiz-result" id="q2-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(1)">← Choose Project</button>
+                    <button class="nav-button" onclick="showSection(3)">Create Timeline →</button>
+                </div>
+            </section>
+
+            <!-- Section 3: Create Your Timeline -->
+            <section class="lesson-section" id="section-3">
+                <h2>⏰ Create Your Timeline</h2>
+                <p>Two weeks might seem like a lot, but it goes FAST! Let's create a realistic timeline that ensures you finish with something awesome to show.</p>
+
+                <h3>Your 14-Day Sprint Schedule</h3>
+                <div class="timeline-builder">
+                    <h4>📅 Week 1: Build Your MVP</h4>
+                    <div class="timeline-day">
+                        <h5>Day 1-2</h5>
+                        <input type="text" class="timeline-input" placeholder="Set up project, create database schema, build authentication" onchange="saveTimeline()">
+                    </div>
+                    <div class="timeline-day">
+                        <h5>Day 3-4</h5>
+                        <input type="text" class="timeline-input" placeholder="Create main UI components, implement core CRUD operations" onchange="saveTimeline()">
+                    </div>
+                    <div class="timeline-day">
+                        <h5>Day 5-6</h5>
+                        <input type="text" class="timeline-input" placeholder="Connect frontend to backend, test data flow" onchange="saveTimeline()">
+                    </div>
+                    <div class="timeline-day">
+                        <h5>Day 7</h5>
+                        <input type="text" class="timeline-input" placeholder="Fix bugs, ensure MVP works end-to-end" onchange="saveTimeline()">
+                    </div>
+
+                    <h4>📅 Week 2: Polish & Enhance</h4>
+                    <div class="timeline-day">
+                        <h5>Day 8-9</h5>
+                        <input type="text" class="timeline-input" placeholder="Add nice-to-have features, improve UI/UX" onchange="saveTimeline()">
+                    </div>
+                    <div class="timeline-day">
+                        <h5>Day 10-11</h5>
+                        <input type="text" class="timeline-input" placeholder="Implement responsive design, optimize performance" onchange="saveTimeline()">
+                    </div>
+                    <div class="timeline-day">
+                        <h5>Day 12</h5>
+                        <input type="text" class="timeline-input" placeholder="Deploy to production, test live version" onchange="saveTimeline()">
+                    </div>
+                    <div class="timeline-day">
+                        <h5>Day 13</h5>
+                        <input type="text" class="timeline-input" placeholder="Write documentation, prepare presentation" onchange="saveTimeline()">
+                    </div>
+                    <div class="timeline-day">
+                        <h5>Day 14</h5>
+                        <input type="text" class="timeline-input" placeholder="Final testing, practice demo, submit!" onchange="saveTimeline()">
+                    </div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        ⚡ Time Management Tips
+                    </div>
+                    <div class="spoiler-content">
+                        <p><strong>Stay on track with these strategies:</strong></p>
+                        <ul>
+                            <li>🍅 Use Pomodoro Technique: 25 min work, 5 min break</li>
+                            <li>🎯 Set daily goals each morning</li>
+                            <li>✅ Test as you go - don't leave it all for the end</li>
+                            <li>💬 Ask for help early if stuck (don't waste hours!)</li>
+                            <li>📝 Keep a quick log of what you accomplish each day</li>
+                            <li>🚫 Avoid scope creep - stick to your plan!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(2)">← Plan Features</button>
+                    <button class="nav-button" onclick="showSection(4)">Development Strategy →</button>
+                </div>
+            </section>
+
+            <!-- Section 4: Development Strategy -->
+            <section class="lesson-section" id="section-4">
+                <h2>🛠️ Development Strategy</h2>
+                <p>Let's set up your development workflow for maximum efficiency. Good practices now = fewer headaches later!</p>
+
+                <h3>Project Setup Checklist</h3>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Create project folder with clear structure</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Initialize Git repository</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Set up .gitignore file</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Create README with project description</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Set up environment variables (.env)</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Install necessary dependencies</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Create basic folder structure</span>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Recommended Project Structure
+project-name/
+├── client/              # Frontend code
+│   ├── public/         # Static assets
+│   ├── src/           # React/JS source code
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── utils/
+│   └── package.json
+├── server/             # Backend code
+│   ├── routes/        # API endpoints
+│   ├── models/        # Database models
+│   ├── middleware/    # Auth, error handling
+│   └── index.js       # Server entry point
+├── .gitignore
+├── .env               # Environment variables
+├── README.md          # Project documentation
+└── package.json       # Root dependencies</pre>
+                </div>
+
+                <h3>AI-Assisted Development Workflow</h3>
+                <div class="tip-card">
+                    <h5>🤖 Use AI as Your Coding Partner</h5>
+                    <p>Remember those prompt engineering skills from Module 4? Time to use them!</p>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Practice: Write an AI Prompt</h4>
+                    <p>Create a prompt to get help with a specific part of your project:</p>
+                    <textarea class="code-editor" id="aiPrompt" placeholder="I need help creating [specific component/feature]. 
+
+Context: [describe your project briefly]
+
+Requirements:
+- [requirement 1]
+- [requirement 2]
+
+Current code structure: [relevant details]
+
+Please provide: [what you need]">I need help creating </textarea>
+                    <button class="run-button" onclick="generateAIResponse()">
+                        🤖 Generate AI Tips
+                    </button>
+                    <div class="output-box" id="aiOutput">AI assistance tips will appear here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        🐛 Debugging Strategy
+                    </div>
+                    <div class="spoiler-content">
+                        <p><strong>When things go wrong (and they will!):</strong></p>
+                        <ol>
+                            <li>Read the error message carefully</li>
+                            <li>Console.log() everything suspicious</li>
+                            <li>Check Network tab for API issues</li>
+                            <li>Verify your database queries</li>
+                            <li>Test each part in isolation</li>
+                            <li>Ask AI to explain the error</li>
+                            <li>Take a break if frustrated!</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(3)">← Create Timeline</button>
+                    <button class="nav-button" onclick="showSection(5)">Integration Tips →</button>
+                </div>
+            </section>
+
+            <!-- Section 5: Integration Tips -->
+            <section class="lesson-section" id="section-5">
+                <h2>🔄 Full-Stack Integration</h2>
+                <p>This is where the magic happens - connecting your frontend to your backend! Let's make sure all the pieces work together smoothly.</p>
+
+                <h3>Integration Checklist</h3>
+                <div class="checklist">
+                    <h4>Frontend ↔️ Backend Connection</h4>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Set up CORS properly on backend</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Configure API base URL for requests</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Handle loading states in UI</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Implement error handling for failed requests</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Test all CRUD operations end-to-end</span>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// Example: Fetch with proper error handling
+async function fetchData() {
+    try {
+        setLoading(true);
+        const response = await fetch(`${API_URL}/endpoint`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setData(data);
+    } catch (error) {
+        console.error('Fetch error:', error);
+        setError(error.message);
+    } finally {
+        setLoading(false);
+    }
+}</pre>
+                </div>
+
+                <h3>Common Integration Pitfalls</h3>
+                <div class="tip-card">
+                    <h5>❌ Pitfall: Hardcoded URLs</h5>
+                    <p>Always use environment variables for API URLs. What works on localhost won't work in production!</p>
+                </div>
+
+                <div class="tip-card">
+                    <h5>❌ Pitfall: No Error Handling</h5>
+                    <p>Always assume requests can fail. Show user-friendly error messages, not raw errors.</p>
+                </div>
+
+                <div class="tip-card">
+                    <h5>❌ Pitfall: Forgetting Authentication</h5>
+                    <p>Include auth tokens in requests that need them. Store tokens securely (not in localStorage for sensitive apps).</p>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What should you do FIRST when your API call isn't working?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'network')">
+                        <input type="radio" name="q3" value="rewrite"> Rewrite all your code
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'network')">
+                        <input type="radio" name="q3" value="network"> Check Network tab in dev tools
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'network')">
+                        <input type="radio" name="q3" value="blame"> Blame the backend
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'network')">
+                        <input type="radio" name="q3" value="ignore"> Hope it fixes itself
+                    </label>
+                    <div class="quiz-result" id="q3-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(4)">← Development Strategy</button>
+                    <button class="nav-button" onclick="showSection(6)">Deployment Guide →</button>
+                </div>
+            </section>
+
+            <!-- Section 6: Deployment Guide -->
+            <section class="lesson-section" id="section-6">
+                <h2>🌐 Deploy Your Project</h2>
+                <p>Your project works locally - awesome! Now let's get it online so the world can see your creation!</p>
+
+                <h3>Deployment Options</h3>
+                <div class="project-selector">
+                    <div class="project-option">
+                        <h4>🔥 Frontend: Vercel/Netlify</h4>
+                        <p><strong>Best for:</strong> React, Vue, static sites</p>
+                        <p><strong>Pros:</strong> Free tier, automatic deploys, easy setup</p>
+                        <p><strong>Deploy command:</strong> Connect GitHub repo, auto-deploys on push!</p>
+                    </div>
+
+                    <div class="project-option">
+                        <h4>🚀 Backend: Render/Railway</h4>
+                        <p><strong>Best for:</strong> Node.js/Express APIs</p>
+                        <p><strong>Pros:</strong> Free tier, easy database setup, good for beginners</p>
+                        <p><strong>Note:</strong> Free tier may sleep after inactivity</p>
+                    </div>
+
+                    <div class="project-option">
+                        <h4>🗄️ Database: Supabase/PostgreSQL</h4>
+                        <p><strong>Best for:</strong> Any SQL database needs</p>
+                        <p><strong>Pros:</strong> Generous free tier, built-in auth, real-time features</p>
+                        <p><strong>Tip:</strong> Get connection string for your backend</p>
+                    </div>
+
+                    <div class="project-option">
+                        <h4>📦 Full-Stack: Vercel + Serverless</h4>
+                        <p><strong>Best for:</strong> Next.js or simple APIs</p>
+                        <p><strong>Pros:</strong> Frontend + API in one place</p>
+                        <p><strong>Consider:</strong> Great for simpler backends</p>
+                    </div>
+                </div>
+
+                <h3>Pre-Deployment Checklist</h3>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Remove all console.log() statements</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Set up environment variables in production</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Update API URLs to production endpoints</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Test build command locally</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Ensure secrets are NOT in code</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Add loading states for slow connections</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Test on mobile devices</span>
+                    </div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        🚨 Common Deployment Issues
+                    </div>
+                    <div class="spoiler-content">
+                        <p><strong>Build Failing?</strong></p>
+                        <ul>
+                            <li>Check for missing dependencies in package.json</li>
+                            <li>Ensure build command is correct</li>
+                            <li>Look for case-sensitive file imports (works on Windows, fails on Linux)</li>
+                        </ul>
+                        <p><strong>App Works Locally But Not Live?</strong></p>
+                        <ul>
+                            <li>Verify environment variables are set</li>
+                            <li>Check CORS settings</li>
+                            <li>Ensure database is accessible</li>
+                            <li>Look at deployment logs!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(5)">← Integration Tips</button>
+                    <button class="nav-button" onclick="showSection(7)">Documentation →</button>
+                </div>
+            </section>
+
+            <!-- Section 7: Documentation -->
+            <section class="lesson-section" id="section-7">
+                <h2>📝 Document Your Work</h2>
+                <p>Good documentation is like leaving a trail of breadcrumbs for your future self (and others). Let's make your project shine with clear docs!</p>
+
+                <h3>README.md Template</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre># Project Name
+
+## 🚀 Overview
+Brief description of what your project does and why it's awesome!
+
+## 🎯 Features
+- ✅ Feature 1
+- ✅ Feature 2
+- ✅ Feature 3
+
+## 🛠️ Technologies Used
+- Frontend: React, CSS, [other libraries]
+- Backend: Node.js, Express
+- Database: PostgreSQL/MongoDB
+- Deployment: Vercel, Render
+
+## 📸 Screenshots
+![Homepage](link-to-screenshot)
+![Main Feature](link-to-screenshot)
+
+## 🏃‍♂️ How to Run Locally
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/project-name
+
+# Install dependencies
+cd project-name
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your values
+
+# Run the development server
+npm run dev
+```
+
+## 🌐 Live Demo
+[Check it out here!](https://your-deployed-url.com)
+
+## 🤔 Challenges & Learning
+- Biggest challenge: [what was hard]
+- How I solved it: [your solution]
+- What I learned: [key takeaways]
+
+## 🚧 Future Improvements
+- [ ] Feature to add later
+- [ ] Performance optimization
+- [ ] Additional functionality
+
+## 👏 Acknowledgments
+Thanks to [instructor/course] for teaching me web development!</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>📝 Write Your Project Story</h4>
+                    <p>Document your biggest challenge and how you overcame it:</p>
+                    <textarea class="code-editor" id="projectStory" placeholder="The biggest challenge I faced was...
+
+I tried to solve it by...
+
+What finally worked was...
+
+From this experience, I learned...">The biggest challenge I faced was...</textarea>
+                    <button class="run-button" onclick="saveStory()">
+                        💾 Save Story
+                    </button>
+                    <div class="output-box" id="storyOutput">Your project story will appear here...</div>
+                </div>
+
+                <h3>Code Comments Best Practices</h3>
+                <div class="tip-card">
+                    <h5>✅ DO: Explain WHY, not WHAT</h5>
+                    <p>Good: <code>// Sort by date to show newest posts first</code></p>
+                    <p>Bad: <code>// This sorts the array</code></p>
+                </div>
+
+                <div class="tip-card">
+                    <h5>✅ DO: Document complex logic</h5>
+                    <p>If you had to think hard about it, add a comment explaining your approach!</p>
+                </div>
+
+                <div class="tip-card">
+                    <h5>❌ DON'T: State the obvious</h5>
+                    <p>Skip comments like <code>// Increment counter by 1</code></p>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(6)">← Deployment Guide</button>
+                    <button class="nav-button" onclick="showSection(8)">Presentation Skills →</button>
+                </div>
+            </section>
+
+            <!-- Section 8: Presentation Skills -->
+            <section class="lesson-section" id="section-8">
+                <h2>🎤 Present Like a Pro</h2>
+                <p>You've built something amazing - now let's make sure you can show it off effectively! A great demo can make your project truly shine.</p>
+
+                <h3>The 5-Minute Demo Formula</h3>
+                <div class="presentation-tips">
+                    <div class="tip-card">
+                        <h5>1️⃣ Hook (30 seconds)</h5>
+                        <p>Start with the problem you're solving. Make it relatable!</p>
+                        <p><em>"Ever forgotten an important task? Lost track of assignments? My app solves that!"</em></p>
+                    </div>
+
+                    <div class="tip-card">
+                        <h5>2️⃣ Solution Overview (30 seconds)</h5>
+                        <p>Explain what your app does in one sentence, then show the main screen.</p>
+                        <p><em>"TaskMaster helps students organize their life with smart reminders and collaboration."</em></p>
+                    </div>
+
+                    <div class="tip-card">
+                        <h5>3️⃣ Live Demo (3 minutes)</h5>
+                        <p>Show, don't tell! Demo the core user flow:</p>
+                        <ul>
+                            <li>Sign up/Login (quick!)</li>
+                            <li>Main feature in action</li>
+                            <li>One "wow" moment</li>
+                            <li>Mobile responsive view</li>
+                        </ul>
+                    </div>
+
+                    <div class="tip-card">
+                        <h5>4️⃣ Technical Highlights (30 seconds)</h5>
+                        <p>Briefly mention cool technical features:</p>
+                        <p><em>"Built with React and Node.js, featuring real-time updates and secure authentication."</em></p>
+                    </div>
+
+                    <div class="tip-card">
+                        <h5>5️⃣ Wrap Up (30 seconds)</h5>
+                        <p>What you learned + what's next:</p>
+                        <p><em>"This project taught me full-stack integration. Next, I'm adding AI-powered suggestions!"</em></p>
+                    </div>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎯 Practice Your Pitch</h4>
+                    <p>Write your 30-second elevator pitch:</p>
+                    <textarea class="code-editor" id="elevatorPitch" placeholder="My app, [name], helps [target users] to [solve this problem] by [unique solution].
+
+Unlike [alternatives], my app [unique value proposition].
+
+Built with [tech stack], it features [top 2-3 features].">My app, </textarea>
+                    <button class="run-button" onclick="practicePitch()">
+                        🎤 Practice Pitch
+                    </button>
+                    <div class="output-box" id="pitchOutput">Your pitch analysis will appear here...</div>
+                </div>
+
+                <h3>Demo Day Checklist</h3>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Test everything 1 hour before</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Have backup: screenshots/video</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Clear browser cache and cookies</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Close unnecessary tabs/apps</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Prepare demo data (not empty state!)</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Practice smooth transitions</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this)">
+                        <span>Smile and breathe! 😊</span>
+                    </div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💪 Handling Demo Disasters
+                    </div>
+                    <div class="spoiler-content">
+                        <p><strong>If something breaks during your demo:</strong></p>
+                        <ol>
+                            <li>Stay calm! Say "Let me show you this other feature first"</li>
+                            <li>Have screenshots ready as backup</li>
+                            <li>Explain what SHOULD happen</li>
+                            <li>Show your code if needed</li>
+                            <li>Remember: Everyone understands tech issues!</li>
+                        </ol>
+                        <p><strong>Pro tip:</strong> Bugs during demos are so common there's a term for it: "Demo Gods" 😄</p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(7)">← Documentation</button>
+                    <button class="nav-button" onclick="showSection(9)">Final Checklist →</button>
+                </div>
+            </section>
+
+            <!-- Section 9: Final Checklist -->
+            <section class="lesson-section" id="section-9">
+                <h2>🏁 Final Sprint Checklist</h2>
+                <p>You're in the home stretch! Let's make sure everything is ready for your big reveal. This is your pre-flight checklist!</p>
+
+                <h3>🚀 Project Completion Status</h3>
+                <div class="progress-tracker">
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Core Features (MVP)</span>
+                            <span id="mvpProgress">0%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-fill" id="mvpBar" style="width: 0%">0%</div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Nice-to-Have Features</span>
+                            <span id="extraProgress">0%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-fill" id="extraBar" style="width: 0%">0%</div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Documentation</span>
+                            <span id="docsProgress">0%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-fill" id="docsBar" style="width: 0%">0%</div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Deployment</span>
+                            <span id="deployProgress">0%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-fill" id="deployBar" style="width: 0%">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>✅ Final Submission Checklist</h3>
+                <div class="checklist">
+                    <h4>Code Quality</h4>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>No console.log() statements in production</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>No commented-out code blocks</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>Consistent code formatting</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>Meaningful variable/function names</span>
+                    </div>
+
+                    <h4>Functionality</h4>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>All features work without errors</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>Proper error handling for edge cases</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>Loading states for async operations</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>Mobile responsive design works</span>
+                    </div>
+
+                    <h4>Deployment</h4>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>Live URL is working</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>Environment variables are set</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>Database is connected and working</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>HTTPS is enabled (if applicable)</span>
+                    </div>
+
+                    <h4>Documentation</h4>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>README.md is complete and clear</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>Setup instructions are tested</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>Screenshots/GIFs included</span>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" onchange="toggleChecklist(this); updateProgress()">
+                        <span>Technologies used are listed</span>
+                    </div>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎉 Final Reflection</h4>
+                    <p>Take a moment to reflect on your journey. What are you most proud of?</p>
+                    <textarea class="code-editor" id="finalReflection" placeholder="Looking back at these 12 weeks...
+
+What I'm most proud of:
+
+The biggest challenge I overcame:
+
+Skills I developed:
+
+What I want to learn next:
+
+Message to future coders:">Looking back at these 12 weeks...</textarea>
+                    <button class="run-button" onclick="saveFinalReflection()">
+                        💾 Save Reflection
+                    </button>
+                    <div class="output-box" id="reflectionOutput">Your reflection will appear here...</div>
+                </div>
+
+                <h3>🎊 Congratulations!</h3>
+                <p>You've completed an incredible journey! From "Hello World" to a full-stack application - that's HUGE! 🚀</p>
+
+                <div class="tip-card">
+                    <h5>🌟 What You've Achieved</h5>
+                    <ul>
+                        <li>Built a complete web application from scratch</li>
+                        <li>Learned frontend, backend, and database technologies</li>
+                        <li>Deployed a project to the real world</li>
+                        <li>Developed problem-solving skills that will last a lifetime</li>
+                        <li>Joined the global community of developers!</li>
+                    </ul>
+                </div>
+
+                <div class="tip-card">
+                    <h5>🚀 What's Next?</h5>
+                    <ul>
+                        <li>Keep building! Your next project will be even better</li>
+                        <li>Contribute to open source projects</li>
+                        <li>Join developer communities online</li>
+                        <li>Explore advanced topics that interest you</li>
+                        <li>Help others learn - teaching solidifies knowledge!</li>
+                    </ul>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(8)">← Presentation Skills</button>
+                    <button class="nav-button" onclick="completeModule()">Complete Module! 🎉</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement" id="achievement">
+        <h3>🏆 Achievement Unlocked!</h3>
+        <p id="achievementText">Full-Stack Developer!</p>
+    </div>
+
+    <script>
+        // State Management
+        let currentSection = 0;
+        const totalSections = 10;
+        let completedSections = new Set();
+        let projectData = {
+            type: '',
+            description: '',
+            features: '',
+            timeline: {},
+            story: '',
+            pitch: '',
+            reflection: ''
+        };
+
+        // Load saved progress
+        function loadProgress() {
+            const saved = localStorage.getItem('module10Progress');
+            if (saved) {
+                const data = JSON.parse(saved);
+                completedSections = new Set(data.completedSections || []);
+                projectData = data.projectData || projectData;
+                currentSection = data.currentSection || 0;
+                updateUI();
+            }
+        }
+
+        // Save progress
+        function saveProgress() {
+            const data = {
+                completedSections: Array.from(completedSections),
+                projectData: projectData,
+                currentSection: currentSection
+            };
+            localStorage.setItem('module10Progress', JSON.stringify(data));
+        }
+
+        // Navigation
+        function showSection(index) {
+            if (index < 0 || index >= totalSections) return;
+            
+            // Mark current section as completed
+            completedSections.add(currentSection);
+            
+            // Hide all sections
+            document.querySelectorAll('.lesson-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(`section-${index}`).classList.add('active');
+            currentSection = index;
+            
+            // Update navigation
+            updateNavigation();
+            updateProgressBar();
+            saveProgress();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Update navigation
+        function updateNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach((item, index) => {
+                item.classList.remove('active');
+                if (completedSections.has(index)) {
+                    item.classList.add('completed');
+                }
+                if (index === currentSection) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const progress = ((completedSections.size + 1) / totalSections) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            
+            // Update module progress in section 0
+            document.getElementById('moduleProgress').textContent = `${Math.round(progress)}%`;
+            const moduleBar = document.querySelector('.progress-fill');
+            if (moduleBar) {
+                moduleBar.style.width = `${progress}%`;
+                moduleBar.textContent = `${Math.round(progress)}%`;
+            }
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.querySelector('.toggle-icon').textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        // Load theme preference
+        function loadTheme() {
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.toggle-icon').textContent = '☀️';
+            }
+        }
+
+        // Project selection
+        function selectProject(element, type) {
+            document.querySelectorAll('.project-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            projectData.type = type;
+            saveProgress();
+            showAchievement('Project Selected! 🎯');
+        }
+
+        // Save project description
+        function saveProjectDescription() {
+            const description = document.getElementById('projectDescription').value;
+            projectData.description = description;
+            document.getElementById('descriptionOutput').textContent = 
+                description || 'Please write your project description!';
+            saveProgress();
+            showAchievement('Project Defined! 📝');
+        }
+
+        // Save features
+        function saveFeatures() {
+            const features = document.getElementById('featureList').value;
+            projectData.features = features;
+            document.getElementById('featureOutput').textContent = 
+                features || 'Please list your features!';
+            saveProgress();
+            showAchievement('Features Planned! 📋');
+        }
+
+        // Save timeline
+        function saveTimeline() {
+            const inputs = document.querySelectorAll('.timeline-input');
+            inputs.forEach((input, index) => {
+                projectData.timeline[`day${index}`] = input.value;
+            });
+            saveProgress();
+        }
+
+        // Generate AI response
+        function generateAIResponse() {
+            const prompt = document.getElementById('aiPrompt').value;
+            const output = document.getElementById('aiOutput');
+            
+            if (!prompt.trim()) {
+                output.textContent = 'Please write a prompt first!';
+                return;
+            }
+            
+            output.textContent = `Great prompt! Here's how to approach it:
+
+1. Break down the problem into smaller parts
+2. Use the AI to generate initial code structure
+3. Test each component separately
+4. Ask the AI to explain any confusing parts
+5. Always verify the code works as expected
+
+Remember: AI is your assistant, not your replacement. Understanding the code is key!`;
+            
+            showAchievement('AI Workflow Mastered! 🤖');
+        }
+
+        // Save story
+        function saveStory() {
+            const story = document.getElementById('projectStory').value;
+            projectData.story = story;
+            document.getElementById('storyOutput').textContent = 
+                story || 'Please share your story!';
+            saveProgress();
+            showAchievement('Story Documented! 📖');
+        }
+
+        // Practice pitch
+        function practicePitch() {
+            const pitch = document.getElementById('elevatorPitch').value;
+            projectData.pitch = pitch;
+            
+            const output = document.getElementById('pitchOutput');
+            const wordCount = pitch.trim().split(/\s+/).length;
+            
+            if (wordCount < 20) {
+                output.textContent = 'Your pitch is too short! Add more details about your unique value.';
+            } else if (wordCount > 60) {
+                output.textContent = 'Your pitch is a bit long. Try to condense it to 30-50 words for impact!';
+            } else {
+                output.textContent = `Perfect length! (${wordCount} words) 
+                
+Tips for delivery:
+- Speak clearly and confidently
+- Make eye contact
+- Show enthusiasm!
+- Practice 3 more times to feel natural`;
+                showAchievement('Pitch Perfect! 🎤');
+            }
+            saveProgress();
+        }
+
+        // Save final reflection
+        function saveFinalReflection() {
+            const reflection = document.getElementById('finalReflection').value;
+            projectData.reflection = reflection;
+            document.getElementById('reflectionOutput').textContent = 
+                reflection || 'Please share your reflection!';
+            saveProgress();
+            showAchievement('Journey Complete! 🌟');
+        }
+
+        // Toggle features
+        function toggleFeature(checkbox) {
+            const item = checkbox.parentElement;
+            if (checkbox.checked) {
+                item.classList.add('completed');
+            } else {
+                item.classList.remove('completed');
+            }
+            updateFeatureProgress();
+        }
+
+        // Update feature progress
+        function updateFeatureProgress() {
+            const total = document.querySelectorAll('.feature-item input').length;
+            const checked = document.querySelectorAll('.feature-item input:checked').length;
+            const progress = (checked / total) * 100;
+            
+            // Update MVP progress if in final section
+            const mvpBar = document.getElementById('mvpBar');
+            if (mvpBar) {
+                mvpBar.style.width = `${progress}%`;
+                mvpBar.textContent = `${Math.round(progress)}%`;
+                document.getElementById('mvpProgress').textContent = `${Math.round(progress)}%`;
+            }
+        }
+
+        // Toggle checklist
+        function toggleChecklist(checkbox) {
+            const item = checkbox.parentElement;
+            if (checkbox.checked) {
+                item.classList.add('checked');
+            } else {
+                item.classList.remove('checked');
+            }
+        }
+
+        // Update final progress
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.checklist-item input');
+            const checked = document.querySelectorAll('.checklist-item input:checked').length;
+            const overallProgress = (checked / checkboxes.length) * 100;
+            
+            // Update different progress bars based on sections
+            const codeChecks = document.querySelectorAll('.checklist-item input').length;
+            const codeChecked = document.querySelectorAll('.checklist-item input:checked').length;
+            
+            // Rough estimates for different categories
+            const mvpProgress = Math.min(100, (codeChecked / codeChecks) * 120);
+            const extraProgress = Math.max(0, (codeChecked / codeChecks) * 80 - 20);
+            const docsProgress = document.querySelector('#finalReflection').value ? 100 : 50;
+            const deployProgress = overallProgress > 70 ? 100 : overallProgress * 1.2;
+            
+            // Update all progress bars
+            updateProgressBarById('mvpBar', 'mvpProgress', mvpProgress);
+            updateProgressBarById('extraBar', 'extraProgress', extraProgress);
+            updateProgressBarById('docsBar', 'docsProgress', docsProgress);
+            updateProgressBarById('deployBar', 'deployProgress', deployProgress);
+            
+            if (overallProgress === 100) {
+                showAchievement('Project Complete! 🎉🎉🎉');
+            }
+        }
+
+        function updateProgressBarById(barId, textId, progress) {
+            const bar = document.getElementById(barId);
+            const text = document.getElementById(textId);
+            if (bar && text) {
+                bar.style.width = `${progress}%`;
+                bar.textContent = `${Math.round(progress)}%`;
+                text.textContent = `${Math.round(progress)}%`;
+            }
+        }
+
+        // Toggle spoiler
+        function toggleSpoiler(header) {
+            const spoiler = header.parentElement;
+            spoiler.classList.toggle('open');
+        }
+
+        // Quiz functionality
+        function checkQuiz(option, correctAnswer) {
+            const value = option.querySelector('input').value;
+            const resultId = option.querySelector('input').name + '-result';
+            const result = document.getElementById(resultId);
+            
+            if (value === correctAnswer) {
+                result.textContent = '✅ Correct! Great job!';
+                result.className = 'quiz-result correct';
+                showAchievement('Quiz Master! 🧠');
+            } else {
+                result.textContent = '❌ Not quite. Think about what really matters for project success!';
+                result.className = 'quiz-result incorrect';
+            }
+        }
+
+        // Copy code
+        function copyCode(button) {
+            const code = button.nextElementSibling.textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Show achievement
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            document.getElementById('achievementText').textContent = text;
+            achievement.classList.add('show');
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        // Complete module
+        function completeModule() {
+            completedSections.add(currentSection);
+            updateProgressBar();
+            saveProgress();
+            showAchievement('🎓 Course Complete! You\'re a Full-Stack Developer!');
+            
+            // Special completion message
+            setTimeout(() => {
+                alert(`🎉 CONGRATULATIONS! 🎉
+                
+You've completed the entire course!
+From HTML to full-stack applications - what an incredible journey!
+
+You're now equipped with the skills to build anything you can imagine.
+Keep coding, keep learning, and keep building amazing things!
+
+Welcome to the developer community! 🚀`);
+            }, 1000);
+        }
+
+        // Update UI on load
+        function updateUI() {
+            // Restore project data
+            if (projectData.description) {
+                document.getElementById('projectDescription').value = projectData.description;
+            }
+            if (projectData.features) {
+                document.getElementById('featureList').value = projectData.features;
+            }
+            if (projectData.story) {
+                document.getElementById('projectStory').value = projectData.story;
+            }
+            if (projectData.pitch) {
+                document.getElementById('elevatorPitch').value = projectData.pitch;
+            }
+            if (projectData.reflection) {
+                document.getElementById('finalReflection').value = projectData.reflection;
+            }
+            
+            // Restore timeline
+            const timelineInputs = document.querySelectorAll('.timeline-input');
+            timelineInputs.forEach((input, index) => {
+                if (projectData.timeline[`day${index}`]) {
+                    input.value = projectData.timeline[`day${index}`];
+                }
+            });
+            
+            updateNavigation();
+            updateProgressBar();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            loadProgress();
+            showSection(currentSection);
+        });
+
+        // Auto-save on page unload
+        window.addEventListener('beforeunload', saveProgress);
+    </script>
+</body>
+</html>

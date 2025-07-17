@@ -46,12 +46,12 @@ export default async function MyCoursesPage() {
 
   const userCourses = await getUserCourses(userId);
 
-  // Calculate stats
+  // Calculate stats using real progress data
   const stats = {
     total: userCourses.length,
-    inProgress: userCourses.filter(c => c.userCourse.progress > 0 && c.userCourse.progress < 100).length,
-    completed: userCourses.filter(c => c.userCourse.progress === 100).length,
-    notStarted: userCourses.filter(c => c.userCourse.progress === 0).length
+    inProgress: userCourses.filter(c => c.progress.percentComplete > 0 && c.progress.percentComplete < 100).length,
+    completed: userCourses.filter(c => c.progress.percentComplete === 100).length,
+    notStarted: userCourses.filter(c => c.progress.percentComplete === 0).length
   };
 
   if (userCourses.length === 0) {
@@ -173,17 +173,17 @@ export default async function MyCoursesPage() {
         <TabsContent value="all" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {userCourses.map((courseData) => {
-              const progress = courseData.userCourse.progress || 0;
+              const progress = courseData.progress.percentComplete || 0;
               const isCompleted = progress === 100;
-              const lastAccessed = courseData.userCourse.lastAccessedAt;
+              const lastAccessed = courseData.grantedAt;
               
               return (
-                <Card key={courseData.course.id} className="group flex flex-col overflow-hidden hover:shadow-lg transition-all duration-300">
+                <Card key={courseData.id} className="group flex flex-col overflow-hidden hover:shadow-lg transition-all duration-300">
                   <div className="relative aspect-video bg-muted">
-                    {courseData.course.thumbnailUrl ? (
+                    {courseData.thumbnailUrl ? (
                       <img
-                        src={courseData.course.thumbnailUrl}
-                        alt={courseData.course.title}
+                        src={courseData.thumbnailUrl}
+                        alt={courseData.title}
                         className="object-cover w-full h-full"
                       />
                     ) : (
@@ -217,10 +217,10 @@ export default async function MyCoursesPage() {
 
                   <CardHeader>
                     <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
-                      {courseData.course.title}
+                      {courseData.title}
                     </CardTitle>
                     <CardDescription className="line-clamp-2">
-                      {courseData.course.description}
+                      {courseData.description}
                     </CardDescription>
                   </CardHeader>
                   
@@ -229,7 +229,7 @@ export default async function MyCoursesPage() {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />
-                        <span>{courseData.course.estimatedHours || 0}h</span>
+                        <span>{courseData.estimatedHours || 0}h</span>
                       </div>
                       {courseData.instructor && (
                         <div className="flex items-center gap-1">
@@ -237,10 +237,10 @@ export default async function MyCoursesPage() {
                           <span>{courseData.instructor.name}</span>
                         </div>
                       )}
-                      {courseData.course.averageRating > 0 && (
+                      {courseData.averageRating > 0 && (
                         <div className="flex items-center gap-1">
                           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span>{courseData.course.averageRating.toFixed(1)}</span>
+                          <span>{courseData.averageRating.toFixed(1)}</span>
                         </div>
                       )}
                     </div>
@@ -261,7 +261,7 @@ export default async function MyCoursesPage() {
                   
                   <CardFooter className="pt-0">
                     <Button asChild className="w-full" variant={isCompleted ? "secondary" : "default"}>
-                      <Link href={`/dashboard/courses/${courseData.course.id}`}>
+                      <Link href={`/dashboard/courses/${courseData.id}`}>
                         {isCompleted ? (
                           <>
                             Review Course
@@ -291,10 +291,10 @@ export default async function MyCoursesPage() {
         <TabsContent value="in-progress">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {userCourses
-              .filter(c => c.userCourse.progress > 0 && c.userCourse.progress < 100)
+              .filter(c => c.progress.percentComplete > 0 && c.progress.percentComplete < 100)
               .map((courseData) => (
                 // Same card component as above
-                <div key={courseData.course.id}>In Progress courses...</div>
+                <div key={courseData.id}>In Progress courses...</div>
               ))}
           </div>
         </TabsContent>
@@ -302,10 +302,10 @@ export default async function MyCoursesPage() {
         <TabsContent value="completed">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {userCourses
-              .filter(c => c.userCourse.progress === 100)
+              .filter(c => c.progress.percentComplete === 100)
               .map((courseData) => (
                 // Same card component as above
-                <div key={courseData.course.id}>Completed courses...</div>
+                <div key={courseData.id}>Completed courses...</div>
               ))}
           </div>
         </TabsContent>
@@ -313,10 +313,10 @@ export default async function MyCoursesPage() {
         <TabsContent value="not-started">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {userCourses
-              .filter(c => c.userCourse.progress === 0)
+              .filter(c => c.progress.percentComplete === 0)
               .map((courseData) => (
                 // Same card component as above
-                <div key={courseData.course.id}>Not started courses...</div>
+                <div key={courseData.id}>Not started courses...</div>
               ))}
           </div>
         </TabsContent>

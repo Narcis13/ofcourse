@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/db"
-import { courses, categories, instructors, userCourses, modules } from "@/db/schema"
+import { courses, categories, instructors, userCourses, modules, progress } from "@/db/schema"
 import { eq, and, ilike, desc, asc, sql } from "drizzle-orm"
 import { auth } from "@clerk/nextjs/server"
 
@@ -257,15 +257,40 @@ export async function getUserCourses(userId: string) {
       grantedAt: userCourse.grantedAt
     }))
 
-    // Get progress for each course (placeholder for now)
-    const coursesWithProgress = transformedCourses.map(course => ({
-      ...course,
-      progress: {
-        completedModules: 0,
-        totalModules: 0,
-        percentComplete: 0
-      }
-    }))
+    // Get progress for each course
+    const coursesWithProgress = await Promise.all(
+      transformedCourses.map(async (course) => {
+        // Get module count and progress
+        const courseModules = await db
+          .select()
+          .from(modules)
+          .where(eq(modules.courseId, course.id))
+
+        const progressRecords = await db
+          .select()
+          .from(progress)
+          .where(
+            and(
+              eq(progress.userId, userId),
+              eq(progress.courseId, course.id)
+            )
+          )
+
+        const completedModules = progressRecords.filter(p => p.completed).length
+        const totalModules = courseModules.length
+
+        return {
+          ...course,
+          progress: {
+            completedModules,
+            totalModules,
+            percentComplete: totalModules > 0 
+              ? Math.round((completedModules / totalModules) * 100) 
+              : 0
+          }
+        }
+      })
+    )
 
     return coursesWithProgress
   } catch (error) {

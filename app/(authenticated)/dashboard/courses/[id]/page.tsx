@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 import { getCourseById } from "@/actions/courses";
+import { getCourseProgressSummary, getEstimatedTimeToComplete } from "@/actions/progress";
 import { requireCourseAccess } from "@/middleware/course-access";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,8 +33,8 @@ import {
 import Link from "next/link";
 import { UpgradePaywall } from "@/components/courses/upgrade-paywall";
 import { db } from "@/db";
-import { userCourses } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { userCourses, progress } from "@/db/schema";
+import { eq, sql, and } from "drizzle-orm";
 
 interface CoursePageProps {
   params: Promise<{
@@ -70,10 +71,25 @@ export default async function CoursePage({ params }: CoursePageProps) {
     return <UpgradePaywall course={course} enrollmentCount={enrollmentCount} />;
   }
 
-  // Mock progress data - would come from database
-  const courseProgress = 35;
-  const completedModules = 4;
-  const totalModules = course.modules?.length || 12;
+  // Get real progress data
+  const progressSummary = await getCourseProgressSummary(courseId);
+  const timeEstimate = await getEstimatedTimeToComplete(courseId);
+  
+  const courseProgress = progressSummary.percentComplete;
+  const completedModules = progressSummary.completedModules;
+  const totalModules = progressSummary.totalModules;
+  
+  // Get module progress for the user
+  const { userId } = await auth();
+  const moduleProgress = userId ? await db
+    .select()
+    .from(progress)
+    .where(
+      and(
+        eq(progress.userId, userId),
+        eq(progress.courseId, courseId)
+      )
+    ) : [];
 
   return (
     <div className="min-h-screen">
@@ -133,7 +149,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
                       {completedModules} of {totalModules} modules
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      ~{Math.round((course.estimatedHours || 0) * (1 - courseProgress / 100))}h remaining
+                      ~{timeEstimate.estimatedMinutes}min remaining
                     </p>
                   </div>
                 </div>
@@ -424,9 +440,12 @@ export default async function CoursePage({ params }: CoursePageProps) {
                   <div className="p-6 pt-0 space-y-2">
                     {course.modules && course.modules.length > 0 ? (
                       course.modules.map((module, index) => {
-                        const isCompleted = index < completedModules;
-                        const isCurrent = index === completedModules;
-                        const isLocked = index > completedModules;
+                        const moduleProgressData = moduleProgress.find(p => p.moduleId === module.id);
+                        const isCompleted = moduleProgressData?.completed || false;
+                        const isCurrent = progressSummary.nextModuleId === module.id;
+                        const isLocked = index > 0 && !moduleProgress.find(
+                          p => p.moduleId === course.modules[index - 1].id
+                        )?.completed && !isCompleted;
                         
                         return (
                           <Card 

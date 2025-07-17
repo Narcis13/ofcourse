@@ -142,11 +142,11 @@ This implementation plan outlines the development of OfCourse, a premium multi-c
 - [x] Update sidebar navigation with course links
 
 #### Progress Tracking
-- [ ] Add `progress` table to schema
-- [ ] Create progress tracking server actions
-- [ ] Implement progress bar component
-- [ ] Add "Mark as Complete" functionality
-- [ ] Calculate course completion percentage
+- [x] Add `progress` table to schema
+- [x] Create progress tracking server actions
+- [x] Implement progress bar component
+- [x] Add "Mark as Complete" functionality
+- [x] Calculate course completion percentage
 
 ## Phase 2: Core Learning Experience (Weeks 5-8)
 

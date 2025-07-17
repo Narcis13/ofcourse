@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 9: Modern Tools - Frameworks & Libraries</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a78bfa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --code-bg: #1e293b;
+            --border: #e5e7eb;
+        }
+
+        body.dark-mode {
+            --dark: #f3f4f6;
+            --light: #1f2937;
+            --white: #111827;
+            --border: #374151;
+            --code-bg: #0f172a;
+            background: #0f172a;
+            color: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            background: var(--white);
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            color: var(--dark);
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+
+        .theme-toggle {
+            background: var(--primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .progress-container {
+            background: var(--border);
+            height: 4px;
+        }
+
+        .progress-bar {
+            background: var(--primary);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: var(--light);
+            border-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .lesson-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .lesson-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lesson-section h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .lesson-section p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .try-it-box {
+            background: var(--light);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .try-it-box h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: 150px;
+            background: var(--code-bg);
+            color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            border: none;
+            resize: vertical;
+            margin: 1rem 0;
+        }
+
+        .run-button {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .run-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .output-box {
+            background: var(--dark);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-family: monospace;
+            min-height: 50px;
+        }
+
+        .quiz-container {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .quiz-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .quiz-option {
+            display: block;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .quiz-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .quiz-result.correct {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .quiz-result.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .spoiler {
+            margin: 1rem 0;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .spoiler-header {
+            background: var(--light);
+            padding: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .spoiler-header:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .spoiler-content {
+            padding: 1rem;
+            display: none;
+            background: var(--white);
+        }
+
+        .spoiler.open .spoiler-content {
+            display: block;
+        }
+
+        .code-block {
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .code-block pre {
+            background: var(--code-bg);
+            color: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background: var(--primary-dark);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .nav-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .achievement {
+            position: fixed;
+            top: -100px;
+            right: 2rem;
+            background: var(--success);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: all 0.5s ease;
+            z-index: 1000;
+        }
+
+        .achievement.show {
+            top: 100px;
+        }
+
+        .component-demo {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .component-demo h5 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .demo-component {
+            background: var(--white);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            margin: 0.5rem 0;
+        }
+
+        .state-display {
+            background: var(--code-bg);
+            color: #10b981;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1>Module 9: Modern Tools ⚛️</h1>
+                <div class="header-subtitle">Stand on the shoulders of giants with React!</div>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="toggle-icon">🌙</span>
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <nav id="lessonNav">
+                <div class="nav-item active" onclick="showSection(0)">🎯 Introduction</div>
+                <div class="nav-item" onclick="showSection(1)">🤔 Why Frameworks?</div>
+                <div class="nav-item" onclick="showSection(2)">🧩 Component Thinking</div>
+                <div class="nav-item" onclick="showSection(3)">⚛️ React Basics</div>
+                <div class="nav-item" onclick="showSection(4)">📦 Props & Data</div>
+                <div class="nav-item" onclick="showSection(5)">🔄 State Management</div>
+                <div class="nav-item" onclick="showSection(6)">🎨 UI Libraries</div>
+                <div class="nav-item" onclick="showSection(7)">🚀 Build Project</div>
+                <div class="nav-item" onclick="showSection(8)">✅ Module Complete</div>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <!-- Section 0: Introduction -->
+            <section class="lesson-section active" id="section-0">
+                <h2>🎯 Welcome to Modern Web Development!</h2>
+                <p>Ready to level up your coding game? In this module, we're diving into React - the tool that powers Facebook, Instagram, Netflix, and countless other apps you use every day!</p>
+                
+                <p>Remember all that HTML, CSS, and JavaScript you've been writing? Well, imagine if you could build things 10x faster, make them more organized, and have them work smoothly across millions of users. That's what React does!</p>
+
+                <div class="try-it-box">
+                    <h4>🎮 Quick Demo: See React in Action!</h4>
+                    <p>Let's see the difference between vanilla JavaScript and React:</p>
+                    <textarea class="code-editor" id="intro-demo">// Vanilla JavaScript way
+document.getElementById('counter').innerHTML = count;
+document.getElementById('button').addEventListener('click', () => {
+    count++;
+    document.getElementById('counter').innerHTML = count;
+});
+
+// React way (much cleaner!)
+function Counter() {
+    const [count, setCount] = useState(0);
+    return (
+        <div>
+            <p>Count: {count}</p>
+            <button onClick={() => setCount(count + 1)}>Click me</button>
+        </div>
+    );
+}</textarea>
+                    <button class="run-button" onclick="runCode('intro-demo', 'intro-output')">
+                        ▶️ See the Difference
+                    </button>
+                    <div class="output-box" id="intro-output">Click to see why React is awesome!</div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" style="visibility: hidden;">← Previous</button>
+                    <button class="nav-button" onclick="showSection(1)">Next: Why Frameworks? →</button>
+                </div>
+            </section>
+
+            <!-- Section 1: Why Frameworks? -->
+            <section class="lesson-section" id="section-1">
+                <h2>🤔 Why Do Frameworks Exist?</h2>
+                <p>Imagine you're building a house. Would you rather:</p>
+                <ul style="line-height: 2; margin-left: 2rem;">
+                    <li>🔨 Cut every piece of wood, make every nail, mix every bit of cement yourself?</li>
+                    <li>🏗️ Or use pre-made materials and tools to build faster and stronger?</li>
+                </ul>
+                
+                <p>That's exactly what frameworks like React do for web development! They give you powerful tools and patterns so you can focus on building amazing features instead of reinventing the wheel.</p>
+
+                <div class="component-demo">
+                    <h5>Real-World Example: Building a Like Button</h5>
+                    
+                    <div class="demo-component">
+                        <p><strong>Without a Framework (30+ lines):</strong></p>
+                        <ul>
+                            <li>Create HTML element</li>
+                            <li>Add event listener</li>
+                            <li>Track state manually</li>
+                            <li>Update DOM every time</li>
+                            <li>Handle edge cases</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-component">
+                        <p><strong>With React (5 lines):</strong></p>
+                        <ul>
+                            <li>Define component</li>
+                            <li>React handles everything else! ✨</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Why do developers love frameworks?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'all')">
+                        <input type="radio" name="q1" value="speed"> They make development faster
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'all')">
+                        <input type="radio" name="q1" value="organize"> They help organize code better
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'all')">
+                        <input type="radio" name="q1" value="community"> They have huge communities for help
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'all')">
+                        <input type="radio" name="q1" value="all"> All of the above!
+                    </label>
+                    <div class="quiz-result" id="q1-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(0)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(2)">Next: Component Thinking →</button>
+                </div>
+            </section>
+
+            <!-- Section 2: Component Thinking -->
+            <section class="lesson-section" id="section-2">
+                <h2>🧩 Component Thinking: Build Once, Use Everywhere</h2>
+                <p>Think of components like LEGO blocks! Each block is a self-contained piece that you can use to build bigger things. In React, everything is a component.</p>
+
+                <div class="try-it-box">
+                    <h4>🎮 Try It: Your First Component!</h4>
+                    <p>Let's create a simple ProfileCard component:</p>
+                    <textarea class="code-editor" id="component-demo">// This is a React component!
+function ProfileCard({ name, role, emoji }) {
+    return (
+        <div style={{
+            border: '2px solid #6366f1',
+            borderRadius: '12px',
+            padding: '20px',
+            margin: '10px',
+            textAlign: 'center'
+        }}>
+            <div style={{ fontSize: '48px' }}>{emoji}</div>
+            <h3>{name}</h3>
+            <p>{role}</p>
+        </div>
+    );
+}
+
+// Now we can use it multiple times!
+<ProfileCard name="You" role="React Developer" emoji="🚀" />
+<ProfileCard name="Friend" role="Designer" emoji="🎨" />
+<ProfileCard name="Team" role="Full Stack" emoji="💪" /></textarea>
+                    <button class="run-button" onclick="runCode('component-demo', 'component-output')">
+                        ▶️ Create Components
+                    </button>
+                    <div class="output-box" id="component-output">Your components will appear here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Pro Tip: Component Best Practices
+                    </div>
+                    <div class="spoiler-content">
+                        <ul style="line-height: 1.8; margin-left: 1rem;">
+                            <li>📦 Keep components small and focused</li>
+                            <li>🏷️ Use descriptive names (UserProfile not UP)</li>
+                            <li>♻️ Make them reusable by using props</li>
+                            <li>🎯 One component = one responsibility</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(1)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(3)">Next: React Basics →</button>
+                </div>
+            </section>
+
+            <!-- Section 3: React Basics -->
+            <section class="lesson-section" id="section-3">
+                <h2>⚛️ React Basics: JSX, the Magic Syntax</h2>
+                <p>React uses something called JSX - it looks like HTML but it's actually JavaScript! This is where the magic happens. 🪄</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>// JSX lets you write HTML-like code in JavaScript!
+const element = (
+    &lt;div className="greeting"&gt;
+        &lt;h1&gt;Hello, {userName}!&lt;/h1&gt;
+        &lt;p&gt;Welcome to React&lt;/p&gt;
+    &lt;/div&gt;
+);
+
+// It's actually JavaScript underneath:
+const element = React.createElement(
+    'div',
+    { className: 'greeting' },
+    React.createElement('h1', null, 'Hello, ', userName, '!'),
+    React.createElement('p', null, 'Welcome to React')
+);</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Try JSX Yourself!</h4>
+                    <p>Create a dynamic greeting card with JSX:</p>
+                    <textarea class="code-editor" id="jsx-demo">// Try changing these values!
+const name = "Code Master";
+const hour = new Date().getHours();
+const greeting = hour < 12 ? "Good morning" : "Good afternoon";
+
+// Your JSX component
+function GreetingCard() {
+    return (
+        <div style={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            padding: '30px',
+            borderRadius: '15px',
+            textAlign: 'center'
+        }}>
+            <h2>{greeting}, {name}! 👋</h2>
+            <p>The time is {new Date().toLocaleTimeString()}</p>
+            <p>You're learning React!</p>
+        </div>
+    );
+}
+
+// Render it!
+console.log("Rendering your greeting card...");</textarea>
+                    <button class="run-button" onclick="runCode('jsx-demo', 'jsx-output')">
+                        ▶️ Run JSX Code
+                    </button>
+                    <div class="output-box" id="jsx-output">Your greeting will appear here...</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What makes JSX special?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'mix')">
+                        <input type="radio" name="q2" value="html"> It's just HTML
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'mix')">
+                        <input type="radio" name="q2" value="js"> It's pure JavaScript
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'mix')">
+                        <input type="radio" name="q2" value="mix"> It lets you mix HTML and JavaScript
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'mix')">
+                        <input type="radio" name="q2" value="css"> It replaces CSS
+                    </label>
+                    <div class="quiz-result" id="q2-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(2)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(4)">Next: Props & Data →</button>
+                </div>
+            </section>
+
+            <!-- Section 4: Props & Data -->
+            <section class="lesson-section" id="section-4">
+                <h2>📦 Props: Passing Data to Components</h2>
+                <p>Props (short for properties) are how you pass data to components. Think of them like function arguments - they make your components flexible and reusable!</p>
+
+                <div class="try-it-box">
+                    <h4>🎮 Props in Action!</h4>
+                    <p>Let's build a customizable button component:</p>
+                    <textarea class="code-editor" id="props-demo">// A button component that accepts props
+function CoolButton({ text, color, size, onClick }) {
+    const styles = {
+        backgroundColor: color || '#6366f1',
+        color: 'white',
+        padding: size === 'large' ? '15px 30px' : '10px 20px',
+        fontSize: size === 'large' ? '18px' : '16px',
+        border: 'none',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        margin: '5px'
+    };
+    
+    return (
+        <button style={styles} onClick={onClick}>
+            {text}
+        </button>
+    );
+}
+
+// Use it with different props!
+<CoolButton text="Click Me!" color="#10b981" size="large" />
+<CoolButton text="Small Button" color="#ef4444" size="small" />
+<CoolButton text="Default Button" />
+
+// With click handler
+<CoolButton 
+    text="Alert Button" 
+    color="#f59e0b"
+    onClick={() => alert('Hello from React!')} 
+/></textarea>
+                    <button class="run-button" onclick="runCode('props-demo', 'props-output')">
+                        ▶️ Test Props
+                    </button>
+                    <div class="output-box" id="props-output">Your buttons will render here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Props vs Regular Function Arguments
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Props work just like function parameters, but with superpowers!</p>
+                        <pre style="background: var(--code-bg); color: white; padding: 1rem; border-radius: 8px;">
+// Regular function
+function greet(name, age) {
+    return `Hello ${name}, you are ${age} years old`;
+}
+
+// React component with props
+function Greeting({ name, age }) {
+    return &lt;h1&gt;Hello {name}, you are {age} years old&lt;/h1&gt;;
+}
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(3)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(5)">Next: State Management →</button>
+                </div>
+            </section>
+
+            <!-- Section 5: State Management -->
+            <section class="lesson-section" id="section-5">
+                <h2>🔄 State: Making Things Interactive</h2>
+                <p>While props are like function arguments (they don't change), state is like the component's memory - it can change over time and React will automatically update your UI!</p>
+
+                <div class="component-demo">
+                    <h5>The Magic of State</h5>
+                    <div class="demo-component">
+                        <p>When state changes → React updates the UI automatically! 🎯</p>
+                        <div class="state-display">No more manual DOM updates!</div>
+                    </div>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Build an Interactive Counter!</h4>
+                    <p>Let's create a counter that tracks clicks:</p>
+                    <textarea class="code-editor" id="state-demo">// useState is React's way of adding memory to components
+function Counter() {
+    // This line creates a state variable 'count' and a function 'setCount' to update it
+    const [count, setCount] = React.useState(0);
+    
+    return (
+        <div style={{
+            textAlign: 'center',
+            padding: '20px',
+            background: '#f3f4f6',
+            borderRadius: '12px'
+        }}>
+            <h2 style={{ fontSize: '48px', margin: '20px' }}>
+                {count}
+            </h2>
+            
+            <button 
+                onClick={() => setCount(count + 1)}
+                style={{
+                    background: '#10b981',
+                    color: 'white',
+                    padding: '10px 20px',
+                    margin: '5px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '18px',
+                    cursor: 'pointer'
+                }}
+            >
+                +1
+            </button>
+            
+            <button 
+                onClick={() => setCount(count - 1)}
+                style={{
+                    background: '#ef4444',
+                    color: 'white',
+                    padding: '10px 20px',
+                    margin: '5px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '18px',
+                    cursor: 'pointer'
+                }}
+            >
+                -1
+            </button>
+            
+            <button 
+                onClick={() => setCount(0)}
+                style={{
+                    background: '#6366f1',
+                    color: 'white',
+                    padding: '10px 20px',
+                    margin: '5px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '18px',
+                    cursor: 'pointer'
+                }}
+            >
+                Reset
+            </button>
+        </div>
+    );
+}</textarea>
+                    <button class="run-button" onclick="runCode('state-demo', 'state-output')">
+                        ▶️ Create Counter
+                    </button>
+                    <div class="output-box" id="state-output">Your interactive counter will appear here...</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What's the difference between props and state?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'change')">
+                        <input type="radio" name="q3" value="same"> They're the same thing
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'change')">
+                        <input type="radio" name="q3" value="change"> Props don't change, state can change
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'change')">
+                        <input type="radio" name="q3" value="reverse"> State doesn't change, props can change
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'change')">
+                        <input type="radio" name="q3" value="neither"> Neither can change
+                    </label>
+                    <div class="quiz-result" id="q3-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(4)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(6)">Next: UI Libraries →</button>
+                </div>
+            </section>
+
+            <!-- Section 6: UI Libraries -->
+            <section class="lesson-section" id="section-6">
+                <h2>🎨 UI Libraries: Don't Reinvent the Wheel!</h2>
+                <p>Why build everything from scratch when amazing developers have already created beautiful components for you? UI libraries are like having a professional designer on your team!</p>
+
+                <div class="component-demo">
+                    <h5>Popular UI Libraries</h5>
+                    <div class="demo-component">
+                        <h3>🎨 Material-UI</h3>
+                        <p>Google's design system - clean and professional</p>
+                    </div>
+                    <div class="demo-component">
+                        <h3>🌊 Tailwind CSS</h3>
+                        <p>Utility-first CSS - super flexible and modern</p>
+                    </div>
+                    <div class="demo-component">
+                        <h3>🐜 Ant Design</h3>
+                        <p>Enterprise-focused - tons of components</p>
+                    </div>
+                    <div class="demo-component">
+                        <h3>⚡ Chakra UI</h3>
+                        <p>Simple, modular and accessible</p>
+                    </div>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Simulate Using a UI Library!</h4>
+                    <p>See how UI libraries transform your components:</p>
+                    <textarea class="code-editor" id="ui-demo">// Without UI Library - lots of custom CSS
+function BasicCard() {
+    return (
+        <div style={{
+            border: '1px solid #ccc',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+            <h3>Basic Card</h3>
+            <p>This took 5 minutes to style...</p>
+        </div>
+    );
+}
+
+// With UI Library - instant beautiful components!
+function MaterialCard() {
+    return (
+        <Card elevation={3} sx={{ maxWidth: 345, m: 2 }}>
+            <CardMedia
+                component="img"
+                height="140"
+                image="/api/placeholder/345/140"
+                alt="Cool image"
+            />
+            <CardContent>
+                <Typography variant="h5" component="div">
+                    Beautiful Card
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    This took 30 seconds with Material-UI! 🚀
+                </Typography>
+            </CardContent>
+            <CardActions>
+                <Button size="small" color="primary">Share</Button>
+                <Button size="small" color="primary">Learn More</Button>
+            </CardActions>
+        </Card>
+    );
+}</textarea>
+                    <button class="run-button" onclick="runCode('ui-demo', 'ui-output')">
+                        ▶️ See the Difference
+                    </button>
+                    <div class="output-box" id="ui-output">UI library magic will appear here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 How to Choose a UI Library
+                    </div>
+                    <div class="spoiler-content">
+                        <ul style="line-height: 1.8; margin-left: 1rem;">
+                            <li>🎯 <strong>For beginners:</strong> Material-UI or Chakra UI (great docs!)</li>
+                            <li>🏢 <strong>For professional apps:</strong> Ant Design</li>
+                            <li>🎨 <strong>For custom designs:</strong> Tailwind CSS</li>
+                            <li>📱 <strong>For mobile-first:</strong> React Native Elements</li>
+                        </ul>
+                        <p style="margin-top: 1rem;"><strong>Pro tip:</strong> Start with one and master it before trying others!</p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(5)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(7)">Next: Build Project →</button>
+                </div>
+            </section>
+
+            <!-- Section 7: Build Project -->
+            <section class="lesson-section" id="section-7">
+                <h2>🚀 Let's Build Something Real!</h2>
+                <p>Time to put it all together! Let's build a Task Manager app using everything we've learned.</p>
+
+                <div class="try-it-box">
+                    <h4>🎮 Build a Complete React App!</h4>
+                    <p>This is a full task manager with add, delete, and complete functionality:</p>
+                    <textarea class="code-editor" id="project-demo" style="min-height: 400px;">// A complete React Task Manager App!
+function TaskManager() {
+    const [tasks, setTasks] = React.useState([]);
+    const [inputValue, setInputValue] = React.useState('');
+    
+    const addTask = () => {
+        if (inputValue.trim()) {
+            setTasks([...tasks, {
+                id: Date.now(),
+                text: inputValue,
+                completed: false
+            }]);
+            setInputValue('');
+        }
+    };
+    
+    const toggleTask = (id) => {
+        setTasks(tasks.map(task => 
+            task.id === id ? { ...task, completed: !task.completed } : task
+        ));
+    };
+    
+    const deleteTask = (id) => {
+        setTasks(tasks.filter(task => task.id !== id));
+    };
+    
+    return (
+        <div style={{
+            maxWidth: '500px',
+            margin: '0 auto',
+            padding: '20px',
+            background: '#f3f4f6',
+            borderRadius: '12px'
+        }}>
+            <h2 style={{ textAlign: 'center', color: '#6366f1' }}>
+                📝 My Task Manager
+            </h2>
+            
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                <input
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addTask()}
+                    placeholder="What needs to be done?"
+                    style={{
+                        flex: 1,
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '2px solid #e5e7eb',
+                        fontSize: '16px'
+                    }}
+                />
+                <button
+                    onClick={addTask}
+                    style={{
+                        background: '#10b981',
+                        color: 'white',
+                        padding: '10px 20px',
+                        border: 'none',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        fontSize: '16px'
+                    }}
+                >
+                    Add Task
+                </button>
+            </div>
+            
+            <div>
+                {tasks.length === 0 ? (
+                    <p style={{ textAlign: 'center', color: '#9ca3af' }}>
+                        No tasks yet. Add one above! 👆
+                    </p>
+                ) : (
+                    tasks.map(task => (
+                        <div
+                            key={task.id}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '10px',
+                                background: 'white',
+                                borderRadius: '8px',
+                                marginBottom: '10px',
+                                textDecoration: task.completed ? 'line-through' : 'none',
+                                opacity: task.completed ? 0.6 : 1
+                            }}
+                        >
+                            <input
+                                type="checkbox"
+                                checked={task.completed}
+                                onChange={() => toggleTask(task.id)}
+                                style={{ width: '20px', height: '20px' }}
+                            />
+                            <span style={{ flex: 1 }}>{task.text}</span>
+                            <button
+                                onClick={() => deleteTask(task.id)}
+                                style={{
+                                    background: '#ef4444',
+                                    color: 'white',
+                                    padding: '5px 10px',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    ))
+                )}
+            </div>
+            
+            {tasks.length > 0 && (
+                <p style={{ textAlign: 'center', marginTop: '20px', color: '#6366f1' }}>
+                    {tasks.filter(t => !t.completed).length} active, 
+                    {' ' + tasks.filter(t => t.completed).length} completed
+                </p>
+            )}
+        </div>
+    );
+}</textarea>
+                    <button class="run-button" onclick="runCode('project-demo', 'project-output')">
+                        ▶️ Launch Your App!
+                    </button>
+                    <div class="output-box" id="project-output" style="min-height: 400px;">Your task manager will appear here...</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What React concepts did we use in this app?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'all-concepts')">
+                        <input type="radio" name="q4" value="state"> Just state management
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'all-concepts')">
+                        <input type="radio" name="q4" value="components"> Just components
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'all-concepts')">
+                        <input type="radio" name="q4" value="props"> Just props
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'all-concepts')">
+                        <input type="radio" name="q4" value="all-concepts"> Components, state, props, and event handlers!
+                    </label>
+                    <div class="quiz-result" id="q4-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(6)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(8)">Complete Module! →</button>
+                </div>
+            </section>
+
+            <!-- Section 8: Module Complete -->
+            <section class="lesson-section" id="section-8">
+                <h2>✅ Module Complete: You're a React Developer!</h2>
+                <p>🎉 Congratulations! You've just learned one of the most powerful tools in modern web development!</p>
+
+                <div class="component-demo">
+                    <h5>What You've Accomplished:</h5>
+                    <div class="demo-component">
+                        <h3>✅ Understood Why Frameworks Exist</h3>
+                        <p>You know when and why to use tools like React</p>
+                    </div>
+                    <div class="demo-component">
+                        <h3>✅ Mastered Component Thinking</h3>
+                        <p>You can break down UIs into reusable pieces</p>
+                    </div>
+                    <div class="demo-component">
+                        <h3>✅ Learned JSX and Props</h3>
+                        <p>You can create dynamic, data-driven components</p>
+                    </div>
+                    <div class="demo-component">
+                        <h3>✅ Conquered State Management</h3>
+                        <p>You can build interactive applications</p>
+                    </div>
+                    <div class="demo-component">
+                        <h3>✅ Built a Real App!</h3>
+                        <p>You created a working task manager from scratch</p>
+                    </div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Your Next Steps
+                    </div>
+                    <div class="spoiler-content">
+                        <h4>Keep Building! Here are some project ideas:</h4>
+                        <ul style="line-height: 2; margin-left: 1rem;">
+                            <li>🎮 A simple game (Tic-Tac-Toe, Memory Match)</li>
+                            <li>📊 A grade calculator for school</li>
+                            <li>🎬 A movie watchlist app</li>
+                            <li>💬 A chat interface</li>
+                            <li>🎨 A drawing app</li>
+                        </ul>
+                        <h4 style="margin-top: 1rem;">Resources to Continue Learning:</h4>
+                        <ul style="line-height: 2; margin-left: 1rem;">
+                            <li>📚 Official React Docs (react.dev)</li>
+                            <li>🎥 YouTube tutorials</li>
+                            <li>💻 CodeSandbox for practice</li>
+                            <li>🌟 Open source projects on GitHub</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 3rem;">
+                    <button class="run-button" onclick="completeModule()" style="font-size: 1.2rem; padding: 1rem 2rem;">
+                        🎉 Complete Module & Get Certificate!
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="achievement" id="achievement">
+        <h3>🏆 Achievement Unlocked!</h3>
+        <p id="achievementText">React Developer!</p>
+    </div>
+
+    <script>
+        // State management
+        let currentSection = 0;
+        const totalSections = 9;
+        let completedSections = new Set();
+
+        // Load progress from localStorage
+        function loadProgress() {
+            const saved = localStorage.getItem('module9-progress');
+            if (saved) {
+                completedSections = new Set(JSON.parse(saved));
+                updateProgressBar();
+            }
+        }
+
+        // Save progress to localStorage
+        function saveProgress() {
+            localStorage.setItem('module9-progress', JSON.stringify([...completedSections]));
+        }
+
+        // Show specific section
+        function showSection(index) {
+            const sections = document.querySelectorAll('.lesson-section');
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            sections.forEach((section, i) => {
+                section.classList.toggle('active', i === index);
+            });
+            
+            navItems.forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+            
+            currentSection = index;
+            completedSections.add(index);
+            updateProgressBar();
+            saveProgress();
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const progress = (completedSections.size / totalSections) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Show achievement for milestones
+            if (completedSections.size === 5 && !localStorage.getItem('module9-halfway')) {
+                showAchievement('Halfway There! Keep Going! 💪');
+                localStorage.setItem('module9-halfway', 'true');
+            }
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-icon');
+            icon.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+
+        // Load theme preference
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.toggle-icon').textContent = '☀️';
+            }
+        }
+
+        // Run code in editor
+        function runCode(editorId, outputId) {
+            const code = document.getElementById(editorId).value;
+            const output = document.getElementById(outputId);
+            
+            try {
+                // Simulate different outputs based on the section
+                if (editorId === 'intro-demo') {
+                    output.innerHTML = `
+                        <div style="color: #10b981;">✨ React makes your code cleaner and more powerful!</div>
+                        <div style="margin-top: 10px;">• Less code to write</div>
+                        <div>• Automatic UI updates</div>
+                        <div>• Better organization</div>
+                    `;
+                } else if (editorId === 'component-demo') {
+                    output.innerHTML = `
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                            <div style="border: 2px solid #6366f1; border-radius: 12px; padding: 20px; text-align: center;">
+                                <div style="font-size: 48px;">🚀</div>
+                                <h3>You</h3>
+                                <p>React Developer</p>
+                            </div>
+                            <div style="border: 2px solid #6366f1; border-radius: 12px; padding: 20px; text-align: center;">
+                                <div style="font-size: 48px;">🎨</div>
+                                <h3>Friend</h3>
+                                <p>Designer</p>
+                            </div>
+                            <div style="border: 2px solid #6366f1; border-radius: 12px; padding: 20px; text-align: center;">
+                                <div style="font-size: 48px;">💪</div>
+                                <h3>Team</h3>
+                                <p>Full Stack</p>
+                            </div>
+                        </div>
+                    `;
+                } else if (editorId === 'jsx-demo') {
+                    const hour = new Date().getHours();
+                    const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+                    output.innerHTML = `
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; text-align: center;">
+                            <h2>${greeting}, Code Master! 👋</h2>
+                            <p>The time is ${new Date().toLocaleTimeString()}</p>
+                            <p>You're learning React!</p>
+                        </div>
+                    `;
+                } else if (editorId === 'props-demo') {
+                    output.innerHTML = `
+                        <div style="display: flex; flex-wrap: wrap; align-items: center;">
+                            <button style="background: #10b981; color: white; padding: 15px 30px; font-size: 18px; border: none; border-radius: 8px; margin: 5px;">Click Me!</button>
+                            <button style="background: #ef4444; color: white; padding: 10px 20px; font-size: 16px; border: none; border-radius: 8px; margin: 5px;">Small Button</button>
+                            <button style="background: #6366f1; color: white; padding: 10px 20px; font-size: 16px; border: none; border-radius: 8px; margin: 5px;">Default Button</button>
+                            <button style="background: #f59e0b; color: white; padding: 10px 20px; font-size: 16px; border: none; border-radius: 8px; margin: 5px;" onclick="alert('Hello from React!')">Alert Button</button>
+                        </div>
+                    `;
+                } else if (editorId === 'state-demo') {
+                    // Create a simple counter simulation
+                    output.innerHTML = `
+                        <div style="text-align: center; padding: 20px; background: #f3f4f6; border-radius: 12px;">
+                            <h2 style="font-size: 48px; margin: 20px;" id="counter-display">0</h2>
+                            <button onclick="updateCounter(1)" style="background: #10b981; color: white; padding: 10px 20px; margin: 5px; border: none; border-radius: 8px; font-size: 18px; cursor: pointer;">+1</button>
+                            <button onclick="updateCounter(-1)" style="background: #ef4444; color: white; padding: 10px 20px; margin: 5px; border: none; border-radius: 8px; font-size: 18px; cursor: pointer;">-1</button>
+                            <button onclick="resetCounter()" style="background: #6366f1; color: white; padding: 10px 20px; margin: 5px; border: none; border-radius: 8px; font-size: 18px; cursor: pointer;">Reset</button>
+                        </div>
+                    `;
+                    // Add counter functionality
+                    window.counterValue = 0;
+                    window.updateCounter = function(delta) {
+                        window.counterValue += delta;
+                        document.getElementById('counter-display').textContent = window.counterValue;
+                    };
+                    window.resetCounter = function() {
+                        window.counterValue = 0;
+                        document.getElementById('counter-display').textContent = window.counterValue;
+                    };
+                } else if (editorId === 'ui-demo') {
+                    output.innerHTML = `
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                            <div style="border: 1px solid #ccc; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                <h3>Basic Card</h3>
+                                <p>This took 5 minutes to style...</p>
+                            </div>
+                            <div style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); overflow: hidden; max-width: 345px;">
+                                <div style="height: 140px; background: linear-gradient(45deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
+                                    🎨 Beautiful Image
+                                </div>
+                                <div style="padding: 20px;">
+                                    <h3 style="margin: 0 0 10px 0; color: #333;">Beautiful Card</h3>
+                                    <p style="color: #666; margin: 0 0 15px 0;">This took 30 seconds with Material-UI! 🚀</p>
+                                    <div style="display: flex; gap: 10px;">
+                                        <button style="background: none; color: #6366f1; border: none; padding: 8px 16px; cursor: pointer; font-weight: 600;">SHARE</button>
+                                        <button style="background: none; color: #6366f1; border: none; padding: 8px 16px; cursor: pointer; font-weight: 600;">LEARN MORE</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (editorId === 'project-demo') {
+                    // Create the task manager app
+                    output.innerHTML = `
+                        <div id="task-app" style="max-width: 500px; margin: 0 auto; padding: 20px; background: #f3f4f6; border-radius: 12px;">
+                            <h2 style="text-align: center; color: #6366f1;">📝 My Task Manager</h2>
+                            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                                <input type="text" id="task-input" placeholder="What needs to be done?" style="flex: 1; padding: 10px; border-radius: 8px; border: 2px solid #e5e7eb; font-size: 16px;">
+                                <button onclick="addTask()" style="background: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">Add Task</button>
+                            </div>
+                            <div id="task-list">
+                                <p style="text-align: center; color: #9ca3af;">No tasks yet. Add one above! 👆</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Task manager functionality
+                    window.tasks = [];
+                    window.addTask = function() {
+                        const input = document.getElementById('task-input');
+                        if (input.value.trim()) {
+                            window.tasks.push({
+                                id: Date.now(),
+                                text: input.value,
+                                completed: false
+                            });
+                            input.value = '';
+                            renderTasks();
+                        }
+                    };
+                    
+                    window.toggleTask = function(id) {
+                        window.tasks = window.tasks.map(task => 
+                            task.id === id ? { ...task, completed: !task.completed } : task
+                        );
+                        renderTasks();
+                    };
+                    
+                    window.deleteTask = function(id) {
+                        window.tasks = window.tasks.filter(task => task.id !== id);
+                        renderTasks();
+                    };
+                    
+                    window.renderTasks = function() {
+                        const taskList = document.getElementById('task-list');
+                        if (window.tasks.length === 0) {
+                            taskList.innerHTML = '<p style="text-align: center; color: #9ca3af;">No tasks yet. Add one above! 👆</p>';
+                        } else {
+                            taskList.innerHTML = window.tasks.map(task => `
+                                <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: white; border-radius: 8px; margin-bottom: 10px; text-decoration: ${task.completed ? 'line-through' : 'none'}; opacity: ${task.completed ? 0.6 : 1};">
+                                    <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})" style="width: 20px; height: 20px;">
+                                    <span style="flex: 1;">${task.text}</span>
+                                    <button onclick="deleteTask(${task.id})" style="background: #ef4444; color: white; padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer;">Delete</button>
+                                </div>
+                            `).join('');
+                            
+                            const active = window.tasks.filter(t => !t.completed).length;
+                            const completed = window.tasks.filter(t => t.completed).length;
+                            taskList.innerHTML += `<p style="text-align: center; margin-top: 20px; color: #6366f1;">${active} active, ${completed} completed</p>`;
+                        }
+                    };
+                    
+                    // Add enter key support
+                    document.getElementById('task-input').addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') addTask();
+                    });
+                }
+                
+                output.style.display = 'block';
+                showAchievement('Code executed successfully! 🎉');
+            } catch (error) {
+                output.innerHTML = `<div style="color: #ef4444;">Error: ${error.message}</div>`;
+            }
+        }
+
+        // Copy code functionality
+        function copyCode(button) {
+            const pre = button.nextElementSibling;
+            const text = pre.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = 'var(--success)';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = 'var(--primary)';
+                }, 2000);
+            });
+        }
+
+        // Toggle spoiler
+        function toggleSpoiler(header) {
+            const spoiler = header.parentElement;
+            spoiler.classList.toggle('open');
+        }
+
+        // Check quiz answer
+        function checkQuiz(option, correctAnswer) {
+            const options = option.parentElement.parentElement.querySelectorAll('.quiz-option');
+            const result = option.parentElement.parentElement.querySelector('.quiz-result');
+            const value = option.querySelector('input').value;
+            
+            options.forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+                opt.style.pointerEvents = 'none';
+            });
+            
+            if (value === correctAnswer) {
+                option.classList.add('correct');
+                result.textContent = '✅ Correct! Great job!';
+                result.classList.add('correct');
+                result.style.display = 'block';
+                showAchievement('Quiz Master! 🧠');
+            } else {
+                option.classList.add('incorrect');
+                result.textContent = '❌ Not quite. Try reviewing the section!';
+                result.classList.add('incorrect');
+                result.style.display = 'block';
+            }
+        }
+
+        // Show achievement
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            const achievementText = document.getElementById('achievementText');
+            
+            achievementText.textContent = text;
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        // Complete module
+        function completeModule() {
+            completedSections.add(8);
+            updateProgressBar();
+            saveProgress();
+            
+            showAchievement('Module Complete! You\'re a React Developer! 🎉');
+            
+            // Create a simple certificate
+            const certificate = `
+                <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 20px; margin-top: 20px;">
+                    <h1 style="font-size: 3rem; margin-bottom: 20px;">🏆 Certificate of Completion</h1>
+                    <p style="font-size: 1.5rem; margin-bottom: 10px;">This certifies that</p>
+                    <h2 style="font-size: 2.5rem; margin: 20px 0;">YOU</h2>
+                    <p style="font-size: 1.5rem; margin-bottom: 30px;">have successfully completed</p>
+                    <h3 style="font-size: 2rem; margin-bottom: 30px;">Module 9: Modern Tools - React Framework</h3>
+                    <p style="font-size: 1.2rem;">Date: ${new Date().toLocaleDateString()}</p>
+                </div>
+            `;
+            
+            document.querySelector('.lesson-section.active').innerHTML += certificate;
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            loadTheme();
+            loadProgress();
+            updateProgressBar();
+        };
+    </script>
+</body>
+</html>
