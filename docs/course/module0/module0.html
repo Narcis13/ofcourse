@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 0: The Digital Universe - How the Internet Actually Works</title>
+    <style>
+        /* CSS Variables for consistent theming */
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a78bfa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --code-bg: #1e293b;
+            --border: #e5e7eb;
+        }
+
+        /* Dark mode variables */
+        body.dark-mode {
+            --dark: #f3f4f6;
+            --light: #1f2937;
+            --white: #111827;
+            --border: #374151;
+            --code-bg: #0f172a;
+            background: #0f172a;
+            color: #f3f4f6;
+        }
+
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Header styles */
+        .header {
+            background: var(--white);
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-subtitle {
+            color: var(--dark);
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .theme-toggle {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Progress bar */
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Main layout */
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: calc(100vh - 120px);
+        }
+
+        /* Sidebar navigation */
+        .sidebar {
+            width: 250px;
+            padding: 2rem 1rem;
+            background: var(--white);
+            border-right: 1px solid var(--border);
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+        }
+
+        .sidebar nav a {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            color: var(--dark);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar nav a:hover {
+            background: var(--light);
+            border-left-color: var(--primary);
+            transform: translateX(2px);
+        }
+
+        .sidebar nav a.active {
+            background: var(--primary);
+            color: white;
+            border-left-color: var(--primary-dark);
+        }
+
+        /* Content area */
+        .content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 800px;
+        }
+
+        .lesson-section {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .lesson-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lesson-section h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .lesson-section p {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        /* Interactive components */
+        .try-it-box {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .try-it-box h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            background: var(--code-bg);
+            color: #e2e8f0;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            margin: 1rem 0;
+        }
+
+        .run-button {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .run-button:hover {
+            background: #0ea572;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .output-box {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            min-height: 60px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        /* Quiz styles */
+        .quiz-container {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-question {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .quiz-option {
+            display: block;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: var(--light);
+            border: 2px solid transparent;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+            transform: translateX(2px);
+        }
+
+        .quiz-result {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            display: none;
+        }
+
+        .quiz-result.correct {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            display: block;
+        }
+
+        .quiz-result.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            display: block;
+        }
+
+        /* Spoiler component */
+        .spoiler {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .spoiler-header {
+            padding: 1rem;
+            background: var(--light);
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .spoiler-header:hover {
+            background: var(--border);
+        }
+
+        .spoiler-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s, padding 0.3s;
+        }
+
+        .spoiler.open .spoiler-content {
+            padding: 1rem;
+            max-height: 500px;
+        }
+
+        /* Code block with copy */
+        .code-block {
+            position: relative;
+            background: var(--code-bg);
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .code-block pre {
+            padding: 1rem;
+            color: #e2e8f0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Navigation buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        .nav-button:disabled {
+            background: var(--border);
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Achievement popup */
+        .achievement {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: top 0.3s;
+            text-align: center;
+        }
+
+        .achievement.show {
+            top: 100px;
+        }
+
+        .achievement h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Visual diagrams */
+        .diagram {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .diagram-item {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            margin: 0.5rem;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .arrow {
+            font-size: 2rem;
+            color: var(--primary);
+            vertical-align: middle;
+            margin: 0 1rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                max-height: none;
+                padding: 1rem;
+            }
+
+            .sidebar nav {
+                display: flex;
+                overflow-x: auto;
+                gap: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+
+            .sidebar nav a {
+                white-space: nowrap;
+                margin: 0;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Special styles */
+        .highlight {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .info-box {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.25rem;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.25rem;
+        }
+
+        /* Loading animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <h1>Module 0: The Digital Universe 🌐</h1>
+                <div class="header-subtitle">How the Internet Actually Works!</div>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="toggle-icon">🌙</span>
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </header>
+
+    <!-- Main container -->
+    <div class="container">
+        <!-- Sidebar navigation -->
+        <aside class="sidebar">
+            <nav id="lessonNav">
+                <a href="#" onclick="showSection(0)" class="active">🚀 Welcome!</a>
+                <a href="#" onclick="showSection(1)">📮 Internet as Postal System</a>
+                <a href="#" onclick="showSection(2)">🏠 URLs Decoded</a>
+                <a href="#" onclick="showSection(3)">🎨 The Holy Trinity</a>
+                <a href="#" onclick="showSection(4)">👀 Browser Dev Tools</a>
+                <a href="#" onclick="showSection(5)">💻 Your First HTML</a>
+                <a href="#" onclick="showSection(6)">🛠️ Dev Environment</a>
+                <a href="#" onclick="showSection(7)">🎉 Final Challenge</a>
+            </nav>
+        </aside>
+
+        <!-- Content area -->
+        <main class="content">
+            <!-- Section 0: Welcome -->
+            <section class="lesson-section active" id="section-0">
+                <h2>🚀 Welcome to the Digital Universe!</h2>
+                <p>Hey there, future web developer! 👋 Ready to understand how the internet <em>actually</em> works? This isn't your typical boring computer class - we're going to explore the web like you've never seen it before!</p>
+                
+                <div class="info-box">
+                    <strong>🎯 What You'll Learn:</strong>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>What really happens when you type a URL and hit Enter</li>
+                        <li>How websites talk to each other (spoiler: it's like texting!)</li>
+                        <li>The secret languages of the web: HTML, CSS, and JavaScript</li>
+                        <li>Pro tools that let you peek behind any website</li>
+                    </ul>
+                </div>
+
+                <p>Think about it - you use Instagram, watch YouTube, play online games... but do you know the magic happening behind the scenes? By the end of this module, you'll see the web with new eyes! 🔍</p>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Quick check! What do you think happens when you search for something on Google?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'magic')">
+                        <input type="radio" name="q0" value="magic"> Magic happens and results appear
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'computer')">
+                        <input type="radio" name="q0" value="computer"> Your computer finds everything locally
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'request')">
+                        <input type="radio" name="q0" value="request"> Your browser sends a request to Google's servers
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'random')">
+                        <input type="radio" name="q0" value="random"> Google randomly guesses what you want
+                    </label>
+                    <div class="quiz-result" id="q0-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" disabled>← Previous</button>
+                    <button class="nav-button" onclick="showSection(1)">Next: The Internet Postal System →</button>
+                </div>
+            </section>
+
+            <!-- Section 1: Internet as Postal System -->
+            <section class="lesson-section" id="section-1">
+                <h2>📮 The Internet as a Postal System</h2>
+                <p>Imagine the internet is like the world's fastest postal service. Seriously! When you send a DM on Instagram, it's like sending a letter - but at the speed of light! ⚡</p>
+
+                <div class="diagram">
+                    <div class="diagram-item">Your Computer<br>📱</div>
+                    <span class="arrow">→</span>
+                    <div class="diagram-item">Internet<br>📡</div>
+                    <span class="arrow">→</span>
+                    <div class="diagram-item">Server<br>🏢</div>
+                </div>
+
+                <h3>Here's how it works:</h3>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Your device</strong> = Your mailbox 📬</li>
+                    <li><strong>Browser</strong> = Your personal mail carrier 📮</li>
+                    <li><strong>Server</strong> = Post office with all the mail 🏢</li>
+                    <li><strong>Internet</strong> = The roads connecting everything 🛣️</li>
+                </ul>
+
+                <div class="try-it-box">
+                    <h4>🎮 Try It Yourself!</h4>
+                    <p>Let's simulate sending a request! Type a message below and click "Send Request" to see how it travels:</p>
+                    <textarea class="code-editor" id="postal-sim">Hey Instagram, show me my feed!</textarea>
+                    <button class="run-button" onclick="runPostalSimulation()">
+                        📤 Send Request
+                    </button>
+                    <div class="output-box" id="postal-output">Your request will travel here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Fun Fact: How Fast Is Internet "Mail"?
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Your message to Instagram's servers and back typically takes only 20-100 milliseconds. That's faster than you can blink! Your actual mail would take days, but internet "mail" is almost instant. 🚀</p>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">In our postal system analogy, what is your web browser?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'postoffice')">
+                        <input type="radio" name="q1" value="postoffice"> The post office
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'carrier')">
+                        <input type="radio" name="q1" value="carrier"> Your personal mail carrier
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'road')">
+                        <input type="radio" name="q1" value="road"> The road
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'letter')">
+                        <input type="radio" name="q1" value="letter"> The letter itself
+                    </label>
+                    <div class="quiz-result" id="q1-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(0)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(2)">Next: URLs Decoded →</button>
+                </div>
+            </section>
+
+            <!-- Section 2: URLs Decoded -->
+            <section class="lesson-section" id="section-2">
+                <h2>🏠 URLs Decoded - Web Addresses Explained</h2>
+                <p>URLs are like street addresses for the internet! Just like your home address tells the mail carrier where to deliver packages, URLs tell your browser exactly where to find websites.</p>
+
+                <div class="info-box">
+                    <strong>Let's break down a URL:</strong><br>
+                    <code style="font-size: 1.1rem;">https://www.youtube.com/watch?v=dQw4w9WgXcQ</code>
+                </div>
+
+                <div class="diagram">
+                    <p><span class="highlight">https://</span> = Secure delivery method (like registered mail) 🔒</p>
+                    <p><span class="highlight">www</span> = Subdomain (like apartment number) 🏠</p>
+                    <p><span class="highlight">youtube.com</span> = Domain name (street address) 📍</p>
+                    <p><span class="highlight">/watch</span> = Path (specific room) 🚪</p>
+                    <p><span class="highlight">?v=dQw4w9WgXcQ</span> = Query (special instructions) 📝</p>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 URL Builder Game!</h4>
+                    <p>Build your own URL by filling in the parts:</p>
+                    <textarea class="code-editor" id="url-builder">Protocol: https://
+Domain: 
+Path: /
+Query: ?search=</textarea>
+                    <button class="run-button" onclick="buildURL()">
+                        🔨 Build URL
+                    </button>
+                    <div class="output-box" id="url-output">Your complete URL will appear here...</div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Why HTTPS Instead of HTTP?
+                    </div>
+                    <div class="spoiler-content">
+                        <p>HTTPS is like sending your mail in a locked box that only the recipient can open. HTTP is like sending a postcard - anyone handling it can read it! Always look for HTTPS when entering passwords or personal info. 🔐</p>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What part of a URL is like the "street address"?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'protocol')">
+                        <input type="radio" name="q2" value="protocol"> The protocol (https://)
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'domain')">
+                        <input type="radio" name="q2" value="domain"> The domain name (youtube.com)
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'path')">
+                        <input type="radio" name="q2" value="path"> The path (/watch)
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'query')">
+                        <input type="radio" name="q2" value="query"> The query (?v=...)
+                    </label>
+                    <div class="quiz-result" id="q2-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(1)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(3)">Next: The Holy Trinity →</button>
+                </div>
+            </section>
+
+            <!-- Section 3: The Holy Trinity -->
+            <section class="lesson-section" id="section-3">
+                <h2>🎨 The Holy Trinity: HTML, CSS & JavaScript</h2>
+                <p>Every website you love is built with three core technologies. Think of them as the ultimate squad that makes the web work! 🦸‍♀️🦸‍♂️🦸</p>
+
+                <div class="diagram">
+                    <div class="diagram-item" style="background: #e34c26;">HTML<br>🦴 Structure</div>
+                    <div class="diagram-item" style="background: #1572b6;">CSS<br>🎨 Style</div>
+                    <div class="diagram-item" style="background: #f7df1e; color: black;">JavaScript<br>🧠 Behavior</div>
+                </div>
+
+                <h3>Meet the Squad:</h3>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>HTML (HyperText Markup Language)</strong> = The skeleton 🦴
+                        <ul>
+                            <li>Creates the structure and content</li>
+                            <li>Like the frame of a house</li>
+                        </ul>
+                    </li>
+                    <li><strong>CSS (Cascading Style Sheets)</strong> = The fashion designer 👗
+                        <ul>
+                            <li>Makes everything look good</li>
+                            <li>Colors, fonts, layouts</li>
+                        </ul>
+                    </li>
+                    <li><strong>JavaScript</strong> = The brain 🧠
+                        <ul>
+                            <li>Makes things interactive</li>
+                            <li>Handles clicks, animations, data</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <div class="try-it-box">
+                    <h4>🎮 See The Trinity in Action!</h4>
+                    <p>Watch how each technology transforms a button:</p>
+                    <textarea class="code-editor" id="trinity-demo"><!-- HTML: The Structure -->
+<button id="coolButton">Click Me!</button>
+
+<!-- CSS: The Style -->
+<style>
+#coolButton {
+    background: #6366f1;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+</style>
+
+<!-- JavaScript: The Behavior -->
+<script>
+document.getElementById('coolButton').onclick = function() {
+    this.textContent = 'You clicked me! 🎉';
+    this.style.background = '#10b981';
+};
+</script></textarea>
+                    <button class="run-button" onclick="runTrinityDemo()">
+                        ▶️ Run Demo
+                    </button>
+                    <div class="output-box" id="trinity-output">
+                        <div id="trinity-preview"></div>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">Which technology would you use to make a button turn green when clicked?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'html')">
+                        <input type="radio" name="q3" value="html"> HTML only
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'css')">
+                        <input type="radio" name="q3" value="css"> CSS only
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'javascript')">
+                        <input type="radio" name="q3" value="javascript"> JavaScript (with CSS)
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'none')">
+                        <input type="radio" name="q3" value="none"> None of these
+                    </label>
+                    <div class="quiz-result" id="q3-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(2)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(4)">Next: Browser Dev Tools →</button>
+                </div>
+            </section>
+
+            <!-- Section 4: Browser Dev Tools -->
+            <section class="lesson-section" id="section-4">
+                <h2>👀 Browser Dev Tools - Your X-Ray Vision!</h2>
+                <p>Here's a secret: every web developer has superpowers built right into their browser! Dev tools let you peek behind ANY website and see how it's made. It's like having X-ray vision! 🦸‍♀️</p>
+
+                <div class="info-box">
+                    <strong>🔧 Opening Dev Tools:</strong>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li><strong>Windows/Linux:</strong> Press <code>F12</code> or <code>Ctrl + Shift + I</code></li>
+                        <li><strong>Mac:</strong> Press <code>Cmd + Option + I</code></li>
+                        <li><strong>Or:</strong> Right-click anywhere → "Inspect"</li>
+                    </ul>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Dev Tools Simulator!</h4>
+                    <p>Let's practice inspecting elements! Click on different parts of this mini-website to see their code:</p>
+                    <div style="border: 2px solid var(--border); padding: 1rem; border-radius: 0.5rem; background: white;">
+                        <h3 style="color: var(--primary); cursor: pointer;" onclick="inspectElement(this)">Click me to inspect!</h3>
+                        <p style="cursor: pointer;" onclick="inspectElement(this)">I'm a paragraph. Click to see my HTML!</p>
+                        <button style="background: var(--success); color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.25rem; cursor: pointer;" onclick="inspectElement(this)">I'm a button!</button>
+                    </div>
+                    <div class="output-box" id="inspect-output" style="margin-top: 1rem;">
+                        <strong>Inspection Result:</strong>
+                        <pre id="inspect-code">Click an element above to inspect it!</pre>
+                    </div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Pro Tip: What Can You Do with Dev Tools?
+                    </div>
+                    <div class="spoiler-content">
+                        <ul>
+                            <li>🎨 Change any website's appearance (just for you!)</li>
+                            <li>🐛 Find and fix bugs in your code</li>
+                            <li>📱 Test how sites look on different devices</li>
+                            <li>⚡ Check website performance</li>
+                            <li>🔍 See all network requests</li>
+                        </ul>
+                        <p><strong>Remember:</strong> Changes you make only affect your view - refresh and they're gone!</p>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ Ethical Hacking:</strong> Dev tools are for learning and building, not for cheating or breaking websites. Always use your powers for good! 🦸‍♂️
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(3)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(5)">Next: Your First HTML →</button>
+                </div>
+            </section>
+
+            <!-- Section 5: Your First HTML -->
+            <section class="lesson-section" id="section-5">
+                <h2>💻 Your First HTML Page!</h2>
+                <p>It's time! You're about to write your very first webpage. Don't worry - it's easier than you think! We'll start simple and build up. 🚀</p>
+
+                <div class="try-it-box">
+                    <h4>🎮 Create Your First Webpage!</h4>
+                    <p>Type your name and favorite emoji in the code below, then click Run to see your page come to life!</p>
+                    <textarea class="code-editor" id="first-html"><!DOCTYPE html>
+<html>
+<head>
+    <title>My First Page</title>
+</head>
+<body>
+    <h1>Hello World! 👋</h1>
+    <p>My name is [YOUR NAME HERE]</p>
+    <p>My favorite emoji is: [ADD EMOJI]</p>
+    <p>I'm learning to code! 💻</p>
+    
+    <!-- Add your own message below! -->
+    <p></p>
+</body>
+</html></textarea>
+                    <button class="run-button" onclick="runFirstHTML()">
+                        ▶️ Run My Page!
+                    </button>
+                    <div class="output-box" id="first-html-output" style="background: white; min-height: 200px;">
+                        <iframe id="html-preview" style="width: 100%; height: 200px; border: none;"></iframe>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>🏗️ What Each Part Does:</strong>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li><code>&lt;!DOCTYPE html&gt;</code> - Tells browser "this is HTML5"</li>
+                        <li><code>&lt;html&gt;</code> - Container for everything</li>
+                        <li><code>&lt;head&gt;</code> - Info about the page (not visible)</li>
+                        <li><code>&lt;title&gt;</code> - Shows in browser tab</li>
+                        <li><code>&lt;body&gt;</code> - Everything visible on the page</li>
+                        <li><code>&lt;h1&gt;</code> - Main heading (biggest)</li>
+                        <li><code>&lt;p&gt;</code> - Paragraph of text</li>
+                    </ul>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Challenge: Add More Elements!
+                    </div>
+                    <div class="spoiler-content">
+                        <p>Try adding these to your page:</p>
+                        <ul>
+                            <li><code>&lt;h2&gt;Subheading&lt;/h2&gt;</code> - Smaller heading</li>
+                            <li><code>&lt;strong&gt;Bold text&lt;/strong&gt;</code> - Makes text bold</li>
+                            <li><code>&lt;em&gt;Italic text&lt;/em&gt;</code> - Makes text italic</li>
+                            <li><code>&lt;br&gt;</code> - Line break (no closing tag needed)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(4)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(6)">Next: Dev Environment →</button>
+                </div>
+            </section>
+
+            <!-- Section 6: Dev Environment -->
+            <section class="lesson-section" id="section-6">
+                <h2>🛠️ Your Pro Dev Setup</h2>
+                <p>Ready to set up your coding workspace like a pro? Let's get you the tools that every developer uses! 🏗️</p>
+
+                <div class="info-box">
+                    <strong>🎯 Essential Tools Checklist:</strong>
+                    <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li><strong>VS Code</strong> - Your code editor (like Google Docs for code)</li>
+                        <li><strong>Chrome/Firefox</strong> - Modern browser with dev tools</li>
+                        <li><strong>Live Server</strong> - See changes instantly</li>
+                        <li><strong>Git</strong> - Save your work history (we'll learn this later)</li>
+                    </ol>
+                </div>
+
+                <h3>🚀 Setting Up VS Code</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre>1. Download VS Code from: code.visualstudio.com
+2. Install it (just click "Next" for everything)
+3. Open VS Code
+4. Install these awesome extensions:
+   - Live Server (by Ritwick Dey)
+   - Prettier (code formatter)
+   - Material Icon Theme (pretty file icons)</pre>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 VS Code Shortcuts Trainer!</h4>
+                    <p>Practice these essential shortcuts (they'll save you hours!):</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <strong>Windows/Linux:</strong>
+                            <ul style="margin-left: 1rem;">
+                                <li><code>Ctrl + S</code> - Save file</li>
+                                <li><code>Ctrl + /</code> - Comment line</li>
+                                <li><code>Ctrl + C/V</code> - Copy/Paste</li>
+                                <li><code>Ctrl + Z</code> - Undo</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <strong>Mac:</strong>
+                            <ul style="margin-left: 1rem;">
+                                <li><code>Cmd + S</code> - Save file</li>
+                                <li><code>Cmd + /</code> - Comment line</li>
+                                <li><code>Cmd + C/V</code> - Copy/Paste</li>
+                                <li><code>Cmd + Z</code> - Undo</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Pro Setup Tips
+                    </div>
+                    <div class="spoiler-content">
+                        <ul>
+                            <li>🎨 Choose a theme you love (Dark themes are easier on eyes)</li>
+                            <li>📁 Create a "Projects" folder for all your code</li>
+                            <li>🔤 Install a good font like "Fira Code" for coding</li>
+                            <li>🚀 Pin VS Code to your taskbar for quick access</li>
+                            <li>📝 Enable autosave: File → Auto Save</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="quiz-question">What's the main benefit of using Live Server?</div>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'hosting')">
+                        <input type="radio" name="q6" value="hosting"> It hosts your website online
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'refresh')">
+                        <input type="radio" name="q6" value="refresh"> It auto-refreshes when you save changes
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'format')">
+                        <input type="radio" name="q6" value="format"> It formats your code
+                    </label>
+                    <label class="quiz-option" onclick="checkQuiz(this, 'debug')">
+                        <input type="radio" name="q6" value="debug"> It finds bugs in your code
+                    </label>
+                    <div class="quiz-result" id="q6-result"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(5)">← Previous</button>
+                    <button class="nav-button" onclick="showSection(7)">Next: Final Challenge →</button>
+                </div>
+            </section>
+
+            <!-- Section 7: Final Challenge -->
+            <section class="lesson-section" id="section-7">
+                <h2>🎉 Final Challenge: Build Your Profile Page!</h2>
+                <p>You've learned so much! Now it's time to put it all together and build something awesome - your very own profile page! 🚀</p>
+
+                <div class="info-box">
+                    <strong>🎯 Your Mission:</strong>
+                    <p>Create a personal profile page that includes:</p>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>✅ Your name as the main heading</li>
+                        <li>✅ A paragraph about yourself</li>
+                        <li>✅ Your favorite websites (at least 3)</li>
+                        <li>✅ Fun facts about you</li>
+                        <li>✅ Your coding goals</li>
+                    </ul>
+                </div>
+
+                <div class="try-it-box">
+                    <h4>🎮 Build Your Profile!</h4>
+                    <p>Use everything you've learned to create your page:</p>
+                    <textarea class="code-editor" id="final-challenge" style="min-height: 400px;"><!DOCTYPE html>
+<html>
+<head>
+    <title>About Me - [Your Name]</title>
+</head>
+<body>
+    <!-- Add your profile content here! -->
+    <h1>👋 Hi, I'm [Your Name]!</h1>
+    
+    <h2>About Me</h2>
+    <p><!-- Tell us about yourself! --></p>
+    
+    <h2>My Favorite Websites</h2>
+    <ul>
+        <li><!-- Add website 1 --></li>
+        <li><!-- Add website 2 --></li>
+        <li><!-- Add website 3 --></li>
+    </ul>
+    
+    <h2>Fun Facts</h2>
+    <!-- Add some fun facts about yourself -->
+    
+    <h2>My Coding Goals</h2>
+    <p><!-- What do you want to build? --></p>
+    
+    <!-- Feel free to add more sections! -->
+</body>
+</html></textarea>
+                    <button class="run-button" onclick="runFinalChallenge()">
+                        ▶️ Preview My Profile!
+                    </button>
+                    <div class="output-box" id="final-output" style="background: white; min-height: 300px;">
+                        <iframe id="final-preview" style="width: 100%; height: 300px; border: none;"></iframe>
+                    </div>
+                </div>
+
+                <div class="spoiler">
+                    <div class="spoiler-header" onclick="toggleSpoiler(this)">
+                        💡 Need Ideas? Here Are Some HTML Tags to Try!
+                    </div>
+                    <div class="spoiler-content">
+                        <ul>
+                            <li><code>&lt;ul&gt;</code> and <code>&lt;ol&gt;</code> - Unordered and ordered lists</li>
+                            <li><code>&lt;strong&gt;</code> and <code>&lt;em&gt;</code> - Bold and italic</li>
+                            <li><code>&lt;h1&gt;</code> through <code>&lt;h6&gt;</code> - Different heading sizes</li>
+                            <li><code>&lt;hr&gt;</code> - Horizontal line separator</li>
+                            <li><code>&lt;!-- Comment --&gt;</code> - Add notes in your code</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="success-box" style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--success); padding: 1rem; margin: 2rem 0; border-radius: 0.25rem;">
+                    <h3>🎊 Congratulations!</h3>
+                    <p>You've completed Module 0! You now understand:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>✅ How the internet works (postal system!)</li>
+                        <li>✅ What URLs mean and how to read them</li>
+                        <li>✅ The HTML, CSS, JavaScript trinity</li>
+                        <li>✅ How to use browser dev tools</li>
+                        <li>✅ How to write basic HTML</li>
+                        <li>✅ How to set up your dev environment</li>
+                    </ul>
+                    <p><strong>You're officially ready to start your web development journey! 🚀</strong></p>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="showSection(6)">← Previous</button>
+                    <button class="nav-button" onclick="completeModule()" style="background: var(--success);">
+                        Complete Module! 🎉
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Achievement popup -->
+    <div class="achievement" id="achievement">
+        <h3>🏆 Achievement Unlocked!</h3>
+        <p id="achievementText">JavaScript Master!</p>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Track current section and progress
+        let currentSection = 0;
+        const totalSections = 8;
+        let completedSections = new Set();
+
+        // Load saved progress
+        function loadProgress() {
+            const saved = localStorage.getItem('module0_progress');
+            if (saved) {
+                completedSections = new Set(JSON.parse(saved));
+                updateProgressBar();
+            }
+            
+            // Load theme
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.toggle-icon').textContent = '☀️';
+            }
+        }
+
+        // Save progress
+        function saveProgress() {
+            localStorage.setItem('module0_progress', JSON.stringify([...completedSections]));
+        }
+
+        // Show section
+        function showSection(index) {
+            // Hide all sections
+            document.querySelectorAll('.lesson-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(`section-${index}`).classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.sidebar nav a').forEach((link, i) => {
+                link.classList.toggle('active', i === index);
+            });
+            
+            // Mark section as completed
+            completedSections.add(currentSection);
+            currentSection = index;
+            
+            // Update progress
+            updateProgressBar();
+            saveProgress();
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const progress = (completedSections.size / totalSections) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Check for achievements
+            if (completedSections.size === 3 && !localStorage.getItem('module0_halfway')) {
+                showAchievement('Halfway There! Keep going! 🌟');
+                localStorage.setItem('module0_halfway', 'true');
+            }
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.toggle-icon');
+            const isDark = document.body.classList.contains('dark-mode');
+            icon.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        // Show achievement
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            document.getElementById('achievementText').textContent = text;
+            achievement.classList.add('show');
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        // Quiz checker
+        function checkQuiz(option, correctAnswer) {
+            const quizContainer = option.closest('.quiz-container');
+            const resultDiv = quizContainer.querySelector('.quiz-result');
+            const selectedValue = option.querySelector('input').value;
+            
+            if (selectedValue === correctAnswer) {
+                resultDiv.textContent = '✅ Correct! Great job!';
+                resultDiv.className = 'quiz-result correct';
+                
+                // Achievement for first correct answer
+                if (!localStorage.getItem('module0_first_quiz')) {
+                    showAchievement('Quiz Master! First correct answer! 🎯');
+                    localStorage.setItem('module0_first_quiz', 'true');
+                }
+            } else {
+                resultDiv.textContent = '❌ Not quite. Try again!';
+                resultDiv.className = 'quiz-result incorrect';
+            }
+        }
+
+        // Spoiler toggle
+        function toggleSpoiler(header) {
+            header.parentElement.classList.toggle('open');
+        }
+
+        // Copy code
+        function copyCode(button) {
+            const code = button.nextElementSibling.textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        // Postal simulation
+        function runPostalSimulation() {
+            const message = document.getElementById('postal-sim').value;
+            const output = document.getElementById('postal-output');
+            
+            output.innerHTML = '<div class="loading">📤 Sending request...</div>';
+            
+            setTimeout(() => {
+                output.innerHTML = `
+<strong>Request Journey:</strong>
+1. 📱 Your browser packages: "${message}"
+2. 📡 Sends through internet cables/wifi
+3. 🏢 Instagram server receives it
+4. 🔍 Server processes your request
+5. 📦 Server sends back your feed data
+6. 📱 Your browser displays the content!
+
+⏱️ Total time: ~50ms (0.05 seconds!)`;
+            }, 1500);
+        }
+
+        // URL Builder
+        function buildURL() {
+            const input = document.getElementById('url-builder').value;
+            const output = document.getElementById('url-output');
+            
+            // Parse the input
+            const lines = input.split('\n');
+            let protocol = 'https://';
+            let domain = '';
+            let path = '/';
+            let query = '';
+            
+            lines.forEach(line => {
+                if (line.includes('Protocol:')) protocol = line.split('Protocol:')[1].trim();
+                if (line.includes('Domain:')) domain = line.split('Domain:')[1].trim();
+                if (line.includes('Path:')) path = line.split('Path:')[1].trim();
+                if (line.includes('Query:')) query = line.split('Query:')[1].trim();
+            });
+            
+            if (!domain) {
+                output.innerHTML = '⚠️ You need to add a domain!';
+                return;
+            }
+            
+            const fullURL = protocol + domain + path + query;
+            output.innerHTML = `
+<strong>Your Complete URL:</strong>
+<code style="font-size: 1.1rem; color: var(--primary);">${fullURL}</code>
+
+<strong>Try it:</strong> This URL would take you to the ${domain} website!`;
+        }
+
+        // Trinity demo
+        function runTrinityDemo() {
+            const code = document.getElementById('trinity-demo').value;
+            const preview = document.getElementById('trinity-preview');
+            
+            // Create a safe preview
+            preview.innerHTML = code;
+            
+            // Execute any script tags
+            const scripts = preview.getElementsByTagName('script');
+            for (let script of scripts) {
+                eval(script.textContent);
+            }
+        }
+
+        // Element inspector
+        function inspectElement(element) {
+            const output = document.getElementById('inspect-code');
+            const tagName = element.tagName.toLowerCase();
+            const attributes = Array.from(element.attributes)
+                .map(attr => ` ${attr.name}="${attr.value}"`)
+                .join('');
+            const content = element.textContent;
+            
+            output.textContent = `<${tagName}${attributes}>${content}</${tagName}>`;
+        }
+
+        // First HTML runner
+        function runFirstHTML() {
+            const code = document.getElementById('first-html').value;
+            const iframe = document.getElementById('html-preview');
+            
+            // Create a data URL for the iframe
+            const blob = new Blob([code], { type: 'text/html' });
+            iframe.src = URL.createObjectURL(blob);
+            
+            // Achievement for first HTML
+            if (!localStorage.getItem('module0_first_html')) {
+                showAchievement('HTML Creator! You made your first webpage! 🎨');
+                localStorage.setItem('module0_first_html', 'true');
+            }
+        }
+
+        // Final challenge runner
+        function runFinalChallenge() {
+            const code = document.getElementById('final-challenge').value;
+            const iframe = document.getElementById('final-preview');
+            
+            // Create a data URL for the iframe
+            const blob = new Blob([code], { type: 'text/html' });
+            iframe.src = URL.createObjectURL(blob);
+        }
+
+        // Module completion
+        function completeModule() {
+            completedSections.add(currentSection);
+            updateProgressBar();
+            saveProgress();
+            
+            showAchievement('Module Complete! You understand the internet! 🌐');
+            
+            // Show completion message
+            setTimeout(() => {
+                if (confirm('🎉 Amazing work! You\'ve completed Module 0!\n\nReady to move on to Module 1: The Coder\'s Toolkit?')) {
+                    // In a real app, this would navigate to the next module
+                    alert('Great! Module 1 will teach you professional coding setup and Git basics. See you there! 🚀');
+                }
+            }, 1000);
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            loadProgress();
+        };
+    </script>
+</body>
+</html>
